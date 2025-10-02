@@ -1,0 +1,583 @@
+// Variables globales
+// L'historique est maintenant géré côté serveur
+let statisticsData = {
+  totalSent: 0,
+  successful: 0,
+  failed: 0,
+  pending: 0
+};
+
+// Initialisation du dashboard
+document.addEventListener('DOMContentLoaded', function() {
+  // Vérifier le statut de l'API
+  checkApiStatus();
+  
+  // Initialiser les graphiques
+  initCharts();
+  
+  // Ajouter les événements
+  setupEventLi      // Mettre à jour les statistiques
+      updateStats(true);
+      
+      // Déclencher un événement pour informer les autres modules
+      document.dispatchEvent(new CustomEvent('token-sent', {
+        detail: { 
+          success: true,
+          tokenData: {
+            type: 'Token',
+            to: phoneInputToken.value,
+            token: data.token,
+            status: 'success',
+            date: new Date()
+          }
+        }
+      }));// Simuler des données pour la démo
+  simulateData();
+});
+
+// Vérifier le statut de l'API
+function checkApiStatus() {
+  fetch('/api/status')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const statusIndicator = document.getElementById('api-status');
+      const statusText = document.getElementById('status-text');
+      
+      if (data.status === 'online' || data.status === 'operational') {
+        statusIndicator.classList.add('success');
+        statusIndicator.classList.remove('danger');
+        statusText.textContent = 'En ligne';
+      } else {
+        statusIndicator.classList.add('danger');
+        statusIndicator.classList.remove('success');
+        statusText.textContent = 'Hors ligne';
+      }
+      
+      // Mettre à jour les autres informations
+      if (data.version) {
+        document.getElementById('api-version').textContent = data.version;
+      }
+      
+      document.getElementById('last-check').textContent = new Date().toLocaleString();
+    })
+    .catch(error => {
+      console.error('Erreur de vérification du statut:', error);
+      const statusIndicator = document.getElementById('api-status');
+      const statusText = document.getElementById('status-text');
+      statusIndicator.classList.add('danger');
+      statusIndicator.classList.remove('success');
+      statusText.textContent = 'Non connecté';
+      
+      // Afficher une alerte
+      showAlert('Impossible de se connecter à l\'API SMS. Vérifiez que le serveur est en cours d\'exécution.', 'danger');
+    });
+}
+
+// Initialiser les graphiques avec Chart.js
+function initCharts() {
+  // Graphique des SMS envoyés (par jour)
+  const ctxDaily = document.getElementById('chart-daily');
+  if (ctxDaily) {
+    new Chart(ctxDaily, {
+      type: 'line',
+      data: {
+        labels: getLast7Days(),
+        datasets: [{
+          label: 'SMS envoyés',
+          data: [12, 19, 8, 15, 20, 14, 18],
+          fill: true,
+          backgroundColor: 'rgba(52, 152, 219, 0.1)',
+          borderColor: '#3498db',
+          tension: 0.4,
+          pointBackgroundColor: '#3498db'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  // Graphique des types de SMS
+  const ctxTypes = document.getElementById('chart-types');
+  if (ctxTypes) {
+    new Chart(ctxTypes, {
+      type: 'doughnut',
+      data: {
+        labels: ['SMS Simple', 'Tokens', 'Notifications'],
+        datasets: [{
+          data: [65, 25, 10],
+          backgroundColor: [
+            '#3498db',
+            '#2ecc71',
+            '#f39c12'
+          ],
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          }
+        },
+        cutout: '70%'
+      }
+    });
+  }
+  
+  // Graphique des taux de succès
+  const ctxSuccess = document.getElementById('chart-success');
+  if (ctxSuccess) {
+    new Chart(ctxSuccess, {
+      type: 'bar',
+      data: {
+        labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+        datasets: [{
+          label: 'Succès',
+          data: [95, 98, 92, 97, 99, 96, 94],
+          backgroundColor: '#2ecc71'
+        }, {
+          label: 'Échecs',
+          data: [5, 2, 8, 3, 1, 4, 6],
+          backgroundColor: '#e74c3c'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            stacked: true,
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          },
+          x: {
+            stacked: true
+          }
+        }
+      }
+    });
+  }
+}
+
+// Configuration des écouteurs d'événements
+function setupEventListeners() {
+  // Formulaire d'envoi de SMS
+  const smsForm = document.getElementById('sms-form');
+  if (smsForm) {
+    smsForm.addEventListener('submit', handleSendSms);
+    
+    // Compteur de caractères
+    const messageInput = document.getElementById('message');
+    const charCounter = document.getElementById('char-counter');
+    
+    if (messageInput && charCounter) {
+      messageInput.addEventListener('input', function() {
+        const count = this.value.length;
+        const smsCount = Math.ceil(count / 160);
+        charCounter.textContent = `${count} caractères (${smsCount} SMS)`;
+      });
+    }
+  }
+  
+  // Formulaire d'envoi de token
+  const tokenForm = document.getElementById('token-form');
+  if (tokenForm) {
+    tokenForm.addEventListener('submit', handleSendToken);
+  }
+  
+  // Bouton d'actualisation du statut
+  const refreshButton = document.getElementById('refresh-status');
+  if (refreshButton) {
+    refreshButton.addEventListener('click', checkApiStatus);
+  }
+  
+  // Navigation
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      // Si c'est un lien vers un onglet
+      if (this.getAttribute('data-tab')) {
+        e.preventDefault();
+        const tabId = this.getAttribute('data-tab');
+        showTab(tabId);
+        
+        // Marquer le lien comme actif
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+      }
+    });
+  });
+  
+  // Initialiser sur le premier onglet
+  const firstTabLink = document.querySelector('.nav-link[data-tab]');
+  if (firstTabLink) {
+    firstTabLink.click();
+  }
+}
+
+// Gestion de l'envoi de SMS
+function handleSendSms(e) {
+  e.preventDefault();
+  
+  const phoneInput = document.getElementById('phone');
+  const messageInput = document.getElementById('message');
+  const submitBtn = document.querySelector('#sms-form button[type="submit"]');
+  const resultDiv = document.getElementById('sms-result');
+  
+  // Valider les entrées
+  if (!validatePhone(phoneInput.value)) {
+    showAlert('Numéro de téléphone invalide. Utilisez le format international (ex: +33612345678)', 'danger', resultDiv);
+    return;
+  }
+  
+  if (!messageInput.value.trim()) {
+    showAlert('Le message ne peut pas être vide.', 'danger', resultDiv);
+    return;
+  }
+  
+  // Désactiver le bouton et afficher le chargement
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="loader"></span> Envoi...';
+  resultDiv.innerHTML = '';
+  
+  // Envoyer la requête à l'API via le proxy local
+  fetch('/api/send-sms', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      to: phoneInput.value.trim(),
+      message: messageInput.value.trim()
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Envoyer le SMS';
+    
+    if (data.success) {
+      showAlert(`SMS envoyé avec succès à ${phoneInput.value}`, 'success', resultDiv);
+      
+      // Réinitialiser le formulaire
+      messageInput.value = '';
+      
+      // Mettre à jour les statistiques
+      updateStats(true);
+      
+      // Déclencher un événement pour informer les autres modules
+      document.dispatchEvent(new CustomEvent('sms-sent', {
+        detail: { 
+          success: true,
+          smsData: {
+            type: 'SMS',
+            to: phoneInput.value,
+            message: messageInput.value,
+            status: 'success',
+            date: new Date()
+          }
+        }
+      }));
+    } else {
+      showAlert(`Erreur: ${data.error || 'Une erreur est survenue'}`, 'danger', resultDiv);
+      updateStats(false);
+    }
+  })
+  .catch(error => {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Envoyer le SMS';
+    showAlert(`Erreur: ${error.message}`, 'danger', resultDiv);
+    updateStats(false);
+  });
+}
+
+// Gestion de l'envoi de token
+function handleSendToken(e) {
+  e.preventDefault();
+  
+  const phoneInput = document.getElementById('token-phone');
+  const tokenInput = document.getElementById('token');
+  const submitBtn = document.querySelector('#token-form button[type="submit"]');
+  const resultDiv = document.getElementById('token-result');
+  
+  // Valider les entrées
+  if (!validatePhone(phoneInput.value)) {
+    showAlert('Numéro de téléphone invalide. Utilisez le format international (ex: +33612345678)', 'danger', resultDiv);
+    return;
+  }
+  
+  if (!tokenInput.value.trim()) {
+    showAlert('Le token ne peut pas être vide.', 'danger', resultDiv);
+    return;
+  }
+  
+  // Désactiver le bouton et afficher le chargement
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="loader"></span> Envoi...';
+  resultDiv.innerHTML = '';
+  
+  // Envoyer la requête à l'API via le proxy local
+  fetch('/api/send-token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      phoneNumber: phoneInput.value.trim(),
+      token: tokenInput.value.trim()
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Envoyer le Token';
+    
+    if (data.success) {
+      showAlert(`Token envoyé avec succès à ${phoneInput.value}`, 'success', resultDiv);
+      
+      // Réinitialiser le formulaire
+      tokenInput.value = '';
+      
+      // Mettre à jour les statistiques
+      updateStats(true);
+      
+      // Ajouter à l'historique
+      addToHistory({
+        type: 'token',
+        to: phoneInput.value,
+        token: tokenInput.value,
+        status: 'success',
+        date: new Date()
+      });
+      
+      // Déclencher un événement pour informer les autres modules
+      document.dispatchEvent(new CustomEvent('sms-sent', {
+        detail: { success: true }
+      }));
+    } else {
+      showAlert(`Erreur: ${data.error || 'Une erreur est survenue'}`, 'danger', resultDiv);
+      updateStats(false);
+    }
+  })
+  .catch(error => {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Envoyer le Token';
+    showAlert(`Erreur: ${error.message}`, 'danger', resultDiv);
+    updateStats(false);
+  });
+}
+
+// Validation du numéro de téléphone
+function validatePhone(phone) {
+  // Format international simple (commençant par +)
+  return /^\+[1-9]\d{1,14}$/.test(phone.trim());
+}
+
+// Afficher une alerte
+function showAlert(message, type, container = null) {
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert alert-${type}`;
+  alertDiv.innerHTML = `
+    ${message}
+    <button class="alert-dismiss">&times;</button>
+  `;
+  
+  // Ajouter au conteneur spécifié ou au corps du document
+  if (container) {
+    container.innerHTML = '';
+    container.appendChild(alertDiv);
+  } else {
+    const alertsContainer = document.getElementById('alerts-container') || document.body;
+    alertsContainer.appendChild(alertDiv);
+  }
+  
+  // Ajouter l'événement pour fermer l'alerte
+  const dismissButton = alertDiv.querySelector('.alert-dismiss');
+  if (dismissButton) {
+    dismissButton.addEventListener('click', function() {
+      alertDiv.remove();
+    });
+  }
+  
+  // Disparaître après 5 secondes si ce n'est pas une erreur
+  if (type !== 'danger') {
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 5000);
+  }
+}
+
+// Afficher un onglet spécifique
+function showTab(tabId) {
+  // Cacher tous les onglets
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.style.display = 'none';
+  });
+  
+  // Afficher l'onglet demandé
+  const activeTab = document.getElementById(tabId);
+  if (activeTab) {
+    activeTab.style.display = 'block';
+    
+    // Déclencher un événement pour informer les autres modules
+    document.dispatchEvent(new CustomEvent('tab-changed', {
+      detail: { tabId: tabId }
+    }));
+    
+    // Si c'est l'onglet des paramètres, s'assurer que les boutons sont correctement initialisés
+    if (tabId === 'settings-tab') {
+      // Mettre à jour les boutons de thème
+      const currentTheme = localStorage.getItem('theme') || 'system';
+      document.querySelectorAll('#theme-light, #theme-dark, #theme-system').forEach(btn => {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+      });
+      const activeThemeBtn = document.getElementById(`theme-${currentTheme}`);
+      if (activeThemeBtn) {
+        activeThemeBtn.classList.remove('btn-secondary');
+        activeThemeBtn.classList.add('btn-primary');
+      }
+      
+      // Mettre à jour les options de couleur
+      const currentColor = localStorage.getItem('preferredColor') || 'color-navy';
+      document.querySelectorAll('.color-option').forEach(option => {
+        option.style.border = '2px solid transparent';
+      });
+      const activeColorOption = document.getElementById(currentColor);
+      if (activeColorOption) {
+        activeColorOption.style.border = '2px solid white';
+      }
+    }
+  }
+}
+
+// Mettre à jour les statistiques
+function updateStats(success) {
+  statisticsData.totalSent++;
+  if (success) {
+    statisticsData.successful++;
+  } else {
+    statisticsData.failed++;
+  }
+  
+  // Mettre à jour les éléments DOM
+  document.getElementById('stat-total').textContent = statisticsData.totalSent;
+  document.getElementById('stat-success').textContent = statisticsData.successful;
+  document.getElementById('stat-failed').textContent = statisticsData.failed;
+  
+  // Calculer le pourcentage de réussite
+  const successRate = statisticsData.totalSent > 0 
+    ? Math.round((statisticsData.successful / statisticsData.totalSent) * 100) 
+    : 0;
+  document.getElementById('stat-rate').textContent = `${successRate}%`;
+}
+
+// Les fonctions d'historique ont été déplacées vers history.js
+
+// Obtenir les 7 derniers jours pour les graphiques
+function getLast7Days() {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    days.push(date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }));
+  }
+  return days;
+}
+
+// Simuler des données pour la démonstration
+function simulateData() {
+  // Simuler des statistiques initiales
+  statisticsData = {
+    totalSent: 152,
+    successful: 146,
+    failed: 6,
+    pending: 0
+  };
+  
+  // Mettre à jour les statistiques dans l'UI
+  document.getElementById('stat-total').textContent = statisticsData.totalSent;
+  document.getElementById('stat-success').textContent = statisticsData.successful;
+  document.getElementById('stat-failed').textContent = statisticsData.failed;
+  document.getElementById('stat-rate').textContent = '96%';
+  
+  // Simuler l'historique
+  const phoneNumbers = ['+33612345678', '+33687654321', '+33723456789', '+33745678912'];
+  const messages = [
+    'Votre rendez-vous est confirmé pour demain à 14h.',
+    'Votre commande a été expédiée. Suivez-la avec le code: ABC123',
+    'Rappel: Paiement de facture attendu avant le 30/09.',
+    'Votre code de vérification est: 953421',
+    'JDC vous informe que votre document est prêt.'
+  ];
+  
+  // Générer un historique fictif
+  for (let i = 0; i < 20; i++) {
+    const isSuccess = Math.random() > 0.1; // 90% de réussite
+    const isToken = Math.random() > 0.7;   // 30% de tokens
+    
+    const date = new Date();
+    date.setMinutes(date.getMinutes() - i * 30); // Espacer les messages
+    
+    if (isToken) {
+      // Simuler un envoi de token
+      addToHistory({
+        type: 'token',
+        to: phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)],
+        token: Math.floor(100000 + Math.random() * 900000).toString(),
+        status: isSuccess ? 'success' : 'failed',
+        date: date
+      });
+    } else {
+      // Simuler un envoi de SMS
+      addToHistory({
+        type: 'sms',
+        to: phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)],
+        message: messages[Math.floor(Math.random() * messages.length)],
+        status: isSuccess ? 'success' : 'failed',
+        date: date
+      });
+    }
+  }
+}
