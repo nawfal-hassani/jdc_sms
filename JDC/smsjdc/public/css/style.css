@@ -142,6 +142,22 @@ body {
   font-size: 24px;
   font-weight: 600;
   color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--secondary);
+  color: white;
+  border-radius: 50%;
+  font-size: 18px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .user-profile {
@@ -716,6 +732,99 @@ body.dark-mode .card-header {
 
 #generate-token .fas {
   font-size: 16px;
+}
+
+/* Styles pour les logos des cartes */
+.card-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--secondary);
+  color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-right: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.history-logo {
+  background-color: var(--accent);
+}
+
+/* Styles pour les titres des cartes avec logo */
+.card-title {
+  display: flex;
+  align-items: center;
+}
+
+/* Styles pour le mode suppression */
+#deletion-mode-btn {
+  position: relative;
+  margin-right: 10px;
+  transition: all 0.3s ease;
+}
+
+#deletion-mode-btn.active {
+  background-color: #e74c3c;
+  color: white;
+}
+
+#deletion-mode-btn.active::after {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: #e74c3c;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+}
+
+/* Styles pour les boutons de suppression dans l'historique */
+.actions {
+  text-align: center;
+  width: 100px;
+  padding: 10px;
+}
+
+.btn-delete {
+  background-color: transparent;
+  color: #e74c3c;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex; /* Toujours visible */
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-delete:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+  transform: scale(1.1);
+}
+
+.btn-delete i {
+  font-size: 16px;
+}
+
+/* Animation pour la suppression des lignes */
+tr.deleting {
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+tr.deleted {
+  transition: all 0.5s ease;
+}
+
+/* Ajustement pour l'animation de suppression */
+tr {
+  transition: opacity 0.3s ease, height 0.5s ease, padding 0.3s ease, margin 0.3s ease;
 }
 
 /* Animation pour le bouton de génération de token */

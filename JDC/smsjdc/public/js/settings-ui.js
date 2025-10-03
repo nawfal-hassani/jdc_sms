@@ -125,7 +125,8 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('theme', theme);
     applyStoredTheme();
     updateThemeButtons();
-    showNotification(`Thème ${theme === 'light' ? 'clair' : theme === 'dark' ? 'sombre' : 'système'} appliqué`);
+    // Notification désactivée
+    // showNotification(`Thème ${theme === 'light' ? 'clair' : theme === 'dark' ? 'sombre' : 'système'} appliqué`);
   }
   
   // Appliquer le thème stocké
@@ -314,7 +315,8 @@ document.addEventListener('DOMContentLoaded', function() {
       'color-red': 'Rouge'
     };
     
-    showNotification(`Couleur ${colorNames[colorId] || colorId} appliquée`);
+    // Notification désactivée
+    // showNotification(`Couleur ${colorNames[colorId] || colorId} appliquée`);
   }
   
   // Appliquer la couleur stockée
@@ -393,7 +395,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (defaultMessageInput) localStorage.setItem('defaultMessage', defaultMessageInput.value);
     if (tokenPrefixInput) localStorage.setItem('tokenPrefix', tokenPrefixInput.value);
     
-    showNotification('Paramètres enregistrés avec succès', 'success');
+    // Notification désactivée
+    // showNotification('Paramètres enregistrés avec succès', 'success');
   }
   
   // ==== UTILITAIRES ====

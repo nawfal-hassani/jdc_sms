@@ -61,7 +61,12 @@
       <div class="header">
         <div class="header-title">
           <img src="/assets/JDC-Occitanie.png" alt="JDC Logo" class="header-logo">
-          <h1>Dashboard SMS</h1>
+          <h1>
+            <span class="dashboard-logo">
+              <i class="fas fa-sms"></i>
+            </span>
+            Dashboard SMS
+          </h1>
         </div>
         <div class="user-profile">
           <div class="user-avatar">JD</div>
@@ -273,7 +278,9 @@
       <div id="history-tab" class="tab-content" style="display: none;">
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Historique des envois</h2>
+            <h2 class="card-title">
+              Historique des envois
+            </h2>
             <div class="card-actions">
               <button><i class="fas fa-download"></i> Exporter</button>
               <button><i class="fas fa-filter"></i> Filtrer</button>
@@ -288,6 +295,7 @@
                   <th>Destinataire</th>
                   <th>Contenu</th>
                   <th>Statut</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -368,5 +376,6 @@
   
   <!-- Scripts JavaScript -->
   <script src="/js/app.js" type="module"></script>
+  <script src="/js/history.js"></script>
 </body>
 </html>

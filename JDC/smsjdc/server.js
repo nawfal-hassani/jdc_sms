@@ -20,7 +20,7 @@ const SMS_API_URL = process.env.SMS_API_URL || 'http://localhost:3000/api';
 const DATA_DIR = path.join(__dirname, 'data');
 const HISTORY_FILE_PATH = path.join(DATA_DIR, 'sms-history.json');
 
-// Créer le répertoire data s'il n'existe pas
+// Créer le répertoire data s'il n'existe pas 
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
@@ -149,7 +149,7 @@ app.post('/api/send-sms', async (req, res) => {
         success: false, 
         error: 'Numéro de téléphone et message requis' 
       });
-    }
+    } 
     
     console.log('Envoi SMS:', { to, message: message.substring(0, 20) + '...' });
     const response = await axios.post(`${SMS_API_URL}/send-sms`, { to, message });
@@ -243,6 +243,26 @@ app.post('/api/send-token', async (req, res) => {
   }
 });
 
+// Ajouter la méthode remove() au gestionnaire d'historique
+historyManager.remove = function(id) {
+  // Rechercher le message dans l'historique local
+  const initialLength = localHistory.length;
+  localHistory = localHistory.filter(item => {
+    // Vérifier si l'id correspond à celui recherché
+    return item.id !== id;
+  });
+  
+  // Si la taille du tableau a changé, un élément a été supprimé
+  const removed = initialLength > localHistory.length;
+  
+  // Sauvegarder le nouvel historique dans le fichier
+  if (removed) {
+    this.save();
+  }
+  
+  return removed;
+};
+
 // Récupérer l'historique des SMS
 app.get('/api/sms/history', async (req, res) => {
   try {
@@ -288,6 +308,27 @@ app.get('/api/sms/history', async (req, res) => {
         message: error.message 
       });
     }
+  }
+});
+
+// Endpoint pour supprimer une entrée de l'historique
+app.delete('/api/sms/history/:id', (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = historyManager.remove(id);
+    
+    if (result) {
+      res.json({ success: true, message: 'Entrée supprimée avec succès' });
+    } else {
+      res.status(404).json({ success: false, message: 'Entrée non trouvée' });
+    }
+  } catch (error) {
+    console.error('Erreur lors de la suppression:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erreur lors de la suppression',
+      error: error.message 
+    });
   }
 });
 

@@ -70,7 +70,8 @@ export function setTheme(theme) {
   localStorage.setItem('theme', theme);
   applyStoredTheme();
   updateThemeButtons();
-  showAlert(`Thème ${theme === 'light' ? 'clair' : theme === 'dark' ? 'sombre' : 'système'} appliqué`);
+  // Notification désactivée
+  // showAlert(`Thème ${theme === 'light' ? 'clair' : theme === 'dark' ? 'sombre' : 'système'} appliqué`);
 }
 
 // Mettre à jour l'apparence des boutons de thème
@@ -157,7 +158,8 @@ export function setColor(colorId, colorValue) {
     'color-red': 'Rouge'
   };
   
-  showAlert(`Couleur ${colorNames[colorId] || colorId} appliquée`);
+  // Notification désactivée
+  // showAlert(`Couleur ${colorNames[colorId] || colorId} appliquée`);
 }
 
 // Mettre à jour l'apparence des boutons de couleur

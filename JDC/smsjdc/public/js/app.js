@@ -1,4 +1,4 @@
-// app.js - Point d'entrée principal de l'application client
+  // app.js - Point d'entrée principal de l'application client
 
 // Attendre que le document soit prêt
 document.addEventListener('DOMContentLoaded', function() {
@@ -397,6 +397,8 @@ function initHistoryModule() {
     });
   }
   
+  // Le mode suppression a été retiré, les boutons de suppression sont toujours visibles
+  
   // Fonction pour charger l'historique
   function loadSmsHistory() {
     const historyTableBody = historyTable.querySelector('tbody');
@@ -405,7 +407,7 @@ function initHistoryModule() {
     // Afficher l'indicateur de chargement
     historyTableBody.innerHTML = `
       <tr>
-        <td colspan="5" style="text-align: center; padding: 20px;">
+        <td colspan="6" style="text-align: center; padding: 20px;">
           <div class="loader"></div>
           <p>Chargement de l'historique...</p>
         </td>
@@ -444,11 +446,30 @@ function initHistoryModule() {
               <td>${recipient}</td>
               <td>${content.length > 50 ? content.substring(0, 47) + '...' : content}</td>
               <td><span class="status ${getStatusClass(status)}">${status}</span></td>
+              <td class="actions">
+                <button class="btn-delete" title="Supprimer cette entrée">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
             `;
+            
+            // Générer un ID unique si aucun n'est défini
+            const messageId = sms.id || sms._id || `${type}-${Date.parse(timestamp)}-${recipient.replace(/\D/g, '')}`;
+            row.dataset.messageId = messageId;
             
             // Ajouter un titre au survol pour le contenu complet
             if (content.length > 50) {
               row.querySelector('td:nth-child(4)').title = content;
+            }
+            
+            // Ajouter l'écouteur d'événement pour le bouton de suppression
+            const deleteBtn = row.querySelector('.btn-delete');
+            if (deleteBtn) {
+              deleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                deleteHistoryEntry(messageId, row);
+              });
             }
             
             historyTableBody.appendChild(row);
@@ -457,7 +478,7 @@ function initHistoryModule() {
           // Aucun SMS dans l'historique
           historyTableBody.innerHTML = `
             <tr>
-              <td colspan="5" style="text-align: center; padding: 20px;">
+              <td colspan="6" style="text-align: center; padding: 20px;">
                 <i class="fas fa-info-circle"></i> Aucun SMS dans l'historique.
               </td>
             </tr>
@@ -542,6 +563,76 @@ function initHistoryModule() {
         return '';
     }
   }
+  
+  // Fonction pour supprimer une entrée de l'historique
+  async function deleteHistoryEntry(id, rowElement) {
+    // Demander confirmation avant de supprimer
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette entrée de l\'historique ?')) {
+      return;
+    }
+    
+    try {
+      // Appliquer une classe visuelle pour montrer que l'élément est en cours de suppression
+      rowElement.classList.add('deleting');
+      
+      // Appeler l'API pour supprimer l'entrée
+      const response = await fetch(`/api/sms/history/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      // Si la suppression a réussi, supprimer la ligne du tableau
+      if (result.success) {
+        rowElement.classList.add('deleted');
+        
+        // Animation de disparition
+        setTimeout(() => {
+          rowElement.style.height = rowElement.offsetHeight + 'px';
+          rowElement.style.opacity = '0';
+          
+          setTimeout(() => {
+            rowElement.style.height = '0';
+            rowElement.style.padding = '0';
+            rowElement.style.margin = '0';
+            
+            setTimeout(() => {
+              rowElement.remove();
+              
+              // Si c'était la dernière ligne, afficher le message "Aucun SMS"
+              if (historyTableBody.querySelectorAll('tr').length === 0) {
+                historyTableBody.innerHTML = `
+                  <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">
+                      <i class="fas fa-info-circle"></i> Aucun SMS dans l'historique.
+                    </td>
+                  </tr>
+                `;
+              }
+              
+              // Mettre à jour les statistiques
+              updateDashboardStats([...historyTableBody.querySelectorAll('tr[data-message-id]')]);
+            }, 300);
+          }, 200);
+        }, 100);
+        
+        showAlert('Entrée supprimée avec succès', 'success');
+      } else {
+        throw new Error(result.message || 'Erreur lors de la suppression');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      rowElement.classList.remove('deleting');
+      showAlert(`Erreur: ${error.message}`, 'danger');
+    }
+  }
 }
 
 // Module de paramètres
@@ -593,7 +684,8 @@ function initSettingsModule() {
     if (defaultMessageInput) localStorage.setItem('defaultMessage', defaultMessageInput.value);
     if (tokenPrefixInput) localStorage.setItem('tokenPrefix', tokenPrefixInput.value);
     
-    showAlert('Paramètres enregistrés avec succès', 'success');
+    // Notification désactivée
+    // showAlert('Paramètres enregistrés avec succès', 'success');
   }
 }
 
@@ -660,7 +752,8 @@ function setupThemeSystem() {
     localStorage.setItem('theme', theme);
     applyStoredTheme();
     updateThemeButtons();
-    showAlert(`Thème ${theme === 'light' ? 'clair' : theme === 'dark' ? 'sombre' : 'système'} appliqué`);
+    // Notification désactivée
+    // showAlert(`Thème ${theme === 'light' ? 'clair' : theme === 'dark' ? 'sombre' : 'système'} appliqué`);
   }
   
   function applyStoredTheme() {
@@ -791,7 +884,7 @@ function setupColorSystem() {
     // Mettre à jour l'apparence des boutons
     updateColorButtons();
     
-    // Afficher une notification
+    // Notification désactivée
     const colorNames = {
       'color-navy': 'Bleu Marine',
       'color-blue': 'Bleu',
@@ -800,7 +893,7 @@ function setupColorSystem() {
       'color-red': 'Rouge'
     };
     
-    showAlert(`Couleur ${colorNames[colorId] || colorId} appliquée`);
+    // showAlert(`Couleur ${colorNames[colorId] || colorId} appliquée`);
   }
   
   function applyStoredColor() {
@@ -843,35 +936,11 @@ function validatePhone(phone) {
   return /^\+\d{10,15}$/.test(phone);
 }
 
-// Afficher une alerte
+// Fonction d'alerte désactivée - ne fait rien
 function showAlert(message, type = 'info') {
-  const alertsContainer = document.getElementById('alerts-container');
-  if (!alertsContainer) return;
-  
-  const alert = document.createElement('div');
-  alert.className = `alert alert-${type}`;
-  alert.innerHTML = `
-    <i class="fas fa-${type === 'info' ? 'info-circle' : type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}
-    <button class="alert-dismiss"><i class="fas fa-times"></i></button>
-  `;
-  
-  // Ajouter un bouton pour fermer l'alerte
-  const dismissBtn = alert.querySelector('.alert-dismiss');
-  if (dismissBtn) {
-    dismissBtn.addEventListener('click', function() {
-      alert.remove();
-    });
-  }
-  
-  // Ajouter l'alerte au conteneur
-  alertsContainer.appendChild(alert);
-  
-  // Supprimer automatiquement après 5 secondes
-  setTimeout(() => {
-    if (alert.parentNode) {
-      alert.remove();
-    }
-  }, 5000);
+  // Fonction désactivée à la demande de l'utilisateur
+  // Ne fait rien, pas de notifications
+  return;
 }
 
 // Configuration globale

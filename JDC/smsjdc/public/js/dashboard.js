@@ -414,8 +414,14 @@ function validatePhone(phone) {
   return /^\+[1-9]\d{1,14}$/.test(phone.trim());
 }
 
-// Afficher une alerte
+// Afficher une alerte (désactivée)
 function showAlert(message, type, container = null) {
+  // Fonction désactivée à la demande de l'utilisateur
+  // Ne fait rien, pas de notifications
+  return;
+  
+  // Code original désactivé
+  /*
   const alertDiv = document.createElement('div');
   alertDiv.className = `alert alert-${type}`;
   alertDiv.innerHTML = `
@@ -446,6 +452,7 @@ function showAlert(message, type, container = null) {
       alertDiv.remove();
     }, 5000);
   }
+  */
 }
 
 // Afficher un onglet spécifique
