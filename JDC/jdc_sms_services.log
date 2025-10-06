@@ -12,6 +12,10 @@ Mode de fonctionnement: PRODUCTION
 > sms-dashboard@1.0.0 start
 > node server.js
 
-Historique local chargé: 27 messages
+Historique local chargé: 23 messages
 📱 Dashboard SMS démarré sur http://localhost:3030
 🔌 Connecté à l'API SMS: http://localhost:3000/api
+Premier endpoint historique échoué, essai avec le second...
+Premier endpoint historique échoué, essai avec le second...
+Échec de récupération depuis l'API, utilisation de l'historique local
+Échec de récupération depuis l'API, utilisation de l'historique local

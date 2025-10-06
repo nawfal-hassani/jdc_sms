@@ -73,6 +73,14 @@ function initDashboard() {
   if (refreshStatusBtn) {
     refreshStatusBtn.addEventListener('click', checkApiStatus);
   }
+  
+  // Configurer le bouton d'exportation du graphique
+  const dashboardExportBtn = document.querySelector('#dashboard-tab .card:nth-child(2) .card-actions button');
+  if (dashboardExportBtn && dashboardExportBtn.textContent.includes('Exporter')) {
+    dashboardExportBtn.addEventListener('click', function() {
+      exportSmsHistory();
+    });
+  }
 }
 
 // Vérifier le statut de l'API
@@ -381,7 +389,7 @@ function initHistoryModule() {
     setTimeout(loadSmsHistory, 1000);
   });
   
-  // Créer ou mettre à jour le bouton de rafraîchissement
+    // Créer ou mettre à jour le bouton de rafraîchissement
   const cardActions = historyTab.querySelector('.card-actions');
   if (cardActions) {
     let refreshButton = cardActions.querySelector('button:first-child');
@@ -393,12 +401,65 @@ function initHistoryModule() {
     
     refreshButton.addEventListener('click', function() {
       loadSmsHistory();
-      showAlert('Actualisation de l\'historique...', 'info');
+      // Notification désactivée
+      // showAlert('Actualisation de l\'historique...', 'info');
+    });
+    
+    // Configurer le bouton d'exportation
+    const exportButton = cardActions.querySelector('button:nth-child(2)');
+    if (exportButton && exportButton.textContent.includes('Exporter')) {
+      exportButton.addEventListener('click', function() {
+        exportSmsHistory();
+      });
+    }
+    const exportButtons = cardActions.querySelectorAll('button');
+    exportButtons.forEach(button => {
+      if (button.innerHTML.includes('fa-download') || button.textContent.includes('Exporter')) {
+        button.addEventListener('click', function() {
+          exportSmsHistory();
+        });
+      }
     });
   }
   
   // Le mode suppression a été retiré, les boutons de suppression sont toujours visibles
   
+  // Fonction pour exporter l'historique (utilisée par tous les boutons d'exportation)
+  function exportSmsHistory() {
+    // Méthode 1: Redirection simple - plus fiable dans tous les navigateurs
+    window.location.href = '/api/sms/history/export';
+    return false;
+  }
+
+  // Fonction pour initialiser les boutons de suppression
+  function initDeleteButtons() {
+    // Obtenir une référence directe à la table d'historique
+    const historyTable = document.getElementById('history-table');
+    if (!historyTable) return;
+    
+    // Sélectionner tous les boutons de suppression
+    const deleteButtons = historyTable.querySelectorAll('.btn-delete');
+    console.log(`${deleteButtons.length} boutons de suppression trouvés`);
+    
+    // Ajouter un écouteur d'événement à chaque bouton
+    deleteButtons.forEach(button => {
+      const row = button.closest('tr');
+      const messageId = row.dataset.messageId;
+      
+      // Supprimer les écouteurs existants pour éviter les doublons
+      button.replaceWith(button.cloneNode(true));
+      const newButton = row.querySelector('.btn-delete');
+      
+      // Ajouter un nouvel écouteur
+      newButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log(`Suppression de l'entrée ${messageId}`);
+        deleteHistoryEntry(messageId, row);
+      });
+    });
+  }
+
   // Fonction pour charger l'historique
   function loadSmsHistory() {
     const historyTableBody = historyTable.querySelector('tbody');
@@ -474,6 +535,15 @@ function initHistoryModule() {
             
             historyTableBody.appendChild(row);
           });
+          
+          // Initialiser les boutons de suppression après avoir ajouté toutes les lignes
+          initDeleteButtons();
+          
+          // Déclencher un événement pour informer que l'historique a été chargé
+          // Les autres modules pourront réagir à cet événement (comme le module de filtrage)
+          document.dispatchEvent(new CustomEvent('history-loaded', {
+            detail: { data }
+          }));
         } else {
           // Aucun SMS dans l'historique
           historyTableBody.innerHTML = `
@@ -623,14 +693,14 @@ function initHistoryModule() {
           }, 200);
         }, 100);
         
-        showAlert('Entrée supprimée avec succès', 'success');
+        console.log('Entrée supprimée avec succès');
       } else {
         throw new Error(result.message || 'Erreur lors de la suppression');
       }
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
       rowElement.classList.remove('deleting');
-      showAlert(`Erreur: ${error.message}`, 'danger');
+      console.error(`Erreur: ${error.message}`);
     }
   }
 }

@@ -799,14 +799,99 @@ body.dark-mode .card-header {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
-  display: inline-flex; /* Toujours visible */
+  display: inline-flex !important; /* Toujours visible - Important pour forcer l'affichage */
   align-items: center;
   justify-content: center;
+  opacity: 1 !important; /* Assure que le bouton est visible */
+  visibility: visible !important; /* Assure que le bouton est visible */
 }
 
 .btn-delete:hover {
   background-color: rgba(231, 76, 60, 0.1);
-  transform: scale(1.1);
+}
+
+/* Styles pour le panneau de filtres */
+.filter-panel {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.dark-mode .filter-panel {
+  background-color: #2d3436;
+  border-color: #444;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.filter-group {
+  margin-bottom: 10px;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.filter-control {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  color: var(--text);
+}
+
+.dark-mode .filter-control {
+  background-color: #383f45;
+  border-color: #4a4a4a;
+  color: #f1f1f1;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: flex-end;
+}
+
+.filter-buttons button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+#filter-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+#filter-button i {
+  margin-right: 5px;
+}
+
+#filter-button:hover {
+  transform: scale(1.05);
+}
+
+#filter-button.active {
+  background-color: var(--secondary);
+  color: white;
 }
 
 .btn-delete i {

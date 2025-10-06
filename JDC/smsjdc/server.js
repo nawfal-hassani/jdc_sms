@@ -263,6 +263,50 @@ historyManager.remove = function(id) {
   return removed;
 };
 
+// Fonction pour convertir l'historique au format CSV
+historyManager.toCSV = function(data) {
+  if (!Array.isArray(data) || data.length === 0) return '';
+  
+  // Définir les en-têtes du CSV
+  const headers = ['Date', 'Type', 'Destinataire', 'Contenu', 'Statut'];
+  
+  // Fonction pour échapper les virgules et les guillemets dans les valeurs CSV
+  const escapeCSV = (value) => {
+    if (value === null || value === undefined) return '';
+    value = String(value);
+    // Si la valeur contient une virgule, un guillemet ou un saut de ligne, on l'entoure de guillemets
+    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+      // On double les guillemets dans la valeur
+      return `"${value.replace(/"/g, '""')}"`;
+    }
+    return value;
+  };
+  
+  // Générer la ligne d'en-tête
+  let csv = headers.join(',') + '\n';
+  
+  // Générer les lignes de données
+  data.forEach(item => {
+    const timestamp = item.timestamp || item.date || item.createdAt || new Date().toISOString();
+    const type = item.type || (item.token ? 'Token' : 'SMS');
+    const recipient = item.to || item.recipient || item.phoneNumber || '';
+    const content = item.message || item.body || item.content || '';
+    const status = item.status || 'pending';
+    
+    const row = [
+      new Date(timestamp).toLocaleString('fr-FR'),
+      escapeCSV(type),
+      escapeCSV(recipient),
+      escapeCSV(content),
+      escapeCSV(status)
+    ];
+    
+    csv += row.join(',') + '\n';
+  });
+  
+  return csv;
+};
+
 // Récupérer l'historique des SMS
 app.get('/api/sms/history', async (req, res) => {
   try {
@@ -327,6 +371,53 @@ app.delete('/api/sms/history/:id', (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: 'Erreur lors de la suppression',
+      error: error.message 
+    });
+  }
+});
+
+// Endpoint pour exporter l'historique au format CSV
+app.get('/api/sms/history/export', async (req, res) => {
+  try {
+    // Récupérer l'historique complet comme pour /api/sms/history
+    let historyData = [...localHistory];
+    
+    // Essayer de récupérer l'historique depuis l'API si possible
+    try {
+      const response = await axios.get(`${SMS_API_URL}/history`);
+      const apiData = historyManager.normalizeApiData(response.data);
+      historyData = historyManager.mergeApiData(apiData);
+    } catch (error) {
+      try {
+        const response = await axios.get(`${SMS_API_URL}/sms-history`);
+        const apiData = historyManager.normalizeApiData(response.data);
+        historyData = historyManager.mergeApiData(apiData);
+      } catch (secondError) {
+        console.log('Utilisation de l\'historique local uniquement pour l\'export');
+      }
+    }
+    
+    // Trier l'historique par date (du plus récent au plus ancien)
+    historyData.sort((a, b) => {
+      const dateA = new Date(a.timestamp || a.date || a.createdAt || 0);
+      const dateB = new Date(b.timestamp || b.date || b.createdAt || 0);
+      return dateB - dateA;
+    });
+    
+    // Convertir l'historique en CSV
+    const csv = historyManager.toCSV(historyData);
+    
+    // Configurer les en-têtes HTTP pour télécharger un fichier CSV
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=sms-history.csv');
+    
+    // Envoyer le fichier CSV
+    res.send(csv);
+  } catch (error) {
+    console.error('Erreur lors de l\'export de l\'historique:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erreur lors de l\'export de l\'historique',
       error: error.message 
     });
   }

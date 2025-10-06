@@ -1,0 +1,25 @@
+Date,Type,Destinataire,Contenu,Statut
+02/10/2025 10:39:53,SMS,+33756885072,hello,delivered
+30/09/2025 10:51:19,Token,+33756885072,Votre code d'authentification JDC est: 65,delivered
+30/09/2025 09:38:29,Token,+33767847265,Votre code d'authentification JDC est: 2,delivered
+30/09/2025 09:38:12,Token,+33756885072,Votre code d'authentification JDC est: 2,delivered
+29/09/2025 16:09:46,Token,+33756885072,Votre code d'authentification JDC est: 50,failed
+29/09/2025 16:09:40,Token,+33767847265,Votre code d'authentification JDC est: 50,failed
+29/09/2025 14:53:29,Token,+33756885072,Votre code d'authentification JDC est: 50,delivered
+29/09/2025 14:52:21,Token,+33756885072,Votre code d'authentification JDC est: 50,delivered
+29/09/2025 14:50:24,Token,+33756885072,Votre code d'authentification JDC est: 50,delivered
+29/09/2025 14:50:00,Token,+33756885072,Votre code d'authentification JDC est: 50,delivered
+29/09/2025 14:49:52,Token,+33767847265,Votre code d'authentification JDC est: 50,delivered
+29/09/2025 14:49:30,Token,+33076784727,Votre code d'authentification JDC est: 50,delivered
+29/09/2025 14:48:21,Token,+33076784727,Votre code d'authentification JDC est: 4,delivered
+29/09/2025 14:48:10,Token,+330767847265,Votre code d'authentification JDC est: 52,delivered
+29/09/2025 14:47:51,Token,+33767847265,Votre code d'authentification JDC est: 4,delivered
+29/09/2025 14:47:13,Token,+33767847265,Votre code d'authentification JDC est: 52,delivered
+29/09/2025 14:45:06,SMS,+33767847265,hello wolrd,delivered
+29/09/2025 14:44:33,Token,+33767847265,Votre code d'authentification JDC est: 23,delivered
+29/09/2025 14:42:14,Token,+33767847265,Votre code d'authentification JDC est: 52,failed
+29/09/2025 14:41:01,Token,+33756885072,Votre code d'authentification JDC est: 25,delivered
+29/09/2025 14:30:23,Token,+33767847265,Votre code d'authentification JDC est: 5,failed
+29/09/2025 14:29:29,Token,+33756885072,Votre code d'authentification JDC est: 4,delivered
+29/09/2025 14:29:12,SMS,+33767847265,hello world,failed
+29/09/2025 12:27:44,Token,+33756885072,Votre code d'authentification JDC est: 23,delivered
