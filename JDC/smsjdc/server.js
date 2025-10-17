@@ -1,3 +1,4 @@
+// BACKEND
 /**
  * Serveur de Dashboard SMS - Point d'entrée principal
  * Ce serveur Express sert l'interface de dashboard SMS et proxie les requêtes vers l'API SMS.

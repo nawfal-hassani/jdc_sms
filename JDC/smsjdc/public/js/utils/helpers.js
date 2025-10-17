@@ -1,3 +1,4 @@
+// FRONTEND
 /**
  * Fonctions utilitaires partagées
  */

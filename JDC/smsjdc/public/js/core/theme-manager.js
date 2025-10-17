@@ -1,3 +1,4 @@
+// FRONTEND
 /**
  * Gestionnaire de thème et d'apparence
  */

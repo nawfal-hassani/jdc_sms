@@ -1,3 +1,4 @@
+// FRONTEND
 /**
  * Service pour la gestion des requêtes API
  */

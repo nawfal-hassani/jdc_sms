@@ -1,3 +1,4 @@
+// FRONTEND
 /**
  * Gestion de l'historique des SMS pour le Dashboard JDC
  */
@@ -7,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const historyTable = document.getElementById('history-table');
   const historyTabLink = document.querySelector('.nav-link[data-tab="history-tab"]');
   let historyTableBody;
+  
+  // Variable pour stocker l'historique complet (utile pour le filtrage)
+  let fullHistoryData = [];
   
   // Fonction pour formater la date
   function formatDate(dateString) {
@@ -198,6 +202,9 @@ document.addEventListener('DOMContentLoaded', function() {
         smsData = data.messages;
       }
       
+      // Stocker l'historique complet pour le filtrage
+      fullHistoryData = [...smsData];
+      
       // Vider le tableau
       historyTableBody.innerHTML = '';
       
@@ -282,4 +289,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Attendre un peu avant de recharger pour laisser le temps à l'API de traiter la demande
     setTimeout(loadSmsHistory, 1000);
   });
+  
+  // Exposer les données d'historique et les fonctions pour le module de filtres
+  window.historyModule = {
+    getFullHistoryData: function() {
+      return fullHistoryData;
+    },
+    refreshHistoryTable: function() {
+      loadSmsHistory();
+    }
+  };
 });

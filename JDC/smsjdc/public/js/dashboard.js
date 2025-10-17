@@ -1,3 +1,4 @@
+// FRONTEND
 // Variables globales
 // L'historique est maintenant géré côté serveur
 let statisticsData = {

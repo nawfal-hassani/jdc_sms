@@ -1,3 +1,4 @@
+// FRONTEND
   // app.js - Point d'entrée principal de l'application client
 
 // Attendre que le document soit prêt

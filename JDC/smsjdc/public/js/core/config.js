@@ -1,3 +1,4 @@
+// FRONTEND
 /**
  * Configuration de l'application
  */

@@ -1,5 +1,8 @@
+// FRONTEND
 /**
  * Système de filtrage pour l'historique des SMS
+ * Permet de filtrer les données par type, statut, numéro et contenu
+ * Affiche les filtres actifs sous forme de badges pour une meilleure UX
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -31,7 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const filterStatus = document.getElementById('filter-status');
     const filterPhone = document.getElementById('filter-phone');
     const filterContent = document.getElementById('filter-content');
-    
+
+  
     if (!filterButton || !filterPanel) {
       console.error('Éléments de filtrage non trouvés dans le DOM');
       return;
@@ -226,12 +230,146 @@ document.addEventListener('DOMContentLoaded', function() {
       if (hasActiveFilters) {
         filterButton.innerHTML = '<i class="fas fa-filter"></i> Filtres actifs';
         filterButton.classList.add('active');
+        // Afficher les badges de filtres actifs
+        displayActiveFilters();
       } else {
         filterButton.innerHTML = '<i class="fas fa-filter"></i> Filtrer';
         filterButton.classList.remove('active');
+        // Supprimer les badges de filtres actifs
+        removeActiveFilters();
       }
     }
     
+    // Fonction pour afficher les badges de filtres actifs
+    function displayActiveFilters() {
+      // Supprimer les badges existants
+      removeActiveFilters();
+      
+      // Créer un conteneur pour les badges s'il n'existe pas déjà
+      let filterBadgesContainer = document.getElementById('active-filters-container');
+      if (!filterBadgesContainer) {
+        filterBadgesContainer = document.createElement('div');
+        filterBadgesContainer.id = 'active-filters-container';
+        filterBadgesContainer.className = 'active-filters-container';
+        filterBadgesContainer.style.margin = '10px 0';
+        filterBadgesContainer.style.display = 'flex';
+        filterBadgesContainer.style.flexWrap = 'wrap';
+        filterBadgesContainer.style.gap = '5px';
+        
+        // Insérer le conteneur avant le tableau d'historique
+        const historyTable = document.getElementById('history-table');
+        if (historyTable) {
+          historyTable.parentNode.insertBefore(filterBadgesContainer, historyTable);
+        }
+      }
+      
+      // Ajouter un label pour les filtres actifs
+      const filterLabel = document.createElement('span');
+      filterLabel.textContent = 'Filtres actifs: ';
+      filterLabel.style.marginRight = '10px';
+      filterLabel.style.alignSelf = 'center';
+      filterBadgesContainer.appendChild(filterLabel);
+      
+      // Créer un badge pour chaque filtre actif
+      let filterCount = 0;
+      
+      // Badge pour le type
+      if (activeFilters.type) {
+        createFilterBadge('Type: ' + activeFilters.type, 'type', filterBadgesContainer);
+        filterCount++;
+      }
+      
+      // Badge pour le statut
+      if (activeFilters.status) {
+        let statusLabel;
+        switch(activeFilters.status.toLowerCase()) {
+          case 'delivered': statusLabel = 'Délivré'; break;
+          case 'failed': statusLabel = 'Échoué'; break;
+          case 'pending': statusLabel = 'En attente'; break;
+          default: statusLabel = activeFilters.status;
+        }
+        createFilterBadge('Statut: ' + statusLabel, 'status', filterBadgesContainer);
+        filterCount++;
+      }
+      
+      // Badge pour le numéro de téléphone
+      if (activeFilters.phone) {
+        createFilterBadge('Tél: ' + activeFilters.phone, 'phone', filterBadgesContainer);
+        filterCount++;
+      }
+      
+      // Badge pour le contenu
+      if (activeFilters.content) {
+        createFilterBadge('Contenu: ' + activeFilters.content, 'content', filterBadgesContainer);
+        filterCount++;
+      }
+      
+      // Si aucun filtre actif, masquer le conteneur
+      if (filterCount === 0) {
+        filterBadgesContainer.style.display = 'none';
+      } else {
+        filterBadgesContainer.style.display = 'flex';
+        
+        // Ajouter un bouton "Réinitialiser tous les filtres"
+        const resetAllButton = document.createElement('button');
+        resetAllButton.className = 'filter-badge reset-all';
+        resetAllButton.innerHTML = '<i class="fas fa-times"></i> Tout réinitialiser';
+        resetAllButton.style.marginLeft = 'auto';
+        resetAllButton.addEventListener('click', function() {
+          // Simuler un clic sur le bouton de réinitialisation
+          document.getElementById('reset-filters').click();
+        });
+        filterBadgesContainer.appendChild(resetAllButton);
+      }
+    }
+    
+    // Fonction pour créer un badge de filtre avec bouton de suppression
+    function createFilterBadge(text, filterKey, container) {
+      const badge = document.createElement('div');
+      badge.className = 'filter-badge';
+      badge.dataset.filterKey = filterKey;
+      badge.style.display = 'inline-flex';
+      badge.style.alignItems = 'center';
+      badge.style.backgroundColor = 'rgba(52, 152, 219, 0.2)';
+      badge.style.padding = '3px 8px';
+      badge.style.borderRadius = '15px';
+      badge.style.fontSize = '0.9em';
+      badge.innerHTML = `
+        ${text} 
+        <button class="filter-badge-remove" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0 0 0 5px;">
+          <i class="fas fa-times-circle"></i>
+        </button>
+      `;
+      
+      // Ajouter l'événement pour supprimer ce filtre spécifique
+      badge.querySelector('.filter-badge-remove').addEventListener('click', function() {
+        // Réinitialiser ce filtre spécifique
+        if (filterKey === 'type') document.getElementById('filter-type').value = '';
+        if (filterKey === 'status') document.getElementById('filter-status').value = '';
+        if (filterKey === 'phone') document.getElementById('filter-phone').value = '';
+        if (filterKey === 'content') document.getElementById('filter-content').value = '';
+        
+        // Mettre à jour les filtres actifs
+        activeFilters[filterKey] = '';
+        
+        // Appliquer les filtres
+        applyFilters();
+        
+        // Mettre à jour l'apparence du bouton et les badges
+        updateFilterButtonAppearance();
+      });
+      
+      container.appendChild(badge);
+    }
+    
+    // Fonction pour supprimer tous les badges de filtres actifs
+    function removeActiveFilters() {
+      const filterBadgesContainer = document.getElementById('active-filters-container');
+      if (filterBadgesContainer) {
+        filterBadgesContainer.innerHTML = '';
+      }
+    }
+
     // Initialiser l'état initial
     updateFilterButtonAppearance();
   }

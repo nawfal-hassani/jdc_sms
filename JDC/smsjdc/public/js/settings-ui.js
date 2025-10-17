@@ -1,3 +1,4 @@
+// FRONTEND
 /**
  * settings-ui.js - Gestion complète des paramètres et du thème du Dashboard JDC
  */

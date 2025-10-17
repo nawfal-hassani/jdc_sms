@@ -1,3 +1,4 @@
+// FRONTEND
 /**
  * Fonctions utilitaires pour le traitement des données
  */

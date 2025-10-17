@@ -1,3 +1,4 @@
+// FRONTEND
 /**
  * Module de gestion des graphiques pour le dashboard
  */
