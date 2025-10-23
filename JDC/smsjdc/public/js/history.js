@@ -64,36 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (statRate) statRate.textContent = `${rate}%`;
   }
   
-  // Fonction pour afficher un message de notification
-  function showNotification(message, type = 'info') {
-    const alertsContainer = document.getElementById('alerts-container');
-    if (!alertsContainer) return;
-    
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${type}`;
-    alert.innerHTML = `
-      <i class="fas fa-${type === 'info' ? 'info-circle' : type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}
-      <button class="alert-dismiss"><i class="fas fa-times"></i></button>
-    `;
-    
-    // Ajouter un bouton pour fermer l'alerte
-    const dismissBtn = alert.querySelector('.alert-dismiss');
-    if (dismissBtn) {
-      dismissBtn.addEventListener('click', function() {
-        alert.remove();
-      });
-    }
-    
-    // Ajouter l'alerte au conteneur
-    alertsContainer.appendChild(alert);
-    
-    // Supprimer automatiquement après 5 secondes
-    setTimeout(() => {
-      if (alert.parentNode) {
-        alert.remove();
-      }
-    }, 5000);
-  }
+  // Utilise la fonction showNotification globale définie dans notification.js
   
   // Fonction pour créer ou mettre à jour le bouton de rafraîchissement
   function setupRefreshButton() {

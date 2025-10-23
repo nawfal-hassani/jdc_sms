@@ -142,7 +142,7 @@
           <div class="card-header">
             <h2 class="card-title">SMS envoyés (7 derniers jours)</h2>
             <div class="card-actions">
-              <button><i class="fas fa-download"></i> Exporter</button>
+              <button id="dashboard-export-btn"><i class="fas fa-download"></i> Exporter</button>
             </div>
           </div>
           <div class="chart-container">
@@ -290,7 +290,7 @@
               Historique des envois
             </h2>
             <div class="card-actions">
-              <button><i class="fas fa-download"></i> Exporter</button>
+              <button id="history-export-btn"><i class="fas fa-download"></i> Exporter</button>
               <button id="filter-button"><i class="fas fa-filter"></i> Filtrer</button>
             </div>
           </div>
@@ -419,6 +419,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/js/modules/charts.js"></script>
   <script src="/js/services/auth-service.js"></script>
+  <script src="/js/notification.js"></script>
   <script src="/js/app.js"></script>
   <script src="/js/history-utils.js"></script>
   <script src="/js/history.js"></script>
@@ -428,5 +429,6 @@
   <script src="/js/auth-badge.js"></script>
   <script src="/js/settings-ui.js"></script>
   <script src="/js/logout-button.js"></script>
+  <script src="/js/export.js"></script>
 </body>
 </html>
