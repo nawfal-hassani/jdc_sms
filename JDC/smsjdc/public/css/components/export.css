@@ -1,0 +1,52 @@
+/* Styles pour les fonctionnalités d'exportation */
+
+/* Animation pour les boutons d'exportation */
+.export-btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.export-btn-loading i.fas.fa-download {
+  display: none;
+}
+
+.export-btn-loading::after {
+  content: '';
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -0.5em;
+  margin-left: -0.5em;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Styles pour les messages de succès d'exportation */
+.export-success {
+  color: #28a745;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Styles pour le message "Aucune donnée à exporter" */
+.no-data-message {
+  font-style: italic;
+  color: #6c757d;
+  text-align: center;
+  padding: 1rem;
+}

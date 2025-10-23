@@ -31,9 +31,20 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Exporter les données du dashboard
   function exportDashboardData() {
+    // Récupérer le bouton et ajouter l'animation de chargement
+    const exportBtn = document.getElementById('dashboard-export-btn');
+    if (exportBtn) {
+      exportBtn.classList.add('export-btn-loading');
+      exportBtn.disabled = true;
+    }
+    
     // Vérifier si Chart.js est disponible
     if (!window.Chart) {
       showNotification('Impossible d\'exporter les données: Chart.js n\'est pas chargé', 'danger');
+      if (exportBtn) {
+        exportBtn.classList.remove('export-btn-loading');
+        exportBtn.disabled = false;
+      }
       return;
     }
     
@@ -130,12 +141,26 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
       console.error('Erreur lors de l\'exportation des données du dashboard:', error);
       showNotification('Erreur lors de l\'exportation des données: ' + error.message, 'danger');
+    } finally {
+      // Restaurer le bouton à son état normal
+      const exportBtn = document.getElementById('dashboard-export-btn');
+      if (exportBtn) {
+        exportBtn.classList.remove('export-btn-loading');
+        exportBtn.disabled = false;
+      }
     }
   }
   
   // Exporter l'historique
   function exportHistory() {
     try {
+      // Récupérer le bouton et ajouter l'animation de chargement
+      const exportBtn = document.getElementById('history-export-btn');
+      if (exportBtn) {
+        exportBtn.classList.add('export-btn-loading');
+        exportBtn.disabled = true;
+      }
+      
       // Afficher une notification de chargement
       showNotification('Exportation de l\'historique en cours...', 'info');
       
@@ -177,6 +202,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Afficher une notification de succès
             showNotification('Exportation de l\'historique réussie', 'success');
+          })
+          .finally(() => {
+            // Restaurer le bouton à son état normal
+            resetExportButton('history-export-btn');
           });
         })
         .catch(error => {
@@ -185,6 +214,9 @@ document.addEventListener('DOMContentLoaded', function() {
           
           // Tentative de repli: exportation côté client
           fallbackHistoryExport();
+          
+          // Restaurer le bouton à son état normal
+          resetExportButton('history-export-btn');
         });
     } catch (error) {
       console.error('Erreur lors de l\'exportation de l\'historique:', error);
@@ -192,6 +224,9 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Tentative de repli
       fallbackHistoryExport();
+      
+      // Restaurer le bouton à son état normal
+      resetExportButton('history-export-btn');
     }
   }
   
@@ -238,6 +273,9 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
       console.error('Erreur lors de l\'exportation locale de l\'historique:', error);
       showNotification('Erreur lors de l\'exportation locale: ' + error.message, 'danger');
+    } finally {
+      // Restaurer le bouton à son état normal
+      resetExportButton('history-export-btn');
     }
   }
   
@@ -282,6 +320,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleString('fr-FR');
+  }
+  
+  // Fonction pour réinitialiser un bouton d'exportation
+  function resetExportButton(buttonId) {
+    const exportBtn = document.getElementById(buttonId);
+    if (exportBtn) {
+      exportBtn.classList.remove('export-btn-loading');
+      exportBtn.disabled = false;
+    }
   }
   
   // Fonction pour afficher une notification
