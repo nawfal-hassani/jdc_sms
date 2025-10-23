@@ -4,7 +4,7 @@
  */
 
 // Initialiser les graphiques avec Chart.js
-export function initCharts() {
+window.initCharts = function() {
   console.log("Initialisation des graphiques...");
   
   // Graphique des SMS envoyés (par jour)

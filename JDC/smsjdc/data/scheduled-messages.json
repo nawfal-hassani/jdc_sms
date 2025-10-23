@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sch-1697896500123",
+    "to": "+33612345678",
+    "message": "Rappel : Votre rendez-vous est demain à 14h",
+    "type": "SMS",
+    "status": "pending",
+    "scheduledDate": "2025-10-22T10:00:00.000Z",
+    "recurringType": "none",
+    "createdAt": "2025-10-20T15:30:00.000Z",
+    "createdBy": "admin"
+  },
+  {
+    "id": "sch-1697896601234",
+    "to": "+33698765432",
+    "message": "N'oubliez pas de renouveler votre abonnement",
+    "type": "SMS",
+    "status": "pending",
+    "scheduledDate": "2025-10-25T08:00:00.000Z",
+    "recurringType": "monthly",
+    "recurringDay": 25,
+    "recurringTime": "08:00",
+    "createdAt": "2025-10-18T11:20:00.000Z",
+    "createdBy": "admin"
+  }
+]

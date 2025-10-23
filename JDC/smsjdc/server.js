@@ -10,7 +10,6 @@ const path = require('path');
 const axios = require('axios');
 const fs = require('fs');
 const dotenv = require('dotenv');
-
 // Configuration de base
 dotenv.config();
 const app = express();
@@ -45,6 +44,14 @@ try {
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Importation des routes
+const authRoutes = require('./src/routes/auth');
+const scheduleRoutes = require('./src/routes/schedule');
+
+// Routes d'authentification et planification
+app.use('/api/auth', authRoutes);
+app.use('/api/schedule', scheduleRoutes);
 
 // Utilitaires pour la gestion de l'historique
 const historyManager = {
@@ -422,6 +429,16 @@ app.get('/api/sms/history/export', async (req, res) => {
       error: error.message 
     });
   }
+});
+
+// Route de connexion
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Route d'administration
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 // Route par défaut pour l'application SPA

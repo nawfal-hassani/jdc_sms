@@ -17,22 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
   initCharts();
   
   // Ajouter les événements
-  setupEventLi      // Mettre à jour les statistiques
-      updateStats(true);
-      
-      // Déclencher un événement pour informer les autres modules
-      document.dispatchEvent(new CustomEvent('token-sent', {
-        detail: { 
-          success: true,
-          tokenData: {
-            type: 'Token',
-            to: phoneInputToken.value,
-            token: data.token,
-            status: 'success',
-            date: new Date()
-          }
-        }
-      }));// Simuler des données pour la démo
+  setupEventListeners();
+  
+  // Simuler des données pour la démo
   simulateData();
 });
 
@@ -383,14 +370,19 @@ function handleSendToken(e) {
       // Mettre à jour les statistiques
       updateStats(true);
       
-      // Ajouter à l'historique
-      addToHistory({
-        type: 'token',
-        to: phoneInput.value,
-        token: tokenInput.value,
-        status: 'success',
-        date: new Date()
-      });
+      // Déclencher un événement pour mettre à jour l'historique
+      document.dispatchEvent(new CustomEvent('token-sent', {
+        detail: { 
+          success: true,
+          tokenData: {
+            type: 'Token',
+            to: phoneInput.value,
+            token: tokenInput.value,
+            status: 'success',
+            date: new Date()
+          }
+        }
+      }));
       
       // Déclencher un événement pour informer les autres modules
       document.dispatchEvent(new CustomEvent('sms-sent', {
@@ -522,6 +514,17 @@ function updateStats(success) {
 }
 
 // Les fonctions d'historique ont été déplacées vers history.js
+
+// Fonction pour la compatibilité avec l'ancien code
+function addToHistory(entry) {
+  // Déclencher un événement pour informer les modules d'historique
+  document.dispatchEvent(new CustomEvent(entry.type === 'token' ? 'token-sent' : 'sms-sent', {
+    detail: { 
+      success: entry.status === 'success',
+      data: entry
+    }
+  }));
+}
 
 // Obtenir les 7 derniers jours pour les graphiques
 function getLast7Days() {

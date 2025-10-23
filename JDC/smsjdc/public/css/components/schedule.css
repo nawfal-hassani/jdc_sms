@@ -1,0 +1,180 @@
+/**
+ * CSS pour le module de planification des SMS
+ */
+
+/* Styles pour le calendrier */
+.calendar-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: var(--accent-color);
+  color: white;
+  font-weight: 600;
+  text-align: center;
+  padding: 10px 0;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(100px, auto);
+  border: 1px solid var(--border-color);
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.calendar-day {
+  border: 1px solid var(--border-color);
+  padding: 5px;
+  min-height: 100px;
+  position: relative;
+  background-color: var(--card-bg);
+}
+
+.calendar-day-header {
+  font-weight: bold;
+  text-align: right;
+  padding: 2px 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.calendar-day.other-month {
+  background-color: var(--bg-secondary);
+  color: var(--text-light);
+}
+
+.calendar-day.today {
+  background-color: rgba(var(--accent-color-rgb), 0.1);
+  border: 2px solid var(--accent-color);
+}
+
+.calendar-event {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 3px 5px;
+  margin-bottom: 3px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-event.recurring {
+  background-color: var(--success-color);
+}
+
+.calendar-event:hover {
+  opacity: 0.9;
+}
+
+/* Navigation du calendrier */
+#current-month {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0 15px;
+}
+
+/* Options de récurrence */
+.recurrence-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.radio-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.radio-label {
+  margin-left: 5px;
+}
+
+/* Sélecteur de jour de la semaine */
+.weekday-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.weekday-checkbox {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-secondary);
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.weekday-checkbox input:checked + span {
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+/* Modal pour afficher les détails */
+.schedule-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.schedule-modal-content {
+  background-color: var(--card-bg);
+  border-radius: 6px;
+  padding: 20px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.schedule-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.schedule-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.schedule-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Styles des vues */
+#calendar-view, #list-view {
+  margin-top: 20px;
+}

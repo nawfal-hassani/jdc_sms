@@ -121,8 +121,15 @@ function checkApiStatus() {
     });
 }
 
-// Importer le module des graphiques
-import { initCharts } from './modules/charts.js';
+// Initialiser les graphiques
+function initCharts() {
+  // Si le module de graphiques est chargé séparément
+  if (typeof window.initCharts === 'function') {
+    window.initCharts();
+  } else {
+    console.error("Le module de graphiques n'est pas disponible");
+  }
+}
 
 // Module d'envoi de SMS
 function initSmsModule() {

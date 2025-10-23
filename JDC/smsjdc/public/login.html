@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JDC SMS - Connexion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/login.css">
+  <link rel="stylesheet" href="/css/components/alerts.css">
+</head>
+<body class="login-page">
+  <div class="login-container">
+    <!-- Panneau gauche -->
+    <div class="login-panel login-branding">
+      <div class="branding-content">
+        <img src="/assets/JDC-Occitanie.png" alt="JDC Logo" class="login-logo">
+        <h1>JDC SMS Dashboard</h1>
+        <p>Plateforme professionnelle d'envoi de SMS et de gestion de campagnes</p>
+        
+        <div class="feature-list">
+          <div class="feature-item">
+            <i class="fas fa-paper-plane"></i>
+            <span>Envoi de SMS en masse ou ciblé</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-key"></i>
+            <span>Authentification sécurisée en 2 étapes</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Statistiques détaillées et rapports</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Panneau droit -->
+    <div class="login-panel login-form-panel">
+      <div class="login-form-container">
+        <h2>Connexion</h2>
+        <p class="login-subtitle">Accédez à votre espace personnel</p>
+        
+        <!-- Onglets d'authentification -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-form="email-tab">
+            <i class="fas fa-envelope"></i> Email
+          </button>
+          <button class="auth-tab" data-form="sms-tab">
+            <i class="fas fa-mobile-alt"></i> SMS
+          </button>
+        </div>
+        
+        <!-- Formulaire de connexion par email -->
+        <div id="email-tab" class="auth-form active">
+          <form id="email-login-form">
+            <div class="form-group">
+              <label for="email">Adresse email</label>
+              <div class="input-with-icon">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" class="form-control" placeholder="votre@email.com" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <div class="label-with-link">
+                <label for="password">Mot de passe</label>
+                <a href="#" id="forgot-password" class="text-link">Mot de passe oublié?</a>
+              </div>
+              <div class="input-with-icon">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                <button type="button" class="toggle-password" aria-label="Afficher/masquer le mot de passe">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="form-group checkbox-group">
+              <label class="checkbox-container">
+                <input type="checkbox" id="remember" checked>
+                <span class="checkmark"></span>
+                <span>Se souvenir de moi</span>
+              </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+          </form>
+          
+          <div class="social-separator">
+            <span>ou</span>
+          </div>
+          
+          <div class="social-login-buttons">
+            <button class="btn btn-apple">
+              <i class="fab fa-apple"></i>
+              <span>Continuer avec Apple</span>
+            </button>
+            
+            <button class="btn btn-google">
+              <i class="fab fa-google"></i>
+              <span>Continuer avec Google</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Formulaire de connexion par SMS -->
+        <div id="sms-tab" class="auth-form">
+          <!-- Formulaire de demande de SMS -->
+          <form id="sms-request-form">
+            <div class="form-group">
+              <label for="phone">Numéro de téléphone</label>
+              <div class="input-with-icon">
+                <i class="fas fa-mobile-alt"></i>
+                <input type="tel" id="phone" class="form-control" placeholder="+33 6 12 34 56 78" required>
+              </div>
+              <small>Vous recevrez un code de vérification par SMS</small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Recevoir un code</button>
+          </form>
+          
+          <!-- Formulaire de vérification de code -->
+          <form id="sms-verify-form" style="display: none;">
+            <div class="form-group">
+              <label>Code de vérification</label>
+              <p class="verification-note">Saisissez le code à 6 chiffres envoyé au <span id="masked-phone"></span></p>
+              
+              <div class="code-input-group">
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+              </div>
+              
+              <div class="resend-timer">
+                <span>Le code expire dans </span>
+                <span id="timer"></span>
+              </div>
+              
+              <button type="submit" class="btn btn-primary btn-block">Vérifier</button>
+              <button type="button" id="resend-code" class="btn btn-text">Renvoyer le code</button>
+            </div>
+          </form>
+        </div>
+        
+        <div class="login-footer">
+          <p>Vous n'avez pas de compte ? <a href="#" class="text-link">Contactez votre administrateur</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/login.js"></script>
+</body>
+</html>

@@ -18,7 +18,39 @@ document.addEventListener('DOMContentLoaded', function() {
   // ==== CONFIGURATION DU FORMULAIRE DE PARAMÈTRES ====
   setupSettingsForm();
   
+  // Note: La configuration du bouton de déconnexion est gérée après la création
+  // dynamique du bouton à la fin du fichier
+  
   // ==== FONCTIONS ====
+  
+  // Configuration du bouton de déconnexion
+  function setupLogoutButton() {
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', function() {
+        // Vérifie si le service d'authentification est disponible
+        if (window.authService && typeof window.authService.logout === 'function') {
+          // Afficher une confirmation
+          if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+            window.authService.logout()
+              .then(result => {
+                console.log('Déconnexion réussie:', result);
+                // Rediriger vers la page de connexion
+                window.location.href = '/login';
+              })
+              .catch(error => {
+                console.error('Erreur lors de la déconnexion:', error);
+                alert('Une erreur est survenue lors de la déconnexion.');
+              });
+          }
+        } else {
+          console.error('Le service d\'authentification n\'est pas disponible.');
+          // Redirection basique en cas d'absence du service d'authentification
+          window.location.href = '/login';
+        }
+      });
+    }
+  }
   
   // Navigation entre les onglets
   function setupTabNavigation() {
@@ -433,58 +465,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 5000);
   }
   
-  // Vérifier si on peut créer une section de débogage
-  // Utile si les boutons normaux ne fonctionnent pas
+  // Ajouter la section Session avec le bouton de déconnexion
   if (document.getElementById('settings-tab')) {
-    const debugSection = document.createElement('div');
-    debugSection.className = 'card';
-    debugSection.style.marginTop = '20px';
-    debugSection.innerHTML = `
+    const sessionSection = document.createElement('div');
+    sessionSection.className = 'card';
+    sessionSection.style.marginTop = '20px';
+    sessionSection.innerHTML = `
       <div class="card-header">
-        <h2 class="card-title">Options d'Apparence (Secours)</h2>
+        <h2 class="card-title">Session</h2>
       </div>
       <div class="card-content">
         <div class="form-group">
-          <label class="form-label">Thème (Secours)</label>
-          <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <button class="btn btn-secondary debug-theme" data-theme="light">Clair</button>
-            <button class="btn btn-secondary debug-theme" data-theme="dark">Sombre</button>
-            <button class="btn btn-secondary debug-theme" data-theme="system">Système</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Couleur (Secours)</label>
-          <div style="display: flex; gap: 10px;">
-            <button class="btn btn-secondary debug-color" data-color="#2c3e50" style="background-color: #2c3e50; color: white;">Marine</button>
-            <button class="btn btn-secondary debug-color" data-color="#3498db" style="background-color: #3498db; color: white;">Bleu</button>
-            <button class="btn btn-secondary debug-color" data-color="#16a085" style="background-color: #16a085; color: white;">Vert</button>
-            <button class="btn btn-secondary debug-color" data-color="#8e44ad" style="background-color: #8e44ad; color: white;">Violet</button>
-            <button class="btn btn-secondary debug-color" data-color="#c0392b" style="background-color: #c0392b; color: white;">Rouge</button>
-          </div>
+          <button id="logout-button-settings" class="btn btn-danger" style="width: 100%; margin-top: 10px;">
+            <i class="fas fa-sign-out-alt"></i> Déconnexion
+          </button>
         </div>
       </div>
     `;
-    document.getElementById('settings-tab').appendChild(debugSection);
+    document.getElementById('settings-tab').appendChild(sessionSection);
     
-    // Ajouter les écouteurs d'événements aux boutons de débogage
-    document.querySelectorAll('.debug-theme').forEach(button => {
-      button.addEventListener('click', function() {
-        setTheme(this.dataset.theme);
+    // Configuration du bouton de déconnexion dans les paramètres
+    const logoutButtonSettings = document.getElementById('logout-button-settings');
+    if (logoutButtonSettings) {
+      logoutButtonSettings.addEventListener('click', function() {
+        // Appeler la même fonction que le bouton principal
+        const mainLogoutButton = document.getElementById('logout-button');
+        if (mainLogoutButton) {
+          mainLogoutButton.click();
+        } else {
+          // Fallback si le bouton principal n'existe pas
+          if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+            window.location.href = '/login.html';
+          }
+        }
       });
-    });
-    
-    document.querySelectorAll('.debug-color').forEach(button => {
-      button.addEventListener('click', function() {
-        const colorValue = this.dataset.color;
-        const colorMap = {
-          '#2c3e50': 'color-navy',
-          '#3498db': 'color-blue',
-          '#16a085': 'color-green',
-          '#8e44ad': 'color-purple',
-          '#c0392b': 'color-red'
-        };
-        setColor(colorMap[colorValue] || 'color-navy', colorValue);
-      });
-    });
+    }
   }
 });

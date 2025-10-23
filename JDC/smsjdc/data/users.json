@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "email": "admin@jdc.fr",
+    "password": "admin123",
+    "name": "Administrateur",
+    "role": "admin",
+    "phone": "+33612345678"
+  },
+  {
+    "id": "2",
+    "email": "user@jdc.fr",
+    "password": "user123",
+    "name": "Utilisateur",
+    "role": "user",
+    "phone": "+33687654321"
+  },
+  {
+    "id": "3",
+    "email": "user3@jdc.fr",
+    "password": "user123",
+    "name": "Utilisateur",
+    "role": "user",
+    "phone": "+33687654381"
+  }
+]

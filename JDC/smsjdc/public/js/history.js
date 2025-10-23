@@ -223,18 +223,38 @@ document.addEventListener('DOMContentLoaded', function() {
           const status = sms.status || 'pending';
           const type = sms.type || (content.includes('code') ? 'Token' : 'SMS');
           
-          // Créer les cellules de la ligne
+          // Créer les cellules de la ligne avec bouton de suppression
+          const messageId = sms.id || sms._id || `${type}-${Date.parse(timestamp)}-${recipient.replace(/\D/g, '')}`;
+          
           row.innerHTML = `
             <td>${formatDate(timestamp)}</td>
             <td>${type}</td>
             <td>${recipient}</td>
             <td>${content.length > 50 ? content.substring(0, 47) + '...' : content}</td>
             <td><span class="status ${getStatusClass(status)}">${status}</span></td>
+            <td class="actions">
+              <button class="btn-delete" title="Supprimer cette entrée">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
           `;
+          
+          // Stocker l'ID dans les attributs de données
+          row.setAttribute('data-message-id', messageId);
           
           // Ajouter un titre au survol pour le contenu complet
           if (content.length > 50) {
             row.querySelector('td:nth-child(4)').title = content;
+          }
+          
+          // Ajouter un écouteur d'événement pour le bouton de suppression
+          const deleteBtn = row.querySelector('.btn-delete');
+          if (deleteBtn) {
+            deleteBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              deleteHistoryEntry(messageId, row);
+            });
           }
           
           historyTableBody.appendChild(row);

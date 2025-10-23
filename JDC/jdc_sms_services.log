@@ -4,59 +4,10 @@
 
 Twilio configuré avec succès
 Mode de fonctionnement: PRODUCTION
-node:events:495
-      throw er; // Unhandled 'error' event
-      ^
-
-Error: listen EADDRINUSE: address already in use :::3000
-    at Server.setupListenHandle [as _listen2] (node:net:1811:16)
-    at listenInCluster (node:net:1859:12)
-    at Server.listen (node:net:1947:7)
-    at Function.listen (/home/hassani/jdc_test-/JDC/sms-api/node_modules/express/lib/application.js:635:24)
-    at file:///home/hassani/jdc_test-/JDC/sms-api/src/server.js:8:5
-Emitted 'error' event on Server instance at:
-    at emitErrorNT (node:net:1838:8)
-    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
-  code: 'EADDRINUSE',
-  errno: -98,
-  syscall: 'listen',
-  address: '::',
-  port: 3000
-}
-
-Node.js v18.19.1
-
-> sms-dashboard@1.0.0 start
-> node server.js
-
-Historique local chargé: 35 messages
-node:events:495
-      throw er; // Unhandled 'error' event
-      ^
-
-Error: listen EADDRINUSE: address already in use :::3030
-    at Server.setupListenHandle [as _listen2] (node:net:1811:16)
-    at listenInCluster (node:net:1859:12)
-    at Server.listen (node:net:1947:7)
-    at Function.listen (/home/hassani/jdc_test-/JDC/smsjdc/node_modules/express/lib/application.js:635:24)
-    at Object.<anonymous> (/home/hassani/jdc_test-/JDC/smsjdc/server.js:433:5)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
-Emitted 'error' event on Server instance at:
-    at emitErrorNT (node:net:1838:8)
-    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
-  code: 'EADDRINUSE',
-  errno: -98,
-  syscall: 'listen',
-  address: '::',
-  port: 3030
-}
-
-Node.js v18.19.1
-Premier endpoint historique échoué, essai avec le second...
-Échec de récupération depuis l'API, utilisation de l'historique local
-Premier endpoint historique échoué, essai avec le second...
-Échec de récupération depuis l'API, utilisation de l'historique local
+=================================================
+🚀 Serveur démarré sur le port 3000
+📝 API accessible sur http://localhost:3000/api
+=================================================
+Historique local chargé: 36 messages
+📱 Dashboard SMS démarré sur http://localhost:3030
+🔌 Connecté à l'API SMS: http://localhost:3000/api

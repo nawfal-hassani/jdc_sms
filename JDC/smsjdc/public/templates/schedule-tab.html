@@ -1,0 +1,164 @@
+<!-- Page de planification des SMS -->
+<div id="schedule-tab" class="tab-content" style="display: none;">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Planifier des SMS</h2>
+      <div class="card-actions">
+        <button id="view-calendar-btn"><i class="fas fa-calendar-alt"></i> Vue Calendrier</button>
+        <button id="view-list-btn"><i class="fas fa-list"></i> Vue Liste</button>
+      </div>
+    </div>
+    <div class="card-content">
+      <form id="schedule-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="schedule-phone">Numéro de téléphone</label>
+            <input type="tel" id="schedule-phone" class="form-control" placeholder="+33612345678" required>
+            <small>Format international (ex: +33612345678)</small>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="schedule-date">Date d'envoi</label>
+            <input type="datetime-local" id="schedule-date" class="form-control" required>
+            <small>Sélectionnez la date et l'heure d'envoi</small>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="schedule-message">Message</label>
+          <textarea id="schedule-message" class="form-control" rows="4" placeholder="Votre message..." required></textarea>
+          <div id="schedule-char-counter" class="char-counter">0 caractères (0 SMS)</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Récurrence</label>
+          <div class="recurrence-options">
+            <label class="radio-container">
+              <input type="radio" name="recurrence-type" value="none" checked>
+              <span class="radio-label">Aucune (envoi unique)</span>
+            </label>
+            <label class="radio-container">
+              <input type="radio" name="recurrence-type" value="daily">
+              <span class="radio-label">Quotidien</span>
+            </label>
+            <label class="radio-container">
+              <input type="radio" name="recurrence-type" value="weekly">
+              <span class="radio-label">Hebdomadaire</span>
+            </label>
+            <label class="radio-container">
+              <input type="radio" name="recurrence-type" value="monthly">
+              <span class="radio-label">Mensuel</span>
+            </label>
+          </div>
+        </div>
+        
+        <div id="recurrence-details" style="display: none;">
+          <!-- Conteneur pour les options spécifiques à la récurrence -->
+          <div class="form-group weekly-options" style="display: none;">
+            <label class="form-label">Jours de la semaine</label>
+            <div class="weekday-selector">
+              <label class="weekday-checkbox">
+                <input type="checkbox" value="1"> Lun
+              </label>
+              <label class="weekday-checkbox">
+                <input type="checkbox" value="2"> Mar
+              </label>
+              <label class="weekday-checkbox">
+                <input type="checkbox" value="3"> Mer
+              </label>
+              <label class="weekday-checkbox">
+                <input type="checkbox" value="4"> Jeu
+              </label>
+              <label class="weekday-checkbox">
+                <input type="checkbox" value="5"> Ven
+              </label>
+              <label class="weekday-checkbox">
+                <input type="checkbox" value="6"> Sam
+              </label>
+              <label class="weekday-checkbox">
+                <input type="checkbox" value="0"> Dim
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group monthly-options" style="display: none;">
+            <label class="form-label" for="monthly-day">Jour du mois</label>
+            <select id="monthly-day" class="form-control">
+              <!-- Options générées par JavaScript -->
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="end-date">Date de fin (optionnel)</label>
+            <input type="date" id="end-date" class="form-control">
+            <small>Laissez vide pour une récurrence sans fin</small>
+          </div>
+        </div>
+        
+        <div class="sms-preview">
+          <h4>Aperçu du SMS</h4>
+          <p id="schedule-preview-text">Votre message s'affichera ici...</p>
+        </div>
+        
+        <div style="margin-top: 20px;">
+          <button type="submit" class="btn btn-primary">Planifier le SMS</button>
+        </div>
+      </form>
+      
+      <div id="schedule-result" style="margin-top: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- Vue calendrier -->
+  <div id="calendar-view" class="card" style="display: none;">
+    <div class="card-header">
+      <h2 class="card-title">Calendrier des envois</h2>
+      <div class="card-actions">
+        <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+        <span id="current-month">Octobre 2025</span>
+        <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <div>Lun</div>
+        <div>Mar</div>
+        <div>Mer</div>
+        <div>Jeu</div>
+        <div>Ven</div>
+        <div>Sam</div>
+        <div>Dim</div>
+      </div>
+      <div class="calendar-grid" id="calendar-grid">
+        <!-- Généré par JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue liste -->
+  <div id="list-view" class="card">
+    <div class="card-header">
+      <h2 class="card-title">SMS Planifiés</h2>
+      <div class="card-actions">
+        <button id="refresh-scheduled"><i class="fas fa-sync-alt"></i> Actualiser</button>
+      </div>
+    </div>
+    <div class="table-container">
+      <table id="scheduled-table" class="table">
+        <thead>
+          <tr>
+            <th>Date planifiée</th>
+            <th>Destinataire</th>
+            <th>Message</th>
+            <th>Récurrence</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rempli par JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
