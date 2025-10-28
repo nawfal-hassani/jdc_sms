@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Simuler des données pour la démo
   simulateData();
   
-  // Calculer et afficher les variations hebdomadaires
-  updateWeeklyChanges();
+  // Optionnel : Calculer et afficher les variations hebdomadaires réelles
+  // updateWeeklyChanges();
 });
 
 // Vérifier le statut de l'API
@@ -631,13 +631,11 @@ function updateStats(success) {
     : 0;
   document.getElementById('stat-rate').textContent = `${successRate}%`;
   
-  // Mettre à jour les variations hebdomadaires après un délai court
-  // pour laisser le temps à l'historique de se mettre à jour
-  setTimeout(() => {
-    updateWeeklyChanges();
-    // Optionnel : décommenter pour mettre à jour les graphiques avec les vraies données
-    // updateChartsWithRealData();
-  }, 1000);
+  // Optionnel : Mettre à jour les variations hebdomadaires et graphiques avec les vraies données
+  // setTimeout(() => {
+  //   updateWeeklyChanges();
+  //   updateChartsWithRealData();
+  // }, 1000);
 }
 
 // Les fonctions d'historique ont été déplacées vers history.js
