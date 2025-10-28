@@ -273,6 +273,10 @@ body {
   color: var(--accent);
 }
 
+.neutral {
+  color: var(--text-light);
+}
+
 /* Cards */
 .card {
   background-color: white;

@@ -56,5 +56,7 @@ Emitted 'error' event on Server instance at:
 }
 
 Node.js v18.19.1
-🔌 Client déconnecté: ApGhKaDRZfrfx24pAAAF
-🔌 Client déconnecté: tOzQtdeCONRzQrfbAAAD
+Premier endpoint historique échoué, essai avec le second...
+Échec de récupération depuis l'API, utilisation de l'historique local
+Premier endpoint historique échoué, essai avec le second...
+Échec de récupération depuis l'API, utilisation de l'historique local

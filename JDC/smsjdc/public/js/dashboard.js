@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Simuler des données pour la démo
   simulateData();
+  
+  // Calculer et afficher les variations hebdomadaires
+  updateWeeklyChanges();
 });
 
 // Vérifier le statut de l'API
@@ -591,4 +594,153 @@ function simulateData() {
       });
     }
   }
+  
+  // Calculer et afficher les variations hebdomadaires
+  updateWeeklyChanges();
 }
+
+// Fonction pour calculer les statistiques de la semaine dernière et cette semaine
+async function calculateWeeklyStats() {
+  try {
+    // Récupérer l'historique depuis le serveur
+    const response = await fetch('/api/sms/history');
+    if (!response.ok) {
+      throw new Error('Impossible de récupérer l\'historique');
+    }
+    
+    const history = await response.json();
+    
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    
+    // Stats de cette semaine (7 derniers jours)
+    const thisWeek = {
+      total: 0,
+      successful: 0,
+      failed: 0
+    };
+    
+    // Stats de la semaine dernière (7 jours précédents)
+    const lastWeek = {
+      total: 0,
+      successful: 0,
+      failed: 0
+    };
+    
+    // Parcourir l'historique et compter
+    history.forEach(entry => {
+      const entryDate = new Date(entry.timestamp || entry.date);
+      
+      if (entryDate >= oneWeekAgo) {
+        // Cette semaine
+        thisWeek.total++;
+        if (entry.status === 'success' || entry.status === 'delivered') {
+          thisWeek.successful++;
+        } else if (entry.status === 'failed' || entry.status === 'error') {
+          thisWeek.failed++;
+        }
+      } else if (entryDate >= twoWeeksAgo && entryDate < oneWeekAgo) {
+        // Semaine dernière
+        lastWeek.total++;
+        if (entry.status === 'success' || entry.status === 'delivered') {
+          lastWeek.successful++;
+        } else if (entry.status === 'failed' || entry.status === 'error') {
+          lastWeek.failed++;
+        }
+      }
+    });
+    
+    // Calculer les taux de réussite
+    const thisWeekRate = thisWeek.total > 0 ? (thisWeek.successful / thisWeek.total) * 100 : 0;
+    const lastWeekRate = lastWeek.total > 0 ? (lastWeek.successful / lastWeek.total) * 100 : 0;
+    
+    return {
+      thisWeek,
+      lastWeek,
+      changes: {
+        total: calculatePercentageChange(lastWeek.total, thisWeek.total),
+        successful: calculatePercentageChange(lastWeek.successful, thisWeek.successful),
+        failed: calculatePercentageChange(lastWeek.failed, thisWeek.failed),
+        rate: thisWeekRate - lastWeekRate
+      }
+    };
+  } catch (error) {
+    console.error('Erreur lors du calcul des statistiques hebdomadaires:', error);
+    // Retourner des valeurs par défaut en cas d'erreur
+    return {
+      thisWeek: { total: 0, successful: 0, failed: 0 },
+      lastWeek: { total: 0, successful: 0, failed: 0 },
+      changes: { total: 0, successful: 0, failed: 0, rate: 0 }
+    };
+  }
+}
+
+// Calculer le pourcentage de changement entre deux valeurs
+function calculatePercentageChange(oldValue, newValue) {
+  if (oldValue === 0) {
+    return newValue > 0 ? 100 : 0;
+  }
+  return ((newValue - oldValue) / oldValue) * 100;
+}
+
+// Mettre à jour l'affichage des variations hebdomadaires
+async function updateWeeklyChanges() {
+  const stats = await calculateWeeklyStats();
+  
+  // Mettre à jour Total SMS Envoyés
+  updateStatChange('stat-total-change', stats.changes.total);
+  
+  // Mettre à jour SMS Délivrés
+  updateStatChange('stat-success-change', stats.changes.successful);
+  
+  // Mettre à jour SMS Échoués
+  updateStatChange('stat-failed-change', stats.changes.failed);
+  
+  // Mettre à jour Taux de réussite
+  updateStatChange('stat-rate-change', stats.changes.rate);
+}
+
+// Mettre à jour un élément de statistique avec le bon style
+function updateStatChange(elementId, changeValue) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  
+  const absValue = Math.abs(changeValue);
+  const roundedValue = Math.round(absValue * 10) / 10; // Arrondir à 1 décimale
+  
+  // Déterminer la classe CSS et l'icône
+  let className = '';
+  let icon = '';
+  let prefix = '';
+  
+  if (changeValue > 0) {
+    className = 'positive';
+    icon = '<i class="fas fa-arrow-up"></i>';
+    prefix = '+';
+  } else if (changeValue < 0) {
+    className = 'negative';
+    icon = '<i class="fas fa-arrow-down"></i>';
+    prefix = '';
+  } else {
+    className = 'neutral';
+    icon = '<i class="fas fa-minus"></i>';
+    prefix = '';
+  }
+  
+  // Pour les SMS échoués, inverser la logique des couleurs (moins c'est mieux)
+  if (elementId === 'stat-failed-change') {
+    if (changeValue > 0) {
+      className = 'negative'; // Plus d'échecs = mauvais
+    } else if (changeValue < 0) {
+      className = 'positive'; // Moins d'échecs = bon
+    }
+  }
+  
+  // Mettre à jour l'élément
+  element.className = `stat-change ${className}`;
+  element.innerHTML = `${icon} ${prefix}${roundedValue}% cette semaine`;
+}
+
+// Rafraîchir les statistiques toutes les 5 minutes
+setInterval(updateWeeklyChanges, 5 * 60 * 1000);
