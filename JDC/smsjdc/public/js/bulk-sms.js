@@ -369,8 +369,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // ==== Téléchargement du template ====
   
   if (downloadTemplate) {
+    console.log('✅ Bouton download-template trouvé');
     downloadTemplate.addEventListener('click', function(e) {
       e.preventDefault();
+      console.log('📥 Téléchargement du modèle CSV...');
       const csvContent = 'phone,message,name\n+33612345678,"Bonjour, ceci est un test",Jean Dupont\n+33698765432,"Deuxième message de test",Marie Martin';
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -383,6 +385,8 @@ document.addEventListener('DOMContentLoaded', function() {
       document.body.removeChild(link);
       showNotification('Modèle CSV téléchargé', 'success');
     });
+  } else {
+    console.error('❌ Bouton download-template NON trouvé');
   }
   
   // ==== Annulation de l'upload ====

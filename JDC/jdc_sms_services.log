@@ -29,7 +29,7 @@ Node.js v18.19.1
 > sms-dashboard@1.0.0 start
 > node server.js
 
-Historique local chargé: 41 messages
+Historique local chargé: 45 messages
 node:events:495
       throw er; // Unhandled 'error' event
       ^
@@ -56,14 +56,3 @@ Emitted 'error' event on Server instance at:
 }
 
 Node.js v18.19.1
-🔐 Login attempt: { email: 'admin@jdc.fr', hasPassword: true, remember: true }
-📋 Users loaded: 3
-👤 User found: true
-🔑 Password hash starts with $2b: true
-✅ Password valid: true
-Premier endpoint historique échoué, essai avec le second...
-Échec de récupération depuis l'API, utilisation de l'historique local
-Premier endpoint historique échoué, essai avec le second...
-Échec de récupération depuis l'API, utilisation de l'historique local
-Premier endpoint historique échoué, essai avec le second...
-Échec de récupération depuis l'API, utilisation de l'historique local
