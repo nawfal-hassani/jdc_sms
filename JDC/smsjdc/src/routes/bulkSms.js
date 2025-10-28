@@ -202,7 +202,7 @@ function validateBulkData(data) {
 }
 
 /**
- * Envoi groupé de SMS (batch processing)
+ * Envoi groupé de SMS (batch processing avec WebSocket)
  * @route POST /api/bulk-sms/send
  */
 router.post('/send', async (req, res) => {
@@ -226,52 +226,99 @@ router.post('/send', async (req, res) => {
       });
     }
 
-    // Retourner immédiatement et traiter en arrière-plan
+    // Créer un job avec le service
+    const bulkSmsService = require('../services/bulkSmsService');
+    const jobId = bulkSmsService.createJob(validRecipients, { delay });
+
+    // Obtenir l'instance Socket.IO depuis l'app
+    const io = req.app.get('io');
+
+    // Démarrer le job en arrière-plan
+    setImmediate(() => {
+      bulkSmsService.startJob(jobId, io).catch(error => {
+        console.error(`Erreur lors du traitement du job ${jobId}:`, error);
+      });
+    });
+
+    // Retourner immédiatement avec l'ID du job
     res.json({
       success: true,
-      message: `Envoi de ${validRecipients.length} SMS en cours`,
+      message: `Job d'envoi créé avec succès`,
+      jobId: jobId,
       total: validRecipients.length
     });
 
-    // Traiter l'envoi en arrière-plan
-    processBulkSending(validRecipients, delay);
-
   } catch (error) {
-    console.error('Erreur lors de l\'envoi groupé:', error);
+    console.error('Erreur lors de la création du job d\'envoi groupé:', error);
     return res.status(500).json({
       success: false,
-      message: 'Erreur lors de l\'envoi groupé',
+      message: 'Erreur lors de la création du job d\'envoi groupé',
       error: error.message
     });
   }
 });
 
 /**
- * Traiter l'envoi groupé en arrière-plan
+ * Obtenir le statut d'un job
+ * @route GET /api/bulk-sms/job/:jobId/status
  */
-async function processBulkSending(recipients, delay) {
-  const axios = require('axios');
-  const SMS_API_URL = process.env.SMS_API_URL || 'http://localhost:3000/api';
+router.get('/job/:jobId/status', (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const bulkSmsService = require('../services/bulkSmsService');
+    const status = bulkSmsService.getJobStatus(jobId);
 
-  for (const recipient of recipients) {
-    try {
-      await axios.post(`${SMS_API_URL}/send-sms`, {
-        to: recipient.phone,
-        message: recipient.message
+    if (!status) {
+      return res.status(404).json({
+        success: false,
+        message: 'Job non trouvé'
       });
-
-      console.log(`SMS envoyé avec succès vers ${recipient.phone}`);
-
-      // Attendre avant le prochain envoi
-      await new Promise(resolve => setTimeout(resolve, delay));
-
-    } catch (error) {
-      console.error(`Erreur lors de l'envoi vers ${recipient.phone}:`, error.message);
     }
-  }
 
-  console.log('Envoi groupé terminé');
-}
+    res.json({
+      success: true,
+      status: status
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération du statut du job:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la récupération du statut du job',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Obtenir les résultats d'un job
+ * @route GET /api/bulk-sms/job/:jobId/results
+ */
+router.get('/job/:jobId/results', (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const bulkSmsService = require('../services/bulkSmsService');
+    const results = bulkSmsService.getJobResults(jobId);
+
+    if (!results) {
+      return res.status(404).json({
+        success: false,
+        message: 'Job non trouvé'
+      });
+    }
+
+    res.json({
+      success: true,
+      results: results
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des résultats du job:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la récupération des résultats du job',
+      error: error.message
+    });
+  }
+});
 
 /**
  * Obtenir un template CSV

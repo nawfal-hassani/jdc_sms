@@ -6,6 +6,8 @@
  */
 
 const express = require('express');
+const http = require('http');
+const socketIO = require('socket.io');
 const path = require('path');
 const axios = require('axios');
 const fs = require('fs');
@@ -13,6 +15,13 @@ const dotenv = require('dotenv');
 // Configuration de base
 dotenv.config();
 const app = express();
+const server = http.createServer(app);
+const io = socketIO(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 const PORT = process.env.PORT || 3030;
 const SMS_API_URL = process.env.SMS_API_URL || 'http://localhost:3000/api';
 
@@ -448,8 +457,114 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Configuration WebSocket pour l'envoi groupé
+const bulkSmsService = require('./src/services/bulkSmsService');
+
+io.on('connection', (socket) => {
+  console.log(`🔌 Client connecté: ${socket.id}`);
+
+  // Joindre une room pour un job spécifique
+  socket.on('join-job', (jobId) => {
+    socket.join(`job:${jobId}`);
+    console.log(`Client ${socket.id} a rejoint le job ${jobId}`);
+    
+    // Envoyer l'état actuel du job
+    const jobStatus = bulkSmsService.getJobStatus(jobId);
+    if (jobStatus) {
+      socket.emit('bulk-sms-update', {
+        type: 'status',
+        jobId: jobId,
+        job: jobStatus
+      });
+    }
+  });
+
+  // Quitter une room
+  socket.on('leave-job', (jobId) => {
+    socket.leave(`job:${jobId}`);
+    console.log(`Client ${socket.id} a quitté le job ${jobId}`);
+  });
+
+  // Mettre en pause un job
+  socket.on('pause-job', (jobId) => {
+    try {
+      const status = bulkSmsService.pauseJob(jobId);
+      io.to(`job:${jobId}`).emit('bulk-sms-update', {
+        type: 'paused',
+        jobId: jobId,
+        job: status
+      });
+    } catch (error) {
+      socket.emit('bulk-sms-error', {
+        jobId: jobId,
+        error: error.message
+      });
+    }
+  });
+
+  // Reprendre un job
+  socket.on('resume-job', (jobId) => {
+    try {
+      const status = bulkSmsService.resumeJob(jobId);
+      io.to(`job:${jobId}`).emit('bulk-sms-update', {
+        type: 'resumed',
+        jobId: jobId,
+        job: status
+      });
+    } catch (error) {
+      socket.emit('bulk-sms-error', {
+        jobId: jobId,
+        error: error.message
+      });
+    }
+  });
+
+  // Arrêter un job
+  socket.on('stop-job', (jobId) => {
+    try {
+      const status = bulkSmsService.stopJob(jobId);
+      io.to(`job:${jobId}`).emit('bulk-sms-update', {
+        type: 'stopped',
+        jobId: jobId,
+        job: status
+      });
+    } catch (error) {
+      socket.emit('bulk-sms-error', {
+        jobId: jobId,
+        error: error.message
+      });
+    }
+  });
+
+  // Obtenir le statut d'un job
+  socket.on('get-job-status', (jobId) => {
+    const status = bulkSmsService.getJobStatus(jobId);
+    socket.emit('job-status', {
+      jobId: jobId,
+      status: status
+    });
+  });
+
+  // Obtenir les résultats d'un job
+  socket.on('get-job-results', (jobId) => {
+    const results = bulkSmsService.getJobResults(jobId);
+    socket.emit('job-results', {
+      jobId: jobId,
+      results: results
+    });
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`🔌 Client déconnecté: ${socket.id}`);
+  });
+});
+
+// Rendre io accessible dans les routes
+app.set('io', io);
+
 // Démarrer le serveur
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`📱 Dashboard SMS démarré sur http://localhost:${PORT}`);
   console.log(`🔌 Connecté à l'API SMS: ${SMS_API_URL}`);
+  console.log(`🌐 WebSocket activé pour le suivi en temps réel`);
 });
