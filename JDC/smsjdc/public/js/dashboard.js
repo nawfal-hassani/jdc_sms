@@ -70,17 +70,32 @@ function checkApiStatus() {
 }
 
 // Initialiser les graphiques avec Chart.js
+// Variables globales pour les graphiques
+let dailyChart = null;
+let typesChart = null;
+let successChart = null;
+
 function initCharts() {
-  // Graphique des SMS envoyés (par jour)
+  // Initialiser les graphiques vides
+  initDailyChart();
+  initTypesChart();
+  initSuccessChart();
+  
+  // Charger les vraies données
+  updateChartsWithRealData();
+}
+
+// Graphique des SMS envoyés par jour
+function initDailyChart() {
   const ctxDaily = document.getElementById('chart-daily');
   if (ctxDaily) {
-    new Chart(ctxDaily, {
+    dailyChart = new Chart(ctxDaily, {
       type: 'line',
       data: {
         labels: getLast7Days(),
         datasets: [{
           label: 'SMS envoyés',
-          data: [12, 19, 8, 15, 20, 14, 18],
+          data: [0, 0, 0, 0, 0, 0, 0],
           fill: true,
           backgroundColor: 'rgba(52, 152, 219, 0.1)',
           borderColor: '#3498db',
@@ -112,16 +127,18 @@ function initCharts() {
       }
     });
   }
-  
-  // Graphique des types de SMS
+}
+
+// Graphique des types de SMS
+function initTypesChart() {
   const ctxTypes = document.getElementById('chart-types');
   if (ctxTypes) {
-    new Chart(ctxTypes, {
+    typesChart = new Chart(ctxTypes, {
       type: 'doughnut',
       data: {
         labels: ['SMS Simple', 'Tokens', 'Notifications'],
         datasets: [{
-          data: [65, 25, 10],
+          data: [0, 0, 0],
           backgroundColor: [
             '#3498db',
             '#2ecc71',
@@ -142,21 +159,23 @@ function initCharts() {
       }
     });
   }
-  
-  // Graphique des taux de succès
+}
+
+// Graphique des taux de succès
+function initSuccessChart() {
   const ctxSuccess = document.getElementById('chart-success');
   if (ctxSuccess) {
-    new Chart(ctxSuccess, {
+    successChart = new Chart(ctxSuccess, {
       type: 'bar',
       data: {
-        labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+        labels: getLast7Days(),
         datasets: [{
           label: 'Succès',
-          data: [95, 98, 92, 97, 99, 96, 94],
+          data: [0, 0, 0, 0, 0, 0, 0],
           backgroundColor: '#2ecc71'
         }, {
           label: 'Échecs',
-          data: [5, 2, 8, 3, 1, 4, 6],
+          data: [0, 0, 0, 0, 0, 0, 0],
           backgroundColor: '#e74c3c'
         }]
       },
@@ -175,21 +194,118 @@ function initCharts() {
         scales: {
           y: {
             beginAtZero: true,
-            stacked: true,
-            max: 100,
+            stacked: false,
             ticks: {
-              callback: function(value) {
-                return value + '%';
-              }
+              precision: 0
             }
           },
           x: {
-            stacked: true
+            stacked: false
           }
         }
       }
     });
   }
+}
+
+// Mettre à jour les graphiques avec les vraies données
+async function updateChartsWithRealData() {
+  try {
+    const response = await fetch('/api/sms/history');
+    if (!response.ok) {
+      console.error('Erreur lors de la récupération de l\'historique');
+      return;
+    }
+    
+    const history = await response.json();
+    console.log('📊 Mise à jour des graphiques avec', history.length, 'entrées');
+    
+    // Préparer les données pour les 7 derniers jours
+    const days = getLast7DaysData();
+    const dailyData = new Array(7).fill(0);
+    const successData = new Array(7).fill(0);
+    const failedData = new Array(7).fill(0);
+    
+    // Compter les types de SMS
+    let smsSimple = 0;
+    let tokens = 0;
+    let notifications = 0;
+    
+    // Parcourir l'historique
+    history.forEach(entry => {
+      const entryDate = new Date(entry.timestamp || entry.date || entry.createdAt);
+      const dayIndex = getDayIndex(entryDate, days);
+      
+      if (dayIndex >= 0) {
+        // Compter par jour
+        dailyData[dayIndex]++;
+        
+        // Compter succès/échecs
+        if (entry.status === 'success' || entry.status === 'delivered') {
+          successData[dayIndex]++;
+        } else if (entry.status === 'failed' || entry.status === 'error') {
+          failedData[dayIndex]++;
+        }
+      }
+      
+      // Compter les types (sur toute la période)
+      if (entry.type === 'token') {
+        tokens++;
+      } else if (entry.message && (entry.message.includes('notification') || entry.message.includes('alerte'))) {
+        notifications++;
+      } else {
+        smsSimple++;
+      }
+    });
+    
+    // Mettre à jour le graphique journalier
+    if (dailyChart) {
+      dailyChart.data.datasets[0].data = dailyData;
+      dailyChart.update();
+    }
+    
+    // Mettre à jour le graphique des types
+    if (typesChart) {
+      typesChart.data.datasets[0].data = [smsSimple, tokens, notifications];
+      typesChart.update();
+    }
+    
+    // Mettre à jour le graphique de succès
+    if (successChart) {
+      successChart.data.datasets[0].data = successData;
+      successChart.data.datasets[1].data = failedData;
+      successChart.update();
+    }
+    
+    console.log('✅ Graphiques mis à jour avec succès');
+  } catch (error) {
+    console.error('❌ Erreur lors de la mise à jour des graphiques:', error);
+  }
+}
+
+// Obtenir les 7 derniers jours avec leurs dates
+function getLast7DaysData() {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    date.setHours(0, 0, 0, 0);
+    days.push(date);
+  }
+  return days;
+}
+
+// Trouver l'index du jour pour une date donnée
+function getDayIndex(date, days) {
+  const dateOnly = new Date(date);
+  dateOnly.setHours(0, 0, 0, 0);
+  
+  for (let i = 0; i < days.length; i++) {
+    if (dateOnly.getTime() === days[i].getTime()) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 // Configuration des écouteurs d'événements
@@ -514,6 +630,13 @@ function updateStats(success) {
     ? Math.round((statisticsData.successful / statisticsData.totalSent) * 100) 
     : 0;
   document.getElementById('stat-rate').textContent = `${successRate}%`;
+  
+  // Mettre à jour les variations hebdomadaires et les graphiques après un délai court
+  // pour laisser le temps à l'historique de se mettre à jour
+  setTimeout(() => {
+    updateWeeklyChanges();
+    updateChartsWithRealData();
+  }, 1000);
 }
 
 // Les fonctions d'historique ont été déplacées vers history.js
@@ -614,6 +737,12 @@ async function calculateWeeklyStats() {
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
     
+    console.log('📊 Calcul des statistiques hebdomadaires');
+    console.log('📅 Aujourd\'hui:', now.toLocaleDateString());
+    console.log('📅 Il y a 1 semaine:', oneWeekAgo.toLocaleDateString());
+    console.log('📅 Il y a 2 semaines:', twoWeeksAgo.toLocaleDateString());
+    console.log('📝 Nombre d\'entrées dans l\'historique:', history.length);
+    
     // Stats de cette semaine (7 derniers jours)
     const thisWeek = {
       total: 0,
@@ -655,6 +784,11 @@ async function calculateWeeklyStats() {
     const thisWeekRate = thisWeek.total > 0 ? (thisWeek.successful / thisWeek.total) * 100 : 0;
     const lastWeekRate = lastWeek.total > 0 ? (lastWeek.successful / lastWeek.total) * 100 : 0;
     
+    console.log('📈 Cette semaine:', thisWeek);
+    console.log('📉 Semaine dernière:', lastWeek);
+    console.log('💯 Taux cette semaine:', thisWeekRate.toFixed(1) + '%');
+    console.log('💯 Taux semaine dernière:', lastWeekRate.toFixed(1) + '%');
+    
     return {
       thisWeek,
       lastWeek,
@@ -689,22 +823,29 @@ async function updateWeeklyChanges() {
   const stats = await calculateWeeklyStats();
   
   // Mettre à jour Total SMS Envoyés
-  updateStatChange('stat-total-change', stats.changes.total);
+  updateStatChange('stat-total-change', stats.changes.total, stats.lastWeek.total);
   
   // Mettre à jour SMS Délivrés
-  updateStatChange('stat-success-change', stats.changes.successful);
+  updateStatChange('stat-success-change', stats.changes.successful, stats.lastWeek.successful);
   
   // Mettre à jour SMS Échoués
-  updateStatChange('stat-failed-change', stats.changes.failed);
+  updateStatChange('stat-failed-change', stats.changes.failed, stats.lastWeek.failed);
   
   // Mettre à jour Taux de réussite
-  updateStatChange('stat-rate-change', stats.changes.rate);
+  updateStatChange('stat-rate-change', stats.changes.rate, stats.lastWeek.total);
 }
 
 // Mettre à jour un élément de statistique avec le bon style
-function updateStatChange(elementId, changeValue) {
+function updateStatChange(elementId, changeValue, previousValue = 0) {
   const element = document.getElementById(elementId);
   if (!element) return;
+  
+  // Si pas de données précédentes, afficher "Nouveau"
+  if (previousValue === 0 && changeValue === 100) {
+    element.className = 'stat-change positive';
+    element.innerHTML = '<i class="fas fa-star"></i> Nouveau cette semaine';
+    return;
+  }
   
   const absValue = Math.abs(changeValue);
   const roundedValue = Math.round(absValue * 10) / 10; // Arrondir à 1 décimale
