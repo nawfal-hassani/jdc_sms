@@ -1,0 +1,8 @@
+
+> sms-dashboard@1.0.0 start
+> node server.js
+
+Historique local chargé: 45 messages
+📱 Dashboard SMS démarré sur http://localhost:3030
+🔌 Connecté à l'API SMS: http://localhost:3000/api
+🌐 WebSocket activé pour le suivi en temps réel

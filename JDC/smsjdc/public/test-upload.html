@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Upload Simple</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        #result { margin-top: 20px; border: 1px solid #ccc; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Test d'Upload Simplifié</h1>
+    
+    <input type="file" id="file-input" accept=".csv,.xlsx,.xls">
+    <button id="upload-btn">Uploader le fichier</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        console.log('✅ Script chargé');
+        
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInput = document.getElementById('file-input');
+        const resultDiv = document.getElementById('result');
+        
+        uploadBtn.onclick = async function() {
+            console.log('📤 Clic détecté');
+            resultDiv.innerHTML = '<p>⏳ Upload en cours...</p>';
+            
+            const file = fileInput.files[0];
+            if (!file) {
+                resultDiv.innerHTML = '<p style="color: red;">❌ Aucun fichier sélectionné</p>';
+                return;
+            }
+            
+            console.log('📁 Fichier:', file.name);
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/api/bulk-sms/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('📡 Status:', response.status);
+                const result = await response.json();
+                console.log('✅ Résultat:', result);
+                
+                resultDiv.innerHTML = `
+                    <h3>✅ Résultat:</h3>
+                    <p><strong>Total:</strong> ${result.stats.total}</p>
+                    <p><strong>Valides:</strong> ${result.stats.valid}</p>
+                    <p><strong>Invalides:</strong> ${result.stats.invalid}</p>
+                    <hr>
+                    <h4>Détails:</h4>
+                    <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                resultDiv.innerHTML = '<p style="color: red;">❌ Erreur: ' + error.message + '</p>';
+            }
+        };
+    </script>
+</body>
+</html>
