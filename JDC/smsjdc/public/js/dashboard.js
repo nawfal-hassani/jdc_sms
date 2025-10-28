@@ -76,13 +76,13 @@ let typesChart = null;
 let successChart = null;
 
 function initCharts() {
-  // Initialiser les graphiques vides
+  // Initialiser les graphiques avec des données de simulation
   initDailyChart();
   initTypesChart();
   initSuccessChart();
   
-  // Charger les vraies données
-  updateChartsWithRealData();
+  // Optionnel : décommenter pour utiliser les vraies données
+  // updateChartsWithRealData();
 }
 
 // Graphique des SMS envoyés par jour
@@ -95,7 +95,7 @@ function initDailyChart() {
         labels: getLast7Days(),
         datasets: [{
           label: 'SMS envoyés',
-          data: [0, 0, 0, 0, 0, 0, 0],
+          data: [12, 19, 8, 15, 20, 14, 18],
           fill: true,
           backgroundColor: 'rgba(52, 152, 219, 0.1)',
           borderColor: '#3498db',
@@ -138,7 +138,7 @@ function initTypesChart() {
       data: {
         labels: ['SMS Simple', 'Tokens', 'Notifications'],
         datasets: [{
-          data: [0, 0, 0],
+          data: [65, 25, 10],
           backgroundColor: [
             '#3498db',
             '#2ecc71',
@@ -171,11 +171,11 @@ function initSuccessChart() {
         labels: getLast7Days(),
         datasets: [{
           label: 'Succès',
-          data: [0, 0, 0, 0, 0, 0, 0],
+          data: [11, 18, 7, 14, 19, 13, 17],
           backgroundColor: '#2ecc71'
         }, {
           label: 'Échecs',
-          data: [0, 0, 0, 0, 0, 0, 0],
+          data: [1, 1, 1, 1, 1, 1, 1],
           backgroundColor: '#e74c3c'
         }]
       },
@@ -631,11 +631,12 @@ function updateStats(success) {
     : 0;
   document.getElementById('stat-rate').textContent = `${successRate}%`;
   
-  // Mettre à jour les variations hebdomadaires et les graphiques après un délai court
+  // Mettre à jour les variations hebdomadaires après un délai court
   // pour laisser le temps à l'historique de se mettre à jour
   setTimeout(() => {
     updateWeeklyChanges();
-    updateChartsWithRealData();
+    // Optionnel : décommenter pour mettre à jour les graphiques avec les vraies données
+    // updateChartsWithRealData();
   }, 1000);
 }
 
