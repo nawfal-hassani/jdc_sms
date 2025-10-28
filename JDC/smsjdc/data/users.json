@@ -2,7 +2,7 @@
   {
     "id": "1",
     "email": "admin@jdc.fr",
-    "password": "admin123",
+    "password": "$2b$10$ufUhd12a1AKh6M.8oO5HxOyofe9lro57pjyBUetUyQw6BUt65z4DG",
     "name": "Administrateur",
     "role": "admin",
     "phone": "+33612345678"
@@ -10,7 +10,7 @@
   {
     "id": "2",
     "email": "user@jdc.fr",
-    "password": "user123",
+    "password": "$2b$10$nIsbfAJBd3Jbbip6br0NPeBJMUW5pZYdq0DUfZOC5Xqp0zgNlyNs.",
     "name": "Utilisateur",
     "role": "user",
     "phone": "+33687654321"
@@ -18,7 +18,7 @@
   {
     "id": "3",
     "email": "user3@jdc.fr",
-    "password": "user123",
+    "password": "$2b$10$.n89hTrC/Rfiok4V.jhc2eeCkcqZiGArUQQNtYBnT8dh8xarAetdm",
     "name": "Utilisateur",
     "role": "user",
     "phone": "+33687654381"

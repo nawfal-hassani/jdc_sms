@@ -5,27 +5,56 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const {
+    loginLimiter,
+    smsLimiter,
+    validateLogin,
+    validateSmsRequest,
+    validateSmsVerification,
+    validateUserCreation,
+    validateUserUpdate,
+    handleValidationErrors,
+    sanitizeInput
+} = require('../middleware/security');
+
+// Appliquer la sanitization sur toutes les routes
+router.use(sanitizeInput);
 
 /**
  * @route   POST /api/auth/login
  * @desc    Authentification par email/mot de passe
  * @access  Public
  */
-router.post('/login', authController.login);
+router.post('/login', 
+    loginLimiter,
+    validateLogin,
+    handleValidationErrors,
+    authController.login
+);
 
 /**
  * @route   POST /api/auth/request-sms
  * @desc    Demande d'envoi d'un code SMS pour authentification
  * @access  Public
  */
-router.post('/request-sms', authController.requestSmsCode);
+router.post('/request-sms',
+    smsLimiter,
+    validateSmsRequest,
+    handleValidationErrors,
+    authController.requestSmsCode
+);
 
 /**
  * @route   POST /api/auth/verify-sms
  * @desc    Vérification d'un code SMS et authentification
  * @access  Public
  */
-router.post('/verify-sms', authController.verifySmsCode);
+router.post('/verify-sms',
+    loginLimiter,
+    validateSmsVerification,
+    handleValidationErrors,
+    authController.verifySmsCode
+);
 
 /**
  * @route   POST /api/auth/verify-token
@@ -44,29 +73,45 @@ router.post('/logout', authController.logout);
 /**
  * @route   POST /api/auth/register
  * @desc    Création d'un nouvel utilisateur
- * @access  Admin (à sécuriser davantage)
+ * @access  Admin
  */
-router.post('/register', authController.createUser);
+router.post('/register',
+    authController.authenticate,
+    validateUserCreation,
+    handleValidationErrors,
+    authController.createUser
+);
 
 /**
  * @route   GET /api/auth/users
  * @desc    Récupérer la liste des utilisateurs
  * @access  Admin
  */
-router.get('/users', authController.getUsers);
+router.get('/users',
+    authController.authenticate,
+    authController.getUsers
+);
 
 /**
  * @route   PUT /api/auth/users/:id
  * @desc    Mettre à jour un utilisateur
  * @access  Admin
  */
-router.put('/users/:id', authController.updateUser);
+router.put('/users/:id',
+    authController.authenticate,
+    validateUserUpdate,
+    handleValidationErrors,
+    authController.updateUser
+);
 
 /**
  * @route   DELETE /api/auth/users/:id
  * @desc    Supprimer un utilisateur
  * @access  Admin
  */
-router.delete('/users/:id', authController.deleteUser);
+router.delete('/users/:id',
+    authController.authenticate,
+    authController.deleteUser
+);
 
 module.exports = router;

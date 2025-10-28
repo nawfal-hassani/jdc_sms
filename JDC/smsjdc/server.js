@@ -12,6 +12,8 @@ const path = require('path');
 const axios = require('axios');
 const fs = require('fs');
 const dotenv = require('dotenv');
+const helmet = require('helmet');
+
 // Configuration de base
 dotenv.config();
 const app = express();
@@ -49,6 +51,21 @@ try {
 } catch (err) {
   console.error('Erreur lors du chargement de l\'historique local:', err);
 }
+
+// Configuration de sécurité avec Helmet
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "http://localhost:*", "ws://localhost:*"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
 
 // Middleware
 app.use(express.json());

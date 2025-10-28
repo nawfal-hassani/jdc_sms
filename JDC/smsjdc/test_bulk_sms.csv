@@ -1,0 +1,6 @@
+phone,message,name
++33612345678,Test SMS 1 - Envoi groupé WebSocket,Jean Dupont
++33698765432,Test SMS 2 - Suivi en temps réel,Marie Martin
++33645678901,Test SMS 3 - Avec Socket.IO,Pierre Durand
++33687654321,Test SMS 4 - Fonctionnalité complète,Sophie Bernard
++33656789012,Test SMS 5 - Dashboard JDC,Luc Moreau

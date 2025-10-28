@@ -3,21 +3,83 @@
  * Gestion des onglets, validation des formulaires, et authentification
  */
 
-// Service d'authentification (simplifié directement dans ce fichier)
+// Service d'authentification
 const authService = {
     login: async function(email, password, remember) {
-        // Version simplifiée - redirection directe
-        window.location.href = 'index.html';
-        return { success: true };
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password, remember })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.token) {
+                // Stocker le token dans localStorage ou sessionStorage
+                const storage = remember ? localStorage : sessionStorage;
+                storage.setItem('authToken', data.token);
+                storage.setItem('user', JSON.stringify(data.user));
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Erreur lors de la connexion:', error);
+            return {
+                success: false,
+                message: 'Erreur de connexion au serveur'
+            };
+        }
     },
+    
     requestSmsCode: async function(phone) {
-        // Version simplifiée
-        return { success: true, expiresIn: 60 };
+        try {
+            const response = await fetch('/api/auth/request-sms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ phone })
+            });
+
+            return await response.json();
+        } catch (error) {
+            console.error('Erreur lors de la demande de code SMS:', error);
+            return {
+                success: false,
+                message: 'Erreur de connexion au serveur'
+            };
+        }
     },
+    
     verifySmsCode: async function(phone, code) {
-        // Version simplifiée
-        window.location.href = 'index.html';
-        return { success: true };
+        try {
+            const response = await fetch('/api/auth/verify-sms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ phone, code })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.token) {
+                // Stocker le token
+                sessionStorage.setItem('authToken', data.token);
+                sessionStorage.setItem('user', JSON.stringify(data.user));
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Erreur lors de la vérification du code:', error);
+            return {
+                success: false,
+                message: 'Erreur de connexion au serveur'
+            };
+        }
     }
 };
 

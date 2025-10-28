@@ -6,10 +6,12 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 const { promisify } = require('util');
 
-// Chemin vers le fichier des utilisateurs (simulé pour démo)
-const usersFilePath = path.join(__dirname, '../data/users.json');
+// Chemin vers le fichier des utilisateurs
+const usersFilePath = path.join(__dirname, '../../data/users.json');
+const SALT_ROUNDS = 10;
 
 // Générer un jeton aléatoire
 function generateToken(length = 32) {
@@ -29,12 +31,12 @@ async function getUsers() {
             await promisify(fs.access)(usersFilePath);
         } catch (error) {
             // Si le fichier n'existe pas, créer un fichier avec des utilisateurs par défaut
+            // Hashage des mots de passe par défaut
             const defaultUsers = [
                 {
                     id: '1',
                     email: 'admin@jdc.fr',
-                    // Dans un environnement de production, ce mot de passe serait haché
-                    password: 'admin123',
+                    password: await bcrypt.hash('admin123', SALT_ROUNDS),
                     name: 'Administrateur',
                     role: 'admin',
                     phone: '+33612345678'
@@ -42,7 +44,7 @@ async function getUsers() {
                 {
                     id: '2',
                     email: 'user@jdc.fr',
-                    password: 'user123',
+                    password: await bcrypt.hash('user123', SALT_ROUNDS),
                     name: 'Utilisateur',
                     role: 'user',
                     phone: '+33687654321'
@@ -86,9 +88,19 @@ const authController = {
             const users = await getUsers();
 
             // Rechercher l'utilisateur
-            const user = users.find(u => u.email === email && u.password === password);
+            const user = users.find(u => u.email === email);
 
             if (!user) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Identifiants invalides'
+                });
+            }
+
+            // Vérifier le mot de passe avec bcrypt
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+
+            if (!isPasswordValid) {
                 return res.status(401).json({
                     success: false,
                     message: 'Identifiants invalides'
@@ -404,15 +416,18 @@ const authController = {
             }
             
             // Créer un nouvel ID
-            const newId = String(Math.max(...users.map(user => parseInt(user.id))) + 1);
+            const newId = String(Math.max(...users.map(user => parseInt(user.id)), 0) + 1);
+            
+            // Hasher le mot de passe
+            const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
             
             // Créer le nouvel utilisateur
             const newUser = {
                 id: newId,
                 email,
-                password,
+                password: hashedPassword,
                 name,
-                role: role || 'user', // Par défaut, rôle utilisateur
+                role: role || 'user',
                 phone: phone || ''
             };
             
@@ -510,15 +525,20 @@ const authController = {
             }
             
             // Mettre à jour l'utilisateur
-            users[userIndex] = {
+            const updatedUser = {
                 ...user,
                 name: name || user.name,
                 email: email || user.email,
                 phone: phone !== undefined ? phone : user.phone,
-                role: role || user.role,
-                // Ne mettre à jour le mot de passe que s'il est fourni
-                ...(password ? { password } : {})
+                role: role || user.role
             };
+            
+            // Hasher le nouveau mot de passe si fourni
+            if (password) {
+                updatedUser.password = await bcrypt.hash(password, SALT_ROUNDS);
+            }
+            
+            users[userIndex] = updatedUser;
             
             // Sauvegarder la liste mise à jour
             await promisify(fs.writeFile)(usersFilePath, JSON.stringify(users, null, 2));
