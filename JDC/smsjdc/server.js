@@ -48,10 +48,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Importation des routes
 const authRoutes = require('./src/routes/auth');
 const scheduleRoutes = require('./src/routes/schedule');
+const bulkSmsRoutes = require('./src/routes/bulkSms');
 
 // Routes d'authentification et planification
 app.use('/api/auth', authRoutes);
 app.use('/api/schedule', scheduleRoutes);
+app.use('/api/bulk-sms', bulkSmsRoutes);
 
 // Utilitaires pour la gestion de l'historique
 const historyManager = {

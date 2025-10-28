@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/css/components/filters.css">
   <link rel="stylesheet" href="/css/components/schedule.css">
   <link rel="stylesheet" href="/css/components/export.css">
+  <link rel="stylesheet" href="/css/components/bulk-sms.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -42,6 +43,12 @@
           <a href="#" class="nav-link" data-tab="send-token-tab">
             <i class="fas fa-key nav-icon"></i>
             <span>Envoyer un Token</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-tab="bulk-sms-tab">
+            <i class="fas fa-users nav-icon"></i>
+            <span>Envoi Groupé</span>
           </a>
         </li>
         <li class="nav-item">
@@ -282,6 +289,223 @@
         </div>
       </div>
       
+      <!-- Bulk SMS Tab -->
+      <div id="bulk-sms-tab" class="tab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Envoi Groupé de SMS</h2>
+          </div>
+          <div class="card-content">
+            <div class="bulk-sms-container">
+              <!-- Zone d'upload -->
+              <div class="upload-section">
+                <div class="upload-zone" id="upload-zone">
+                  <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                  <h3>Glissez-déposez votre fichier ici</h3>
+                  <p>ou</p>
+                  <label for="file-input" class="btn btn-secondary">
+                    <i class="fas fa-folder-open"></i> Choisir un fichier
+                  </label>
+                  <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display: none;">
+                  <p class="upload-info">Formats acceptés: CSV, Excel (.xlsx, .xls)</p>
+                </div>
+                
+                <div class="file-format-info">
+                  <h4><i class="fas fa-info-circle"></i> Format du fichier</h4>
+                  <p>Votre fichier doit contenir les colonnes suivantes :</p>
+                  <ul>
+                    <li><strong>phone</strong> ou <strong>telephone</strong> : Numéro de téléphone au format international (+33...)</li>
+                    <li><strong>message</strong> ou <strong>texte</strong> : Contenu du SMS à envoyer</li>
+                    <li><strong>name</strong> ou <strong>nom</strong> (optionnel) : Nom du destinataire</li>
+                  </ul>
+                  <p>
+                    <a href="#" id="download-template" class="btn btn-link">
+                      <i class="fas fa-download"></i> Télécharger un modèle CSV
+                    </a>
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Prévisualisation et validation -->
+              <div id="preview-section" class="preview-section" style="display: none;">
+                <div class="preview-header">
+                  <h3>Prévisualisation des envois</h3>
+                  <button id="cancel-upload" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Annuler
+                  </button>
+                </div>
+                
+                <div class="preview-stats">
+                  <div class="preview-stat">
+                    <i class="fas fa-file-alt"></i>
+                    <div>
+                      <strong id="file-name">--</strong>
+                      <span>Fichier chargé</span>
+                    </div>
+                  </div>
+                  <div class="preview-stat">
+                    <i class="fas fa-check-circle text-success"></i>
+                    <div>
+                      <strong id="valid-count">0</strong>
+                      <span>Valides</span>
+                    </div>
+                  </div>
+                  <div class="preview-stat">
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                    <div>
+                      <strong id="invalid-count">0</strong>
+                      <span>Invalides</span>
+                    </div>
+                  </div>
+                  <div class="preview-stat">
+                    <i class="fas fa-paper-plane"></i>
+                    <div>
+                      <strong id="total-count">0</strong>
+                      <span>Total</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Options d'envoi -->
+                <div class="send-options">
+                  <div class="form-group">
+                    <label class="form-label">
+                      <input type="checkbox" id="skip-invalid"> 
+                      Ignorer les entrées invalides et envoyer uniquement les SMS valides
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="batch-delay">Délai entre les envois (ms)</label>
+                    <input type="number" id="batch-delay" class="form-control" value="1000" min="100" max="10000" step="100">
+                    <small>Temps d'attente entre chaque envoi (recommandé: 1000ms)</small>
+                  </div>
+                </div>
+                
+                <!-- Tableau de prévisualisation -->
+                <div class="preview-table-container">
+                  <table class="preview-table">
+                    <thead>
+                      <tr>
+                        <th>Statut</th>
+                        <th>Nom</th>
+                        <th>Téléphone</th>
+                        <th>Message</th>
+                        <th>Erreur</th>
+                      </tr>
+                    </thead>
+                    <tbody id="preview-table-body">
+                      <!-- Les lignes seront ajoutées dynamiquement -->
+                    </tbody>
+                  </table>
+                </div>
+                
+                <!-- Boutons d'action -->
+                <div class="preview-actions">
+                  <button id="start-bulk-send" class="btn btn-primary" disabled>
+                    <i class="fas fa-paper-plane"></i> Envoyer les SMS (<span id="send-count">0</span>)
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Progression de l'envoi -->
+              <div id="progress-section" class="progress-section" style="display: none;">
+                <h3>Envoi en cours...</h3>
+                
+                <div class="progress-bar-container">
+                  <div class="progress-bar">
+                    <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+                  </div>
+                  <div class="progress-text">
+                    <span id="progress-current">0</span> / <span id="progress-total">0</span>
+                    (<span id="progress-percent">0</span>%)
+                  </div>
+                </div>
+                
+                <div class="progress-stats">
+                  <div class="progress-stat success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                      <strong id="sent-success">0</strong>
+                      <span>Réussis</span>
+                    </div>
+                  </div>
+                  <div class="progress-stat error">
+                    <i class="fas fa-times-circle"></i>
+                    <div>
+                      <strong id="sent-failed">0</strong>
+                      <span>Échecs</span>
+                    </div>
+                  </div>
+                  <div class="progress-stat">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                      <strong id="time-elapsed">00:00</strong>
+                      <span>Temps écoulé</span>
+                    </div>
+                  </div>
+                  <div class="progress-stat">
+                    <i class="fas fa-hourglass-half"></i>
+                    <div>
+                      <strong id="time-remaining">--:--</strong>
+                      <span>Temps restant</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Log en temps réel -->
+                <div class="progress-log">
+                  <h4>Journal d'envoi</h4>
+                  <div id="progress-log-content" class="log-content">
+                    <!-- Les logs seront ajoutés dynamiquement -->
+                  </div>
+                </div>
+                
+                <div class="progress-actions">
+                  <button id="pause-bulk-send" class="btn btn-warning">
+                    <i class="fas fa-pause"></i> Pause
+                  </button>
+                  <button id="stop-bulk-send" class="btn btn-danger">
+                    <i class="fas fa-stop"></i> Arrêter
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Résultats finaux -->
+              <div id="results-section" class="results-section" style="display: none;">
+                <div class="results-header">
+                  <i class="fas fa-check-circle text-success"></i>
+                  <h3>Envoi terminé</h3>
+                </div>
+                
+                <div class="results-summary">
+                  <div class="result-stat">
+                    <strong id="result-success">0</strong>
+                    <span>SMS envoyés avec succès</span>
+                  </div>
+                  <div class="result-stat">
+                    <strong id="result-failed">0</strong>
+                    <span>Échecs</span>
+                  </div>
+                  <div class="result-stat">
+                    <strong id="result-duration">0</strong>
+                    <span>Durée totale</span>
+                  </div>
+                </div>
+                
+                <div class="results-actions">
+                  <button id="export-results" class="btn btn-secondary">
+                    <i class="fas fa-download"></i> Exporter le rapport
+                  </button>
+                  <button id="new-bulk-send" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nouvel envoi groupé
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <!-- History Tab -->
       <div id="history-tab" class="tab-content" style="display: none;">
         <div class="card">
@@ -430,5 +654,7 @@
   <script src="/js/settings-ui.js"></script>
   <script src="/js/logout-button.js"></script>
   <script src="/js/export.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script src="/js/bulk-sms.js"></script>
 </body>
 </html>

@@ -1,0 +1,4 @@
+# Ignorer tous les fichiers dans uploads
+*
+# Mais garder le dossier
+!.gitignore
