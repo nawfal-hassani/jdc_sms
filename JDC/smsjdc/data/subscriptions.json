@@ -1,0 +1,42 @@
+[
+  {
+    "id": "solo",
+    "name": "Solo",
+    "price_monthly": 7.99,
+    "price_yearly": 75.00,
+    "features": [
+      "1 calendrier unique",
+      "Essai gratuit de 30 jours",
+      "Intégration Calendrier Google",
+      "Intégration Microsoft Outlook"
+    ],
+    "max_calendars": 1
+  },
+  {
+    "id": "team",
+    "name": "Equipe",
+    "price_monthly": 19.99,
+    "price_yearly": 190.00,
+    "features": [
+      "De 2 à 5 calendriers (inclus)",
+      "Essai gratuit de 30 jours",
+      "Intégration Calendrier Google",
+      "Intégration Microsoft Outlook"
+    ],
+    "max_calendars": 5,
+    "popular": true
+  },
+  {
+    "id": "enterprise",
+    "name": "Entreprise",
+    "price_monthly": 39.99,
+    "price_yearly": 380.00,
+    "features": [
+      "Plus de 6 calendriers",
+      "Essai gratuit de 30 jours",
+      "Intégration Calendrier Google",
+      "Intégration Microsoft Outlook"
+    ],
+    "max_calendars": -1
+  }
+]
