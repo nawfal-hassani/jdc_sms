@@ -1014,3 +1014,480 @@ tr {
 .btn-success {
   animation: pulse 0.5s;
 }
+
+/* ============================= */
+/* Billing Section Styles */
+/* ============================= */
+
+/* Purchase Wizard */
+.purchase-wizard {
+  margin: 20px 0;
+}
+
+.wizard-steps {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.wizard-steps::before {
+  content: '';
+  position: absolute;
+  top: 25px;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: #e0e0e0;
+  z-index: 0;
+}
+
+.wizard-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  max-width: 200px;
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.wizard-step.active .step-number {
+  background: #667eea;
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.wizard-step.completed .step-number {
+  background: #28a745;
+  color: white;
+}
+
+.step-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #999;
+  transition: color 0.3s ease;
+}
+
+.wizard-step.active .step-label {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.wizard-step.completed .step-label {
+  color: #28a745;
+}
+
+.wizard-content {
+  animation: fadeInSlide 0.4s ease-out;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Info Cards */
+.info-card {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.info-card h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-card h4 i {
+  color: #667eea;
+}
+
+/* Summary Lines */
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+}
+
+.summary-line:last-child {
+  border-bottom: none;
+}
+
+.summary-line.total-line {
+  border-top: 2px solid #667eea;
+  padding-top: 15px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+/* Payment Methods */
+.payment-method {
+  display: block;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.payment-method input[type="radio"] {
+  display: none;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.payment-option i {
+  font-size: 24px;
+  color: #666;
+}
+
+.payment-method:hover .payment-option {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.payment-method input:checked + .payment-option {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.payment-method input:checked + .payment-option i {
+  color: #667eea;
+}
+
+/* Billing Sub-tabs */
+.billing-subtabs {
+  background: #f8f9fa;
+  padding: 0;
+  border-radius: 8px 8px 0 0;
+}
+
+.billing-subtab-btn {
+  background: transparent;
+  border: none;
+  padding: 15px 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  outline: none;
+  user-select: none;
+}
+
+.billing-subtab-btn:hover {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+  cursor: pointer;
+}
+
+.billing-subtab-btn.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  font-weight: 600;
+}
+
+.billing-subtab-btn i {
+  font-size: 16px;
+}
+
+.billing-subtab-content {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* SMS Pack Cards - Hover Effects */
+#sms-packs-grid > div,
+.pack-card {
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+#sms-packs-grid > div:hover,
+.pack-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* Subscription Cards - Hover Effects */
+#subscriptions-grid > div,
+.sub-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+#subscriptions-grid > div:hover,
+.sub-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Popular badge animation */
+@keyframes badge-pulse {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+}
+
+#subscriptions-grid > div > div[style*="RECOMMANDÉ"] {
+  animation: badge-pulse 2s infinite;
+}
+
+/* Billing Toggle Button */
+#billing-toggle {
+  transition: all 0.3s ease;
+}
+
+#billing-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Promo Code Section */
+#promo-code-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Invoice Table Styling */
+#invoices-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+#invoices-table tbody tr:hover {
+  background: #f8f9fa;
+  transform: scale(1.01);
+}
+
+/* Alert Settings Inputs */
+#alert-critical:focus,
+#alert-normal:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* SMS Balance Widget in Sidebar */
+.sms-balance-widget {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 12px 8px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+.sms-balance-widget .btn {
+  transition: all 0.3s ease;
+}
+
+.sms-balance-widget .btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
+}
+
+/* Dark Mode Adjustments for Billing */
+body.dark-mode .billing-subtabs {
+  background: #2d3748;
+}
+
+body.dark-mode .billing-subtab-btn {
+  color: #a0aec0;
+}
+
+body.dark-mode .billing-subtab-btn:hover {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+body.dark-mode .billing-subtab-btn.active {
+  color: #667eea;
+}
+
+body.dark-mode .info-card {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+body.dark-mode .info-card h4 {
+  color: #e2e8f0;
+}
+
+body.dark-mode .summary-line {
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+body.dark-mode .payment-option {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+body.dark-mode .payment-method:hover .payment-option {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+body.dark-mode #sms-packs-grid > div,
+body.dark-mode #subscriptions-grid > div {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+body.dark-mode #sms-packs-grid > div:hover,
+body.dark-mode #subscriptions-grid > div:hover {
+  border-color: #667eea;
+}
+
+body.dark-mode #promo-code-input,
+body.dark-mode #alert-critical,
+body.dark-mode #alert-normal {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+body.dark-mode #invoices-table tbody tr:hover {
+  background: #2d3748;
+}
+
+body.dark-mode #billing-tab .card-body > div[style*="background: #f8f9fa"] {
+  background: #2d3748 !important;
+}
+
+/* Pack card button animations */
+.select-pack-btn {
+  transition: all 0.2s ease;
+}
+
+.select-pack-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Loading state for billing operations */
+.billing-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.billing-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #667eea;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Alert/Notice styles for promo codes */
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design for Billing */
+@media (max-width: 768px) {
+  #sms-packs-grid,
+  #subscriptions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sms-balance-widget .balance-number {
+    font-size: 28px;
+  }
+  
+  .wizard-steps {
+    flex-direction: column;
+  }
+  
+  .wizard-steps::before {
+    display: none;
+  }
+}
