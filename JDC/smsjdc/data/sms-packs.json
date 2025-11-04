@@ -1,0 +1,59 @@
+[
+  {
+    "id": "pack_1000",
+    "quantity": 1000,
+    "price": 65.00,
+    "price_per_sms": 0.065,
+    "discount": 0
+  },
+  {
+    "id": "pack_2500",
+    "quantity": 2500,
+    "price": 152.50,
+    "price_per_sms": 0.061,
+    "discount": 0
+  },
+  {
+    "id": "pack_5000",
+    "quantity": 5000,
+    "price": 295.00,
+    "price_per_sms": 0.059,
+    "discount": 0,
+    "popular": true
+  },
+  {
+    "id": "pack_10000",
+    "quantity": 10000,
+    "price": 550.00,
+    "price_per_sms": 0.055,
+    "discount": 0
+  },
+  {
+    "id": "pack_25000",
+    "quantity": 25000,
+    "price": 1300.00,
+    "price_per_sms": 0.052,
+    "discount": 0
+  },
+  {
+    "id": "pack_50000",
+    "quantity": 50000,
+    "price": 2450.00,
+    "price_per_sms": 0.049,
+    "discount": 0
+  },
+  {
+    "id": "pack_100000",
+    "quantity": 100000,
+    "price": 4200.00,
+    "price_per_sms": 0.042,
+    "discount": 0
+  },
+  {
+    "id": "pack_500000",
+    "quantity": 500000,
+    "price": 19500.00,
+    "price_per_sms": 0.039,
+    "discount": 0
+  }
+]
