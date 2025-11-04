@@ -75,11 +75,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 const authRoutes = require('./src/routes/auth');
 const scheduleRoutes = require('./src/routes/schedule');
 const bulkSmsRoutes = require('./src/routes/bulkSms');
+const billingRoutes = require('./src/routes/billing');
 
 // Routes d'authentification et planification
 app.use('/api/auth', authRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/bulk-sms', bulkSmsRoutes);
+app.use('/api/billing', billingRoutes);
 
 // Utilitaires pour la gestion de l'historique
 const historyManager = {
