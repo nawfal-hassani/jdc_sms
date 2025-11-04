@@ -22,5 +22,16 @@
     "recurringTime": "08:00",
     "createdAt": "2025-10-18T11:20:00.000Z",
     "createdBy": "admin"
+  },
+  {
+    "id": "sch-1761925139410-650",
+    "to": "+33767847265",
+    "message": "im",
+    "type": "SMS",
+    "status": "pending",
+    "scheduledDate": "2025-11-01T08:00:00.000Z",
+    "recurringType": "none",
+    "recurringDetails": null,
+    "createdAt": "2025-10-31T15:38:59.410Z"
   }
 ]
