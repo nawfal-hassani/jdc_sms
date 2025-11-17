@@ -813,5 +813,23 @@
     "payment_method": "credit_card",
     "created_at": "2025-11-07T15:23:48.545Z",
     "paid_at": "2025-11-07T15:23:48.545Z"
+  },
+  {
+    "id": "INV-1762944748169",
+    "user_email": "adminn@gmail.com",
+    "type": "sms_pack",
+    "pack_id": "pack_1000",
+    "quantity": 1000,
+    "unit_price": 65,
+    "promo_code": "SEB",
+    "discount_percent": 5,
+    "subtotal": 65,
+    "discount_amount": 3.25,
+    "total_ht": 61.75,
+    "total_ttc": 74.1,
+    "status": "paid",
+    "payment_method": "credit_card",
+    "created_at": "2025-11-12T10:52:28.169Z",
+    "paid_at": "2025-11-12T10:52:28.169Z"
   }
 ]
