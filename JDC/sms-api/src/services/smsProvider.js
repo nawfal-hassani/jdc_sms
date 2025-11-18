@@ -2,24 +2,18 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Configuration Twilio simplifiée
-let twilioClient = null;
-try {
-  const twilio = await import("twilio");
-  const accountSid = process.env.TWILIO_SID;
-  const authToken = process.env.TWILIO_TOKEN;
-  if (accountSid && authToken) {
-    twilioClient = twilio.default(accountSid, authToken);
-    console.log("Twilio configuré avec succès");
-  } else {
-    console.log("Mode simulation: Twilio non configuré");
-  }
-} catch (err) {
-  console.log("Mode simulation: Twilio non disponible");
+// Configuration Twilio (obligatoire)
+const twilio = await import("twilio");
+const accountSid = process.env.TWILIO_SID;
+const authToken = process.env.TWILIO_TOKEN;
+
+if (!accountSid || !authToken) {
+  throw new Error("ERREUR: TWILIO_SID et TWILIO_TOKEN doivent être configurés dans le fichier .env");
 }
 
-// Afficher le mode de fonctionnement
-console.log(`Mode de fonctionnement: ${twilioClient ? "PRODUCTION" : "SIMULATION"}`);
+const twilioClient = twilio.default(accountSid, authToken);
+console.log("✅ Twilio configuré avec succès");
+console.log("Mode de fonctionnement: PRODUCTION");
 
 /**
  * Envoie un SMS via Twilio ou simule l'envoi si Twilio n'est pas configuré
@@ -32,19 +26,6 @@ async function sendSmsViaTwilio(to, message) {
   if (!message || message.trim() === '') {
     message = "Votre commande est prête à être récupérée";
     console.log("Message vide détecté, utilisation du message par défaut");
-  }
-
-  // Si Twilio n'est pas configuré, simuler l'envoi
-  if (!twilioClient) {
-    console.log(`[SIMULATION] SMS envoyé à ${to}: "${message}"`);
-    return { 
-      success: true, 
-      provider: "simulation", 
-      sid: `sim-${Date.now()}`,
-      to,
-      message,
-      timestamp: new Date().toISOString()
-    };
   }
   
   try {

@@ -1,0 +1,22 @@
+# Fichiers de logs
+*.log
+JDC/*.log
+
+# Fichiers PID
+*.pid
+
+# Variables d'environnement
+.env
+.env.local
+.env.*.local
+
+# Dépendances
+node_modules/
+
+# Système
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
