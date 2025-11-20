@@ -831,5 +831,23 @@
     "payment_method": "credit_card",
     "created_at": "2025-11-12T10:52:28.169Z",
     "paid_at": "2025-11-12T10:52:28.169Z"
+  },
+  {
+    "id": "INV-1763565448138",
+    "user_email": "admin@gmail.com",
+    "type": "sms_pack",
+    "pack_id": "pack_2500",
+    "quantity": 2500,
+    "unit_price": 152.5,
+    "promo_code": "BIENVENUE",
+    "discount_percent": 10,
+    "subtotal": 152.5,
+    "discount_amount": 15.25,
+    "total_ht": 137.25,
+    "total_ttc": 164.7,
+    "status": "paid",
+    "payment_method": "credit_card",
+    "created_at": "2025-11-19T15:17:28.138Z",
+    "paid_at": "2025-11-19T15:17:28.138Z"
   }
 ]
