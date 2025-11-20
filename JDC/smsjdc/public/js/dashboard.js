@@ -568,25 +568,24 @@ function showAlert(message, type, container = null) {
 }
 
 // Afficher un onglet spécifique
+// Delegate to the global showTab if available to avoid duplicate implementations
 function showTab(tabId) {
-  // Cacher tous les onglets
-  document.querySelectorAll('.tab-content').forEach(tab => {
-    tab.style.display = 'none';
-  });
-  
-  // Afficher l'onglet demandé
+  if (typeof window.showTab === 'function' && window.showTab !== showTab) {
+    // Ask the central showTab to trigger tab-changed so modules initialize
+    return window.showTab(tabId, true);
+  }
+
+  // Fallback: basic behaviour
+  document.querySelectorAll('.tab-content').forEach(tab => { tab.style.display = 'none'; });
   const activeTab = document.getElementById(tabId);
-  if (activeTab) {
-    activeTab.style.display = 'block';
-    
-    // Déclencher un événement pour informer les autres modules
-    document.dispatchEvent(new CustomEvent('tab-changed', {
-      detail: { tabId: tabId }
-    }));
-    
-    // Si c'est l'onglet des paramètres, s'assurer que les boutons sont correctement initialisés
-    if (tabId === 'settings-tab') {
-      // Mettre à jour les boutons de thème
+  if (activeTab) activeTab.style.display = 'block';
+}
+
+// Keep specific settings-tab adjustments in response to tab-changed
+document.addEventListener('tab-changed', function(e) {
+  try {
+    if (e.detail && e.detail.tabId === 'settings-tab') {
+      // Update theme buttons and color options
       const currentTheme = localStorage.getItem('theme') || 'system';
       document.querySelectorAll('#theme-light, #theme-dark, #theme-system').forEach(btn => {
         btn.classList.remove('btn-primary');
@@ -597,19 +596,14 @@ function showTab(tabId) {
         activeThemeBtn.classList.remove('btn-secondary');
         activeThemeBtn.classList.add('btn-primary');
       }
-      
-      // Mettre à jour les options de couleur
+
       const currentColor = localStorage.getItem('preferredColor') || 'color-navy';
-      document.querySelectorAll('.color-option').forEach(option => {
-        option.style.border = '2px solid transparent';
-      });
+      document.querySelectorAll('.color-option').forEach(option => { option.style.border = '2px solid transparent'; });
       const activeColorOption = document.getElementById(currentColor);
-      if (activeColorOption) {
-        activeColorOption.style.border = '2px solid white';
-      }
+      if (activeColorOption) activeColorOption.style.border = '2px solid white';
     }
-  }
-}
+  } catch (err) { console.error('tab-changed handler (dashboard):', err); }
+});
 
 // Mettre à jour les statistiques
 function updateStats(success) {

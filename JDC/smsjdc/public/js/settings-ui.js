@@ -76,24 +76,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // Afficher un onglet spécifique
+  // Delegate to central showTab to avoid global conflicts
   function showTab(tabId) {
-    // Masquer tous les onglets
-    document.querySelectorAll('.tab-content').forEach(tab => {
-      tab.style.display = 'none';
-    });
-    
-    // Afficher l'onglet demandé
-    const activeTab = document.getElementById(tabId);
-    if (activeTab) {
-      activeTab.style.display = 'block';
+    if (typeof window.showTab === 'function' && window.showTab !== showTab) {
+      return window.showTab(tabId, true);
     }
-    
-    // Si c'est l'onglet des paramètres, mettre à jour l'UI
-    if (tabId === 'settings-tab') {
-      updateThemeButtons();
-      setupColorButtons(); // Reconfigurer les boutons de couleur
-    }
+    // Fallback behaviour
+    document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+    const activeTab = document.getElementById(tabId); if (activeTab) activeTab.style.display = 'block';
+    if (tabId === 'settings-tab') { updateThemeButtons(); setupColorButtons(); }
   }
   
   // ==== SYSTÈME DE THÈME ====

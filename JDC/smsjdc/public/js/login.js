@@ -21,7 +21,7 @@ const authService = {
                 // Stocker le token dans localStorage ou sessionStorage
                 const storage = remember ? localStorage : sessionStorage;
                 storage.setItem('authToken', data.token);
-                storage.setItem('user', JSON.stringify(data.user));S
+                storage.setItem('user', JSON.stringify(data.user));
             }
 
             return data;

@@ -1,9 +1,81 @@
 // FRONTEND
   // app.js - Point d'entrée principal de l'application client
 
+// ============================================
+// SYSTÈME DE MÉMORISATION DES ONGLETS
+// ============================================
+
+/**
+ * Sauvegarde l'onglet actif dans le localStorage
+ */
+function saveActiveTab(tabId) {
+  try {
+    localStorage.setItem('jdc_activeTab', tabId);
+    console.log(`✅ Onglet sauvegardé: ${tabId}`);
+  } catch (error) {
+    console.error('❌ Erreur lors de la sauvegarde:', error);
+  }
+}
+
+/**
+ * Récupère l'onglet actif depuis le localStorage
+ */
+function getActiveTab() {
+  try {
+    return localStorage.getItem('jdc_activeTab');
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération:', error);
+    return null;
+  }
+}
+
+/**
+ * Affiche un onglet spécifique
+ */
+function showTab(tabId, triggerEvent = false) {
+  console.log(`🔄 Tentative d'affichage de l'onglet: ${tabId}`);
+  
+  // Masquer tous les onglets
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.style.display = 'none';
+  });
+  
+  // Retirer la classe active de tous les liens
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+  });
+  
+  // Afficher l'onglet sélectionné
+  const selectedTab = document.getElementById(tabId);
+  if (selectedTab) {
+    selectedTab.style.display = 'block';
+    
+    // Activer le lien correspondant dans la sidebar
+    const selectedLink = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
+    if (selectedLink) {
+      selectedLink.classList.add('active');
+      console.log(`✅ Lien activé pour: ${tabId}`);
+    } else {
+      console.warn(`⚠️ Lien non trouvé pour: ${tabId}`);
+    }
+    
+    console.log(`👁️ Onglet affiché: ${tabId}`);
+  } else {
+    console.error(`❌ Onglet introuvable: ${tabId}`);
+  }
+  // Déclencher l'événement de changement d'onglet si demandé
+  if (triggerEvent) {
+    try {
+      document.dispatchEvent(new CustomEvent('tab-changed', { detail: { tabId } }));
+    } catch (e) {
+      console.error('Erreur dispatch tab-changed', e);
+    }
+  }
+}
+
 // Attendre que le document soit prêt
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialiser la navigation
+  // Initialiser la navigation d'abord
   setupTabNavigation();
   
   // Initialiser le dashboard principal
@@ -23,7 +95,56 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialiser le gestionnaire de thème
   initThemeManager();
+  
+  // 🔥 RESTAURER L'ONGLET ACTIF EN DERNIER (après tous les inits)
+  // Utiliser requestAnimationFrame pour attendre que le DOM soit complètement rendu
+  requestAnimationFrame(function() {
+    setTimeout(function() {
+      console.log('🎯 Démarrage de la restauration de l\'onglet');
+      restoreActiveTab();
+    }, 50);
+  });
 });
+
+/**
+ * Restaure l'onglet actif au chargement de la page
+ */
+function restoreActiveTab() {
+  const savedTab = getActiveTab();
+  
+  console.log(`📖 Onglet sauvegardé trouvé: ${savedTab || 'aucun'}`);
+  
+  if (savedTab && document.getElementById(savedTab)) {
+    console.log(`🔄 Restauration de l'onglet: ${savedTab}`);
+    
+    // Forcer l'affichage avec un petit délai pour s'assurer que tout est prêt
+    setTimeout(function() {
+      // Utiliser triggerEvent=true pour notifier les modules (billing, etc.)
+      showTab(savedTab, true);
+      
+      // Double vérification après 100ms pour s'assurer que rien n'a réinitialisé
+      setTimeout(function() {
+        const currentTab = document.querySelector('.tab-content[style*="display: block"]');
+        const currentTabId = currentTab ? currentTab.id : null;
+
+        if (currentTabId !== savedTab) {
+          if (!window._restorationDone) {
+            console.warn(`⚠️ Réinitialisation détectée, correction de ${currentTabId} vers ${savedTab}`);
+            window._restorationDone = true;
+            showTab(savedTab, true);
+          } else {
+            console.warn('⚠️ Restauration déjà tentée, abandon de la correction pour éviter boucle');
+          }
+        } else {
+          console.log(`✅ Onglet ${savedTab} correctement affiché et stable`);
+        }
+      }, 100);
+    }, 10);
+  } else {
+    console.log(`📊 Affichage du dashboard par défaut`);
+    showTab('dashboard-tab', true);
+  }
+}
 
 // Navigation entre les onglets
 function setupTabNavigation() {
@@ -35,28 +156,12 @@ function setupTabNavigation() {
       const tabId = this.getAttribute('data-tab');
       if (!tabId) return;
       
-      // Masquer tous les onglets
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.style.display = 'none';
-      });
-      
-      // Afficher l'onglet demandé
-      const activeTab = document.getElementById(tabId);
-      if (activeTab) {
-        activeTab.style.display = 'block';
-      }
-      
-      // Mettre à jour les liens de navigation
-      document.querySelectorAll('.nav-link').forEach(l => {
-        l.classList.remove('active');
-      });
-      
-      this.classList.add('active');
-      
-      // Déclencher un événement pour informer les autres modules
-      document.dispatchEvent(new CustomEvent('tab-changed', {
-        detail: { tabId }
-      }));
+      // Afficher l'onglet (gère aussi les classes active automatiquement)
+      // Indiquer triggerEvent=true pour que les modules écoutant 'tab-changed' soient notifiés
+      showTab(tabId, true);
+
+      // 🔥 SAUVEGARDER L'ONGLET ACTIF
+      saveActiveTab(tabId);
     });
   });
 }

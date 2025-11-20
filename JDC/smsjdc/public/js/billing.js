@@ -237,6 +237,14 @@
     if(selectedContent) selectedContent.style.display = 'block';
     if(selectedBtn) selectedBtn.classList.add('active');
 
+    // 🔥 SAUVEGARDER LE SOUS-ONGLET ACTIF
+    try {
+      localStorage.setItem('jdc_activeBillingSubTab', tab);
+      console.log(`✅ Sous-onglet billing sauvegardé: ${tab}`);
+    } catch (error) {
+      console.error('❌ Erreur lors de la sauvegarde du sous-onglet:', error);
+    }
+
     if(tab === 'packs') loadPacks();
     if(tab === 'subscriptions') loadSubscriptions();
     if(tab === 'invoices') loadInvoices();
@@ -244,14 +252,14 @@
   };
 
   window.showBillingTab = function(){
-    if(typeof showTab === 'function') showTab('billing');
+    if(typeof showTab === 'function') showTab('billing-tab', true);
     else {
       $$('.tab-content').forEach(t => t.style.display = 'none');
       const b = $('#billing-tab'); if(b) b.style.display = 'block';
       $$('.nav-link').forEach(n => n.classList.remove('active'));
       const nav = $(`[data-tab="billing-tab"]`); if(nav) nav.classList.add('active');
     }
-    initBilling();
+    // initBilling will be triggered by the central 'tab-changed' event
   };
 
   // Select pack (called by UI)
@@ -289,6 +297,23 @@
   // Wizard helpers (kept globally for index.html usage)
   window.goToWizardStep = function(step){
     console.log('[Billing] goToWizardStep called with step:', step);
+    
+    // 🔥 S'assurer que l'onglet billing est actif dans la sidebar
+    const billingTab = document.getElementById('billing-tab');
+    const billingLink = document.querySelector('.nav-link[data-tab="billing-tab"]');
+    
+    if (billingTab && billingTab.style.display !== 'block') {
+      console.log('[Billing] Réaffichage de billing-tab');
+      if (typeof window.showTab === 'function') {
+        window.showTab('billing-tab', false); // false = pas de re-trigger d'événement
+      }
+    }
+    
+    // S'assurer que le lien sidebar est actif
+    if (billingLink && !billingLink.classList.contains('active')) {
+      document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+      billingLink.classList.add('active');
+    }
     
     // Validation de l'étape 2 avant de passer à l'étape 3
     if(step === 3) {
@@ -508,8 +533,13 @@
   async function initBilling(){
     currentUser = localStorage.getItem('userEmail') || null;
     await loadCredits();
-    // default show packs
-    window.showBillingSubTab('packs');
+    
+    // 🔥 RESTAURER LE SOUS-ONGLET SAUVEGARDÉ
+    const savedSubTab = localStorage.getItem('jdc_activeBillingSubTab');
+    const defaultSubTab = savedSubTab || 'packs';
+    
+    console.log(`🔄 Restauration du sous-onglet billing: ${defaultSubTab}`);
+    window.showBillingSubTab(defaultSubTab);
   }
 
   // Attach tab activation
@@ -518,7 +548,14 @@
     $$('.billing-subtab-btn').forEach(btn=> btn.addEventListener('click', (e)=>{ e.preventDefault(); const t = btn.getAttribute('data-subtab'); window.showBillingSubTab(t); }));
     const billingNav = $(`[data-tab="billing-tab"]`);
     if(billingNav) billingNav.addEventListener('click', initBilling);
-    // on load if billing tab present, init will be triggered when user clicks
+    
+    // 🔥 ÉCOUTER L'ÉVÉNEMENT DE CHANGEMENT D'ONGLET
+    document.addEventListener('tab-changed', function(e) {
+      if (e.detail && e.detail.tabId === 'billing-tab') {
+        console.log('📢 Événement tab-changed reçu pour billing-tab');
+        initBilling();
+      }
+    });
   });
 
   // Expose some helpers for dev
