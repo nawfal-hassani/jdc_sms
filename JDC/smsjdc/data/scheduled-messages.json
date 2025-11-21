@@ -33,5 +33,16 @@
     "recurringType": "none",
     "recurringDetails": null,
     "createdAt": "2025-10-31T15:38:59.410Z"
+  },
+  {
+    "id": "sch-1763721873891-517",
+    "to": "+33612345678",
+    "message": "Rappel : Votre rendez-vous est demain à 14h",
+    "type": "SMS",
+    "status": "pending",
+    "scheduledDate": "2025-10-22T10:00:00.000Z",
+    "recurringType": "none",
+    "recurringDetails": null,
+    "createdAt": "2025-11-21T10:44:33.891Z"
   }
 ]
