@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Stripe Packs</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components/stripe-payment.css">
+    <style>
+        body {
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .debug-info {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-family: monospace;
+        }
+        .debug-info pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test d'affichage des packs Stripe</h1>
+        
+        <div class="debug-info">
+            <h3>État du chargement :</h3>
+            <pre id="debug-output">Initialisation...</pre>
+        </div>
+
+        <h2>Packs SMS disponibles :</h2>
+        <div id="sms-packs-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <p>Chargement des packs...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/stripe-payment.js"></script>
+    <script>
+        const debugOutput = document.getElementById('debug-output');
+        
+        function log(message) {
+            console.log(message);
+            const timestamp = new Date().toLocaleTimeString();
+            debugOutput.textContent += `\n[${timestamp}] ${message}`;
+        }
+
+        // Attendre que le DOM soit chargé
+        document.addEventListener('DOMContentLoaded', async () => {
+            log('✅ DOM chargé');
+            
+            // Vérifier que le service Stripe existe
+            if (window.stripePaymentService) {
+                log('✅ Service Stripe disponible');
+            } else {
+                log('❌ Service Stripe NON disponible !');
+                return;
+            }
+
+            // Tester l'API
+            try {
+                log('📡 Test de l\'API /api/stripe/packs...');
+                const response = await fetch('/api/stripe/packs');
+                const data = await response.json();
+                log(`✅ API répond : ${data.packs?.length || 0} packs reçus`);
+                log(`📦 Packs : ${JSON.stringify(data.packs?.map(p => p.name), null, 2)}`);
+            } catch (error) {
+                log(`❌ Erreur API : ${error.message}`);
+            }
+
+            // Tester l'affichage des packs
+            try {
+                log('🎨 Affichage des packs...');
+                const userId = 'test@example.com';
+                await window.stripePaymentService.displayPacks('sms-packs-grid', userId);
+                log('✅ displayPacks() terminé');
+                
+                // Vérifier le contenu du container
+                const container = document.getElementById('sms-packs-grid');
+                const packsCount = container.querySelectorAll('.pack-card').length;
+                log(`✅ ${packsCount} cartes de packs affichées dans le DOM`);
+                
+            } catch (error) {
+                log(`❌ Erreur affichage : ${error.message}`);
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
