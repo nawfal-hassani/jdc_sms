@@ -245,7 +245,14 @@
       console.error('❌ Erreur lors de la sauvegarde du sous-onglet:', error);
     }
 
-    if(tab === 'packs') loadPacks();
+    if(tab === 'packs') {
+      // Charger les packs Stripe
+      if (window.stripePaymentService) {
+        const userId = localStorage.getItem('userEmail') || null;
+        window.stripePaymentService.displayPacks('sms-packs-grid', userId).catch(console.error);
+        window.stripePaymentService.displayCredits('stripe-credits-display', userId).catch(console.error);
+      }
+    }
     if(tab === 'subscriptions') loadSubscriptions();
     if(tab === 'invoices') loadInvoices();
     if(tab === 'alerts') loadAlertSettings();
@@ -533,6 +540,23 @@
   async function initBilling(){
     currentUser = localStorage.getItem('userEmail') || null;
     await loadCredits();
+    
+    // 🔥 INITIALISER STRIPE PAYMENT SERVICE
+    if (window.stripePaymentService) {
+      try {
+        // Afficher les crédits
+        await window.stripePaymentService.displayCredits('stripe-credits-display', currentUser);
+        
+        // Afficher les packs Stripe
+        await window.stripePaymentService.displayPacks('sms-packs-grid', currentUser);
+        
+        console.log('✅ Stripe Payment Service initialisé');
+      } catch (error) {
+        console.error('❌ Erreur lors de l\'initialisation de Stripe:', error);
+      }
+    } else {
+      console.warn('⚠️ Stripe Payment Service non disponible');
+    }
     
     // 🔥 RESTAURER LE SOUS-ONGLET SAUVEGARDÉ
     const savedSubTab = localStorage.getItem('jdc_activeBillingSubTab');

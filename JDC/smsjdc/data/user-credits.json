@@ -40,8 +40,8 @@
   {
     "id": 3,
     "user_email": "admin@gmail.com",
-    "current_balance": 6500,
-    "total_purchased": 578000,
+    "current_balance": 7500,
+    "total_purchased": 579000,
     "total_sent": 0,
     "subscription": {
       "plan": "enterprise",
@@ -58,7 +58,7 @@
       "email_notifications": true
     },
     "created_at": "2025-10-30T09:54:48.233Z",
-    "updated_at": "2025-11-19T15:17:28.138Z"
+    "updated_at": "2025-11-24T13:35:55.247Z"
   },
   {
     "id": 4,
@@ -79,8 +79,8 @@
   {
     "id": 5,
     "user_email": "adminn@gmail.com",
-    "current_balance": 276552000,
-    "total_purchased": 276552000,
+    "current_balance": 276553000,
+    "total_purchased": 276553000,
     "total_sent": 0,
     "subscription": null,
     "alert_settings": {
@@ -90,6 +90,6 @@
       "email_notifications": true
     },
     "created_at": "2025-11-04T09:39:08.033Z",
-    "updated_at": "2025-11-12T10:52:28.169Z"
+    "updated_at": "2025-11-24T13:36:21.496Z"
   }
 ]

@@ -1,4 +1,7 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// Initialiser Stripe uniquement si la clé est configurée
+const stripe = process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY.trim() !== '' 
+  ? require('stripe')(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 // Prix des packs SMS (en centimes)
 const SMS_PACKS = {
@@ -69,6 +72,10 @@ const SUBSCRIPTIONS = {
  */
 async function createCheckoutSession(userId, packId, successUrl, cancelUrl) {
   try {
+    if (!stripe) {
+      throw new Error('Stripe n\'est pas configuré. Veuillez ajouter vos clés API dans le fichier .env');
+    }
+
     const pack = SMS_PACKS[packId];
     
     if (!pack) {
@@ -117,6 +124,10 @@ async function createCheckoutSession(userId, packId, successUrl, cancelUrl) {
  */
 async function createSubscriptionCheckout(userId, subscriptionId, successUrl, cancelUrl) {
   try {
+    if (!stripe) {
+      throw new Error('Stripe n\'est pas configuré. Veuillez ajouter vos clés API dans le fichier .env');
+    }
+
     const subscription = SUBSCRIPTIONS[subscriptionId];
     
     if (!subscription) {
