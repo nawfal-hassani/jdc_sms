@@ -6,9 +6,6 @@
 document.addEventListener('DOMContentLoaded', function() {
   console.log("Settings UI chargé");
   
-  // ==== INITIALISATION DE LA NAVIGATION ====
-  setupTabNavigation();
-  
   // ==== CONFIGURATION DU THÈME ====
   setupThemeSystem();
   
@@ -53,40 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // Navigation entre les onglets
-  function setupTabNavigation() {
-    // Navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', function(e) {
-        if (this.getAttribute('data-tab')) {
-          e.preventDefault();
-          const tabId = this.getAttribute('data-tab');
-          showTab(tabId);
-          
-          // Marquer le lien comme actif
-          document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-          this.classList.add('active');
-        }
-      });
-    });
-    
-    // Vérifier l'onglet actif au chargement (pour les rechargements de page)
-    const activeTabLink = document.querySelector('.nav-link.active');
-    if (activeTabLink && activeTabLink.getAttribute('data-tab')) {
-      showTab(activeTabLink.getAttribute('data-tab'));
-    }
-  }
-  
-  // Delegate to central showTab to avoid global conflicts
-  function showTab(tabId) {
-    if (typeof window.showTab === 'function' && window.showTab !== showTab) {
-      return window.showTab(tabId, true);
-    }
-    // Fallback behaviour
-    document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
-    const activeTab = document.getElementById(tabId); if (activeTab) activeTab.style.display = 'block';
-    if (tabId === 'settings-tab') { updateThemeButtons(); setupColorButtons(); }
-  }
-  
   // ==== SYSTÈME DE THÈME ====
   
   function setupThemeSystem() {

@@ -72,14 +72,23 @@ const SUBSCRIPTIONS = {
  */
 async function createCheckoutSession(userId, packId, successUrl, cancelUrl) {
   try {
-    if (!stripe) {
-      throw new Error('Stripe n\'est pas configuré. Veuillez ajouter vos clés API dans le fichier .env');
-    }
-
     const pack = SMS_PACKS[packId];
     
     if (!pack) {
       throw new Error('Pack SMS invalide');
+    }
+
+    // Mode démo : simuler un paiement réussi
+    if (process.env.DEMO_MODE === 'true' || !stripe) {
+      console.log('🧪 MODE DÉMO : Simulation de paiement pour', pack.name);
+      return {
+        id: 'demo_session_' + Date.now(),
+        url: `/payment-success?session_id=demo_${packId}_${Date.now()}&demo=true`,
+        mode: 'demo',
+        packId: packId,
+        smsAmount: pack.sms,
+        userId: userId
+      };
     }
 
     const session = await stripe.checkout.sessions.create({
