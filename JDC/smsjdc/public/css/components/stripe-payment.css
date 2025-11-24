@@ -1,0 +1,170 @@
+/* Stripe Payment Styles */
+
+.pack-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  text-align: center;
+  border: 2px solid transparent;
+}
+
+.pack-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+  border-color: #667eea;
+}
+
+.pack-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+}
+
+.popular-badge {
+  background: linear-gradient(135deg, #ff6b6b, #ff8787);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.pack-card h3 {
+  margin: 0 0 15px 0;
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
+}
+
+.pack-price {
+  margin: 20px 0;
+}
+
+.price-amount {
+  font-size: 42px;
+  font-weight: bold;
+  color: #667eea;
+  display: block;
+}
+
+.pack-details {
+  margin: 20px 0;
+  padding: 15px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.pack-details p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.price-per-sms {
+  font-size: 14px;
+  color: #999;
+}
+
+.purchase-pack-btn {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+}
+
+.purchase-pack-btn:hover {
+  transform: scale(1.05);
+}
+
+.pack-savings {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #28a745;
+  font-weight: 600;
+}
+
+/* Credits Display */
+.credits-display {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.credits-display h2 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.credits-amount {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.credits-label {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+/* Payment Success/Cancel Pages */
+.payment-status {
+  text-align: center;
+  padding: 60px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.payment-status-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+}
+
+.payment-status-icon.success {
+  color: #28a745;
+}
+
+.payment-status-icon.cancel {
+  color: #ffc107;
+}
+
+.payment-status h1 {
+  font-size: 32px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.payment-status p {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.payment-status .btn {
+  padding: 15px 40px;
+  font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pack-card {
+    margin-bottom: 20px;
+  }
+
+  .price-amount {
+    font-size: 36px;
+  }
+
+  .credits-amount {
+    font-size: 36px;
+  }
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement Annulé - JDC SMS</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components/stripe-payment.css">
+</head>
+<body>
+    <div class="payment-status">
+        <div class="payment-status-icon cancel">
+            ⚠
+        </div>
+        <h1>Paiement Annulé</h1>
+        <p>Votre paiement a été annulé. Aucun montant n'a été débité de votre compte.</p>
+        <p style="font-size: 14px; color: #999;">Si vous avez rencontré un problème, n'hésitez pas à nous contacter.</p>
+        <a href="/index.html" class="btn btn-primary">Retour au Tableau de Bord</a>
+    </div>
+
+    <script>
+        // Informer la fenêtre parente de l'annulation
+        setTimeout(() => {
+            if (window.opener) {
+                window.opener.postMessage({ type: 'payment-cancel' }, '*');
+            }
+        }, 1000);
+
+        // Redirection automatique après 5 secondes
+        setTimeout(() => {
+            window.location.href = '/index.html';
+        }, 5000);
+    </script>
+</body>
+</html>
