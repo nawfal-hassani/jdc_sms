@@ -21,9 +21,18 @@ class StripePaymentService {
     try {
       const response = await fetch('/api/stripe/packs');
       const data = await response.json();
-      return data.packs;
+      
+      console.log('📦 Réponse API packs:', data);
+      
+      if (data.success && data.packs) {
+        console.log('✅ Packs chargés:', data.packs.length);
+        return data.packs;
+      } else {
+        console.error('❌ Format de réponse invalide:', data);
+        return [];
+      }
     } catch (error) {
-      console.error('Erreur chargement packs:', error);
+      console.error('❌ Erreur chargement packs:', error);
       return [];
     }
   }
@@ -84,10 +93,26 @@ class StripePaymentService {
 
   // Afficher les packs dans le DOM
   async displayPacks(containerId, userId) {
+    console.log('🎯 displayPacks appelé - containerId:', containerId, 'userId:', userId);
+    
     const packs = await this.getPacks();
+    console.log('📦 Packs reçus:', packs);
+    
     const container = document.getElementById(containerId);
+    console.log('📍 Container trouvé:', container ? 'OUI' : 'NON');
 
-    if (!container) return;
+    if (!container) {
+      console.error('❌ Container non trouvé:', containerId);
+      return;
+    }
+
+    if (!packs || packs.length === 0) {
+      console.warn('⚠️ Aucun pack à afficher');
+      container.innerHTML = '<p style="text-align: center; color: #999;">Aucun pack disponible pour le moment.</p>';
+      return;
+    }
+
+    console.log(`✅ Affichage de ${packs.length} packs`);
 
     container.innerHTML = packs.map(pack => `
       <div class="pack-card">
