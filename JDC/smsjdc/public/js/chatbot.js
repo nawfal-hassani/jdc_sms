@@ -3,14 +3,29 @@ class ChatbotAssistant {
   constructor() {
     this.isOpen = false;
     this.messages = [];
+    this.conversationHistory = [];
     this.knowledgeBase = this.initKnowledgeBase();
+    this.aiEnabled = false;
     this.init();
   }
 
   init() {
     this.createChatbotUI();
     this.attachEventListeners();
+    this.checkAIStatus();
     this.loadWelcomeMessage();
+  }
+
+  async checkAIStatus() {
+    try {
+      const response = await fetch('/api/chatbot/status');
+      const data = await response.json();
+      this.aiEnabled = data.aiEnabled;
+      console.log(`🤖 Chatbot mode: ${data.mode} (${data.provider || 'Base de connaissances'})`);
+    } catch (error) {
+      console.log('🤖 Chatbot en mode local uniquement');
+      this.aiEnabled = false;
+    }
   }
 
   initKnowledgeBase() {
@@ -314,22 +329,51 @@ class ChatbotAssistant {
     }, 500);
   }
 
-  sendMessage() {
+  async sendMessage() {
     const input = document.getElementById('chatbot-input');
     const message = input.value.trim();
 
     if (!message) return;
 
     this.addUserMessage(message);
+    this.conversationHistory.push({ role: 'user', content: message });
     input.value = '';
 
     // Simule le "typing"
     this.showTyping();
 
+    // Essaye d'abord l'IA si disponible
+    if (this.aiEnabled) {
+      try {
+        const response = await fetch('/api/chatbot/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: message,
+            history: this.conversationHistory.slice(-10)
+          })
+        });
+
+        const data = await response.json();
+        this.hideTyping();
+
+        if (data.response) {
+          this.conversationHistory.push({ role: 'assistant', content: data.response });
+          this.addBotMessage(data.response);
+          return;
+        }
+      } catch (error) {
+        console.log('IA non disponible, utilisation de la base locale');
+      }
+    }
+
+    // Fallback : base de connaissances locale
     setTimeout(() => {
       this.hideTyping();
       this.processMessage(message);
-    }, 1000 + Math.random() * 1000);
+    }, 800);
   }
 
   processMessage(message) {
