@@ -157,6 +157,72 @@ class ChatbotAssistant {
             answer: "Pour toute question, vous pouvez nous contacter par email à support@jdc.com ou utiliser ce chatbot pour obtenir de l'aide instantanée."
           }
         ]
+      },
+
+      // Agences et contact
+      agences: {
+        keywords: ['agence', 'bureau', 'adresse', 'téléphone', 'horaire', 'toulouse', 'montpellier', 'perpignan', 'rodez', 'localisation', 'où'],
+        responses: [
+          {
+            question: "Où sont vos agences ?",
+            answer: "JDC Occitanie dispose de 4 agences :<br><br>" +
+              "🏢 <strong>Toulouse</strong> - Parc d'Activité du Cassé 1, 14 rue du Cassé, 31240 ST JEAN<br>" +
+              "📞 05 62 89 33 44<br><br>" +
+              "🏢 <strong>Montpellier</strong> - 113 rue Emile Julien, 34070 MONTPELLIER<br>" +
+              "📞 04 67 20 21 84<br><br>" +
+              "🏢 <strong>Perpignan</strong> - 1420 Avenue de la Salanque, 66000 PERPIGNAN<br>" +
+              "📞 04 68 50 23 33<br><br>" +
+              "🏢 <strong>Rodez</strong> - 57 Av. de Rodez, 12450 LUC-LA-PRIMAUBE<br>" +
+              "📞 05 62 89 33 44"
+          },
+          {
+            question: "Quels sont vos horaires ?",
+            answer: "Nos agences sont ouvertes :<br><br>" +
+              "📅 <strong>Lundi à Vendredi</strong> : 8h30-12h30, 14h-18h<br>" +
+              "📅 <strong>Weekend</strong> : Fermé<br><br>" +
+              "💻 Le service SMS en ligne est disponible 24/7 !"
+          },
+          {
+            question: "Agence de Toulouse",
+            answer: "🏢 <strong>Agence Toulouse</strong><br><br>" +
+              "📍 Parc d'Activité du Cassé 1<br>" +
+              "14, rue du Cassé – 31240 ST JEAN<br><br>" +
+              "📞 Tél : 05 62 89 33 44<br>" +
+              "📠 Fax : 05 62 89 49 57<br>" +
+              "📧 contact@jdcoccitanie.fr<br><br>" +
+              "⏰ Lun-Ven : 8h30-12h30, 14h-18h"
+          },
+          {
+            question: "Agence de Montpellier",
+            answer: "🏢 <strong>Agence Montpellier</strong><br><br>" +
+              "📍 113 rue Emile Julien<br>" +
+              "34070 MONTPELLIER<br><br>" +
+              "📞 Tél : 04 67 20 21 84<br>" +
+              "📠 Fax : 04 67 20 21 85<br>" +
+              "📧 contact@jdclr.com<br><br>" +
+              "⏰ Lun-Ven : 8h30-12h30, 14h-18h"
+          },
+          {
+            question: "Agence de Perpignan",
+            answer: "🏢 <strong>Agence Perpignan</strong><br><br>" +
+              "📍 1420 Avenue de la Salanque<br>" +
+              "66000 PERPIGNAN<br><br>" +
+              "📞 Tél : 04 68 50 23 33<br>" +
+              "📠 Fax : 04 68 50 02 99<br>" +
+              "📧 contact@jdcoccitanie.fr<br><br>" +
+              "⏰ Lun-Ven : 8h30-12h30, 14h-18h"
+          },
+          {
+            question: "Agence de Rodez",
+            answer: "🏢 <strong>Agence Rodez</strong><br><br>" +
+              "📍 57 Av. de Rodez<br>" +
+              "12450 LUC-LA-PRIMAUBE<br><br>" +
+              "📞 Tél : 05 62 89 33 44<br>" +
+              "📠 Fax : 05 62 89 49 57<br>" +
+              "📧 contact@jdcoccitanie.fr<br><br>" +
+              "⏰ Lun-Ven : 8h30-12h30, 14h-18h"
+          }
+        ]
       }
     };
   }
@@ -241,8 +307,8 @@ class ChatbotAssistant {
         [
           { text: "📱 Envoyer un SMS", action: "sms_help" },
           { text: "💳 Acheter des crédits", action: "billing_help" },
-          { text: "📊 Voir l'historique", action: "history_help" },
-          { text: "❓ Autre question", action: "general_help" }
+          { text: "🏢 Nos agences", action: "agences_help" },
+          { text: "📊 Voir l'historique", action: "history_help" }
         ]
       );
     }, 500);
@@ -300,6 +366,7 @@ class ChatbotAssistant {
           { text: "📤 Envoi groupé", action: "bulk_help" },
           { text: "⏰ Planification", action: "schedule_help" },
           { text: "💳 Facturation", action: "billing_help" },
+          { text: "🏢 Nos agences", action: "agences_help" },
           { text: "🧑‍💻 Support technique", action: "support" }
         ]
       );
@@ -319,6 +386,15 @@ class ChatbotAssistant {
       replies.push({ text: "📋 Voir mon solde", action: "check_balance" });
     }
 
+    if (message.includes('agence') || message.includes('adresse') || message.includes('horaire') || 
+        message.includes('toulouse') || message.includes('montpellier') || message.includes('perpignan') || message.includes('rodez')) {
+      replies.push({ text: "🏢 Toulouse", action: "agence_toulouse" });
+      replies.push({ text: "🏢 Montpellier", action: "agence_montpellier" });
+      replies.push({ text: "🏢 Perpignan", action: "agence_perpignan" });
+      replies.push({ text: "🏢 Rodez", action: "agence_rodez" });
+      replies.push({ text: "⏰ Horaires", action: "horaires" });
+    }
+
     replies.push({ text: "❓ Autre question", action: "general_help" });
 
     return replies;
@@ -332,7 +408,13 @@ class ChatbotAssistant {
       schedule_help: () => this.processMessage("comment planifier un sms"),
       billing_help: () => this.processMessage("comment acheter des sms"),
       history_help: () => this.processMessage("où voir mes sms envoyés"),
+      agences_help: () => this.processMessage("où sont vos agences"),
       general_help: () => this.processMessage("aide générale"),
+      agence_toulouse: () => this.processMessage("agence de toulouse"),
+      agence_montpellier: () => this.processMessage("agence de montpellier"),
+      agence_perpignan: () => this.processMessage("agence de perpignan"),
+      agence_rodez: () => this.processMessage("agence de rodez"),
+      horaires: () => this.processMessage("quels sont vos horaires"),
       support: () => {
         this.addBotMessage(
           "📞 Pour contacter notre support technique :<br><br>" +
