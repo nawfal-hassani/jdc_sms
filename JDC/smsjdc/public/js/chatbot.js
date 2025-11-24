@@ -253,7 +253,7 @@ class ChatbotAssistant {
         <div class="chatbot-window" id="chatbot-window">
           <div class="chatbot-header">
             <div class="chatbot-avatar">
-              <img src="/assets/JDC-Occitanie.png" alt="JDC Assistant">
+              <img src="/assets/chatbot-avatar.svg" alt="JDC Assistant">
             </div>
             <div class="chatbot-info">
               <h3>Assistant JDC</h3>
@@ -533,7 +533,7 @@ class ChatbotAssistant {
     const html = `
       <div class="chatbot-message bot">
         <div class="message-avatar">
-          <img src="/assets/JDC-Occitanie.png" alt="JDC">
+          <img src="/assets/chatbot-avatar.svg" alt="JDC">
         </div>
         <div class="message-content">
           ${text}
