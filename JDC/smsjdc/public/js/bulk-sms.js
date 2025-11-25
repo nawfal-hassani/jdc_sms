@@ -416,10 +416,20 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       addLog(`Envoi vers ${item.phone}...`, 'info');
       
+      // 🔑 Récupérer le token d'authentification
+      const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      
+      if (!token) {
+        addLog('✗ Erreur: Token d\'authentification non trouvé. Veuillez vous reconnecter.', 'error');
+        stopSending();
+        return;
+      }
+      
       const response = await fetch('/api/send-sms', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           to: item.phone,

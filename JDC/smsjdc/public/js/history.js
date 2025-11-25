@@ -113,12 +113,27 @@ document.addEventListener('DOMContentLoaded', function() {
         </tr>
       `;
       
-      // Obtenir l'historique depuis l'API
-      const response = await fetch('/api/sms/history');
+      // 🔑 Récupérer le token d'authentification
+      const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      
+      if (!token) {
+        throw new Error('Token d\'authentification non trouvé. Veuillez vous reconnecter.');
+      }
+      
+      // Obtenir l'historique depuis l'API avec le token
+      const response = await fetch('/api/sms/history', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       
       if (!response.ok) {
         // Si le premier endpoint échoue, essayer un autre endpoint alternatif
-        const altResponse = await fetch('/api/sms-history');
+        const altResponse = await fetch('/api/sms-history', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         if (!altResponse.ok) {
           throw new Error(`Erreur HTTP: ${response.status}`);
         }

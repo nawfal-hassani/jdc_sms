@@ -260,10 +260,23 @@ function initSmsModule() {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="loader"></span> Envoi...';
     
-    // Envoyer la requête à l'API
+    // 🔑 Récupérer le token d'authentification
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    
+    if (!token) {
+      showAlert('Erreur: Token d\'authentification non trouvé. Veuillez vous reconnecter.', 'danger');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Envoyer le SMS';
+      return;
+    }
+    
+    // Envoyer la requête à l'API avec le token
     fetch('/api/send-sms', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({
         to: phoneInput.value.trim(),
         message: messageInput.value.trim()
@@ -392,10 +405,23 @@ function initTokenModule() {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="loader"></span> Envoi...';
     
-    // Envoyer la requête à l'API
+    // 🔑 Récupérer le token d'authentification
+    const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    
+    if (!authToken) {
+      showAlert('Erreur: Token d\'authentification non trouvé. Veuillez vous reconnecter.', 'danger');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Envoyer le Token';
+      return;
+    }
+    
+    // Envoyer la requête à l'API avec le token
     fetch('/api/send-token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
       body: JSON.stringify({
         phoneNumber: phoneInput.value.trim(),
         token: tokenInput.value.trim()
