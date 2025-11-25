@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Ajouter les événements
   setupEventListeners();
   
-  // Simuler des données pour la démo
-  simulateData();
+  // Charger les vraies statistiques depuis l'historique
+  loadRealStatistics();
   
   // Optionnel : Calculer et afficher les variations hebdomadaires réelles
   // updateWeeklyChanges();
@@ -656,63 +656,58 @@ function getLast7Days() {
   return days;
 }
 
-// Simuler des données pour la démonstration
-function simulateData() {
-  // Simuler des statistiques initiales
-  statisticsData = {
-    totalSent: 152,
-    successful: 146,
-    failed: 6,
-    pending: 0
-  };
-  
-  // Mettre à jour les statistiques dans l'UI
+// Charger les vraies statistiques depuis l'API
+async function loadRealStatistics() {
+  try {
+    const response = await fetch('/api/sms/history');
+    if (!response.ok) {
+      console.error('Erreur lors du chargement de l\'historique:', response.status);
+      return;
+    }
+    
+    const history = await response.json();
+    
+    // Calculer les statistiques réelles
+    statisticsData.totalSent = history.length;
+    statisticsData.successful = history.filter(m => m.status === 'delivered').length;
+    statisticsData.failed = history.filter(m => m.status === 'failed').length;
+    statisticsData.pending = history.filter(m => m.status === 'pending').length;
+    
+    // Mettre à jour l'interface
+    updateStatisticsUI();
+    
+    // Mettre à jour les graphiques
+    updateCharts();
+    
+  } catch (error) {
+    console.error('Erreur lors du chargement des statistiques:', error);
+    // En cas d'erreur, garder les valeurs à 0
+  }
+}
+
+// Mettre à jour l'interface avec les statistiques
+function updateStatisticsUI() {
   document.getElementById('stat-total').textContent = statisticsData.totalSent;
   document.getElementById('stat-success').textContent = statisticsData.successful;
   document.getElementById('stat-failed').textContent = statisticsData.failed;
-  document.getElementById('stat-rate').textContent = '96%';
+  
+  // Calculer et afficher le taux de succès
+  if(statisticsData.totalSent > 0) {
+    const successRate = (statisticsData.successful / statisticsData.totalSent * 100).toFixed(0);
+    document.getElementById('stat-rate').textContent = successRate + '%';
+  } else {
+    document.getElementById('stat-rate').textContent = '0%';
+  }
+}
+
+// Simuler des données pour la démonstration (fonction legacy - ne fait plus rien)
+function simulateData() {
+  // Cette fonction est désormais vide - les vraies données sont chargées via loadRealStatistics()
+  console.log('simulateData() appelé - utilise maintenant loadRealStatistics() à la place');
   
   // Simuler l'historique
   const phoneNumbers = ['+33612345678', '+33687654321', '+33723456789', '+33745678912'];
-  const messages = [
-    'Votre rendez-vous est confirmé pour demain à 14h.',
-    'Votre commande a été expédiée. Suivez-la avec le code: ABC123',
-    'Rappel: Paiement de facture attendu avant le 30/09.',
-    'Votre code de vérification est: 953421',
-    'JDC vous informe que votre document est prêt.'
-  ];
-  
-  // Générer un historique fictif
-  for (let i = 0; i < 20; i++) {
-    const isSuccess = Math.random() > 0.1; // 90% de réussite
-    const isToken = Math.random() > 0.7;   // 30% de tokens
-    
-    const date = new Date();
-    date.setMinutes(date.getMinutes() - i * 30); // Espacer les messages
-    
-    if (isToken) {
-      // Simuler un envoi de token
-      addToHistory({
-        type: 'token',
-        to: phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)],
-        token: Math.floor(100000 + Math.random() * 900000).toString(),
-        status: isSuccess ? 'success' : 'failed',
-        date: date
-      });
-    } else {
-      // Simuler un envoi de SMS
-      addToHistory({
-        type: 'sms',
-        to: phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)],
-        message: messages[Math.floor(Math.random() * messages.length)],
-        status: isSuccess ? 'success' : 'failed',
-        date: date
-      });
-    }
-  }
-  
-  // Calculer et afficher les variations hebdomadaires
-  updateWeeklyChanges();
+  // Code de simulation supprimé - nous utilisons maintenant les vraies données
 }
 
 // Fonction pour calculer les statistiques de la semaine dernière et cette semaine
