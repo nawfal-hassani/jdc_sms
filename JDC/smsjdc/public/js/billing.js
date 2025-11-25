@@ -463,7 +463,17 @@
       }
     }catch(e){ 
       console.error(e); 
-      alert('❌ Erreur lors de la souscription : ' + e.message); 
+      
+      // Afficher un beau message si Stripe n'est pas configuré
+      if (e.message.includes('Stripe n\'est pas configuré') || e.message.includes('pas configuré')) {
+        if (window.stripePaymentService) {
+          window.stripePaymentService.showStripeNotConfiguredModal();
+        } else {
+          alert('⚠️ Le système de paiement Stripe est en cours de configuration.\nCette fonctionnalité sera bientôt disponible.');
+        }
+      } else {
+        alert('❌ Erreur lors de la souscription : ' + e.message);
+      }
     }
   };
 

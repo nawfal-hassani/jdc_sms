@@ -112,6 +112,14 @@ function restoreActiveTab() {
     console.log(`🔄 Restauration de l'onglet: ${savedTab}`);
     showTab(savedTab, true);
     console.log(`✅ Onglet ${savedTab} restauré`);
+    
+    // 🔥 Forcer l'initialisation pour certains onglets après restauration
+    setTimeout(() => {
+      if (savedTab === 'billing-tab') {
+        console.log('🔄 Force initialisation billing après restauration');
+        document.dispatchEvent(new CustomEvent('tab-changed', { detail: { tabId: savedTab } }));
+      }
+    }, 100);
   } else {
     console.log(`📊 Affichage du dashboard par défaut`);
     showTab('dashboard-tab', true);
