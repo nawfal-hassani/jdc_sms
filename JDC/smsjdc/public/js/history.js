@@ -197,6 +197,11 @@ document.addEventListener('DOMContentLoaded', function() {
       // Mettre à jour les statistiques du dashboard
       updateDashboardStats(smsData);
       
+      // 🔔 Émettre un événement pour notifier que l'historique est chargé
+      document.dispatchEvent(new CustomEvent('history-updated', {
+        detail: { count: smsData.length }
+      }));
+      
       // Si des données sont disponibles, les afficher
       if (smsData.length > 0) {
         smsData.forEach(sms => {

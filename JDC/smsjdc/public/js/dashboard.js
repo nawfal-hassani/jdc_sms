@@ -19,8 +19,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // Ajouter les événements
   setupEventListeners();
   
-  // Charger les vraies statistiques depuis l'historique
-  loadRealStatistics();
+  // Charger les vraies statistiques depuis l'historique (avec retry)
+  loadRealStatisticsWithRetry();
+  
+  // Écouter les événements de mise à jour de l'historique
+  document.addEventListener('history-updated', function() {
+    console.log('📊 Historique mis à jour, rechargement des statistiques...');
+    loadRealStatistics();
+  });
+  
+  // Écouter les événements d'envoi de SMS
+  document.addEventListener('sms-sent', function() {
+    console.log('📤 SMS envoyé, rechargement des statistiques...');
+    setTimeout(() => loadRealStatistics(), 500); // Petit délai pour laisser l'historique se mettre à jour
+  });
   
   // Optionnel : Calculer et afficher les variations hebdomadaires réelles
   // updateWeeklyChanges();
@@ -656,6 +668,26 @@ function getLast7Days() {
   return days;
 }
 
+// Charger les statistiques avec retry (attendre que le token soit disponible)
+async function loadRealStatisticsWithRetry(maxRetries = 5, delay = 200) {
+  for (let i = 0; i < maxRetries; i++) {
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    
+    if (token) {
+      // Token trouvé, charger les statistiques
+      await loadRealStatistics();
+      return;
+    }
+    
+    // Token pas encore disponible, attendre un peu
+    console.log(`⏳ Token non disponible, retry ${i + 1}/${maxRetries}...`);
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  
+  // Après tous les retries, afficher un message
+  console.warn('⚠️ Impossible de charger les statistiques: token non disponible après plusieurs tentatives');
+}
+
 // Charger les vraies statistiques depuis l'API
 async function loadRealStatistics() {
   try {
@@ -686,7 +718,7 @@ async function loadRealStatistics() {
     statisticsData.failed = history.filter(m => m.status === 'failed').length;
     statisticsData.pending = history.filter(m => m.status === 'pending').length;
     
-    console.log(`📊 Statistiques chargées: ${statisticsData.totalSent} SMS`);
+    console.log(`📊 Statistiques chargées: ${statisticsData.totalSent} SMS (${statisticsData.successful} ✓, ${statisticsData.failed} ✗, ${statisticsData.pending} ⏳)`);
     
     // Mettre à jour l'interface
     updateStatisticsUI();
