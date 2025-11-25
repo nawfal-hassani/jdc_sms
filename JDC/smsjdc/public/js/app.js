@@ -130,11 +130,15 @@ function restoreActiveTab() {
 function setupTabNavigation() {
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', function(e) {
-      e.preventDefault();
-      
       // Récupérer l'ID de l'onglet à afficher
       const tabId = this.getAttribute('data-tab');
-      if (!tabId) return;
+      
+      // Si pas de data-tab (comme le lien Administration), laisser le comportement par défaut
+      if (!tabId) {
+        return; // Ne pas empêcher la navigation
+      }
+      
+      e.preventDefault();
       
       // Afficher l'onglet (gère aussi les classes active automatiquement)
       // Indiquer triggerEvent=true pour que les modules écoutant 'tab-changed' soient notifiés
