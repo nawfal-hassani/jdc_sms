@@ -5,6 +5,8 @@
 
 const axios = require('axios');
 const EventEmitter = require('events');
+const path = require('path');
+const historyService = require('../utils/history');
 
 class BulkSmsService extends EventEmitter {
   constructor() {
@@ -33,6 +35,8 @@ class BulkSmsService extends EventEmitter {
       status: 'pending', // pending, running, paused, stopped, completed
       startTime: null,
       endTime: null,
+      userEmail: options.userEmail || null, // 🔑 Email de l'utilisateur
+      userName: options.userName || null,   // 🔑 Nom de l'utilisateur
       options: {
         delay: options.delay || 1000,
         retryOnError: options.retryOnError || false,
@@ -139,6 +143,18 @@ class BulkSmsService extends EventEmitter {
             timestamp: new Date()
           });
 
+          // 🔑 Ajouter à l'historique avec l'email utilisateur
+          historyService.addToLocalHistory({
+            type: 'SMS',
+            to: recipient.phone,
+            message: recipient.message,
+            status: 'delivered',
+            source: 'bulk-sms',
+            userEmail: job.userEmail,
+            userName: job.userName,
+            recipientName: recipient.name || ''
+          });
+
           this.emitJobUpdate(io, jobId, {
             type: 'success',
             message: `✓ SMS envoyé avec succès vers ${recipient.phone}`,
@@ -157,6 +173,19 @@ class BulkSmsService extends EventEmitter {
             recipient: recipient,
             error: result.error,
             timestamp: new Date()
+          });
+
+          // 🔑 Ajouter à l'historique même en cas d'échec
+          historyService.addToLocalHistory({
+            type: 'SMS',
+            to: recipient.phone,
+            message: recipient.message,
+            status: 'failed',
+            error: result.error,
+            source: 'bulk-sms',
+            userEmail: job.userEmail,
+            userName: job.userName,
+            recipientName: recipient.name || ''
           });
 
           this.emitJobUpdate(io, jobId, {

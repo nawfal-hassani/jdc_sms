@@ -9,6 +9,7 @@ const csvParser = require('csv-parser');
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
+const authController = require('../controllers/authController');
 
 // Configuration de multer pour l'upload de fichiers
 const storage = multer.diskStorage({
@@ -46,7 +47,7 @@ const upload = multer({
  * Upload et parsing d'un fichier CSV/Excel pour envoi groupé
  * @route POST /api/bulk-sms/upload
  */
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.post('/upload', authController.authenticate, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -205,9 +206,11 @@ function validateBulkData(data) {
  * Envoi groupé de SMS (batch processing avec WebSocket)
  * @route POST /api/bulk-sms/send
  */
-router.post('/send', async (req, res) => {
+router.post('/send', authController.authenticate, async (req, res) => {
   try {
     const { recipients, delay = 1000 } = req.body;
+    const userEmail = req.user.email; // 🔑 Récupérer l'email utilisateur
+    const userName = req.user.name;
 
     if (!Array.isArray(recipients) || recipients.length === 0) {
       return res.status(400).json({
@@ -226,9 +229,15 @@ router.post('/send', async (req, res) => {
       });
     }
 
-    // Créer un job avec le service
+    console.log(`📤 Envoi groupé par ${userEmail}: ${validRecipients.length} SMS`);
+
+    // Créer un job avec le service en incluant les infos utilisateur
     const bulkSmsService = require('../services/bulkSmsService');
-    const jobId = bulkSmsService.createJob(validRecipients, { delay });
+    const jobId = bulkSmsService.createJob(validRecipients, { 
+      delay,
+      userEmail,  // 🔑 Passer l'email au service
+      userName
+    });
 
     // Obtenir l'instance Socket.IO depuis l'app
     const io = req.app.get('io');

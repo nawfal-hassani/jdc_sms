@@ -659,7 +659,20 @@ function getLast7Days() {
 // Charger les vraies statistiques depuis l'API
 async function loadRealStatistics() {
   try {
-    const response = await fetch('/api/sms/history');
+    // 🔑 Récupérer le token d'authentification
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    
+    if (!token) {
+      console.error('Token d\'authentification non trouvé');
+      return;
+    }
+    
+    const response = await fetch('/api/sms/history', {
+      headers: {
+        'Authorization': `Bearer ${token}` // 🔑 Ajouter le token dans les headers
+      }
+    });
+    
     if (!response.ok) {
       console.error('Erreur lors du chargement de l\'historique:', response.status);
       return;
@@ -672,6 +685,8 @@ async function loadRealStatistics() {
     statisticsData.successful = history.filter(m => m.status === 'delivered').length;
     statisticsData.failed = history.filter(m => m.status === 'failed').length;
     statisticsData.pending = history.filter(m => m.status === 'pending').length;
+    
+    console.log(`📊 Statistiques chargées: ${statisticsData.totalSent} SMS`);
     
     // Mettre à jour l'interface
     updateStatisticsUI();
