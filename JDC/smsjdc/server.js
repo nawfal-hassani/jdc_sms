@@ -586,8 +586,8 @@ io.on('connection', (socket) => {
 app.set('io', io);
 
 // Démarrer le serveur
-server.listen(PORT, () => {
-  console.log(`📱 Dashboard SMS démarré sur http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`📱 Dashboard SMS démarré sur http://0.0.0.0:${PORT}`);
   console.log(`🔌 Connecté à l'API SMS: ${SMS_API_URL}`);
   console.log(`🌐 WebSocket activé pour le suivi en temps réel`);
 });
