@@ -6,7 +6,7 @@
 const axios = require('axios');
 const EventEmitter = require('events');
 const path = require('path');
-const historyService = require('../utils/history');
+const userHistoryService = require('./userHistoryService');
 
 class BulkSmsService extends EventEmitter {
   constructor() {
@@ -143,14 +143,13 @@ class BulkSmsService extends EventEmitter {
             timestamp: new Date()
           });
 
-          // 🔑 Ajouter à l'historique avec l'email utilisateur
-          historyService.addToLocalHistory({
+          // 🔑 Ajouter à l'historique de l'utilisateur
+          await userHistoryService.addSmsToHistory(job.userEmail, {
             type: 'SMS',
             to: recipient.phone,
             message: recipient.message,
             status: 'delivered',
             source: 'bulk-sms',
-            userEmail: job.userEmail,
             userName: job.userName,
             recipientName: recipient.name || ''
           });
@@ -175,15 +174,14 @@ class BulkSmsService extends EventEmitter {
             timestamp: new Date()
           });
 
-          // 🔑 Ajouter à l'historique même en cas d'échec
-          historyService.addToLocalHistory({
+          // 🔑 Ajouter à l'historique de l'utilisateur même en cas d'échec
+          await userHistoryService.addSmsToHistory(job.userEmail, {
             type: 'SMS',
             to: recipient.phone,
             message: recipient.message,
             status: 'failed',
             error: result.error,
             source: 'bulk-sms',
-            userEmail: job.userEmail,
             userName: job.userName,
             recipientName: recipient.name || ''
           });

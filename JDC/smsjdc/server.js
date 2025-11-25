@@ -79,9 +79,14 @@ const bulkSmsRoutes = require('./src/routes/bulkSms');
 const billingRoutes = require('./src/routes/billing');
 const chatbotRoutes = require('./src/routes/chatbot');
 const stripeRoutes = require('./src/routes/stripe');
+const adminRoutes = require('./src/routes/admin');
+
+// Importation du service d'historique par utilisateur
+const userHistoryService = require('./src/services/userHistoryService');
 
 // Routes d'authentification et planification
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/bulk-sms', bulkSmsRoutes);
@@ -198,38 +203,31 @@ app.post('/api/send-sms', authController.authenticate, async (req, res) => {
     console.log(`📤 Envoi SMS par ${userEmail}:`, { to, message: message.substring(0, 20) + '...' });
     const response = await axios.post(`${SMS_API_URL}/send-sms`, { to, message });
     
-    // Ajouter à l'historique local AVEC l'email de l'utilisateur
-    const smsRecord = {
+    // Ajouter à l'historique de l'utilisateur
+    await userHistoryService.addSmsToHistory(userEmail, {
       type: 'SMS',
       to: to,
       message: message,
       status: response.data.success ? 'delivered' : 'failed',
       source: 'dashboard',
-      userEmail: userEmail, // 🔑 Associer le SMS à l'utilisateur
       userName: req.user.name,
-      // Ajouter d'autres infos de la réponse si disponibles
-      ...(response.data.messageId && { messageId: response.data.messageId })
-    };
-    
-    historyManager.add(smsRecord);
+      messageId: response.data.messageId || null
+    });
     
     res.json(response.data);
   } catch (error) {
     console.error('Erreur envoi SMS:', error.message);
     
-    // Ajouter à l'historique local même en cas d'erreur
-    const smsRecord = {
+    // Ajouter à l'historique de l'utilisateur même en cas d'erreur
+    await userHistoryService.addSmsToHistory(req.user.email, {
       type: 'SMS',
       to: req.body.to || '',
       message: req.body.message || '',
       status: 'failed',
       error: error.message,
       source: 'dashboard',
-      userEmail: req.user.email, // 🔑 Associer même les erreurs
       userName: req.user.name
-    };
-    
-    historyManager.add(smsRecord);
+    });
     
     res.status(500).json({ 
       success: false, 
@@ -254,28 +252,24 @@ app.post('/api/send-token', authController.authenticate, async (req, res) => {
     console.log(`📤 Envoi token par ${userEmail}:`, { phoneNumber, token });
     const response = await axios.post(`${SMS_API_URL}/send-token-by-sms`, { phoneNumber, token });
     
-    // Ajouter à l'historique local AVEC l'email de l'utilisateur
-    const tokenRecord = {
+    // Ajouter à l'historique de l'utilisateur
+    await userHistoryService.addSmsToHistory(userEmail, {
       type: 'Token',
       to: phoneNumber,
       message: `Votre code d'authentification JDC est: ${token}`,
       token: token,
       status: response.data.success ? 'delivered' : 'failed',
       source: 'dashboard',
-      userEmail: userEmail, // 🔑 Associer le SMS à l'utilisateur
       userName: req.user.name,
-      // Ajouter d'autres infos de la réponse si disponibles
-      ...(response.data.messageId && { messageId: response.data.messageId })
-    };
-    
-    historyManager.add(tokenRecord);
+      messageId: response.data.messageId || null
+    });
     
     res.json(response.data);
   } catch (error) {
     console.error('Erreur envoi token:', error.message);
     
-    // Ajouter à l'historique local même en cas d'erreur
-    const tokenRecord = {
+    // Ajouter à l'historique de l'utilisateur même en cas d'erreur
+    await userHistoryService.addSmsToHistory(req.user.email, {
       type: 'Token',
       to: req.body.phoneNumber || '',
       token: req.body.token || '',
@@ -283,11 +277,8 @@ app.post('/api/send-token', authController.authenticate, async (req, res) => {
       status: 'failed',
       error: error.message,
       source: 'dashboard',
-      userEmail: req.user.email, // 🔑 Associer même les erreurs
       userName: req.user.name
-    };
-    
-    historyManager.add(tokenRecord);
+    });
     
     res.status(500).json({ 
       success: false, 
@@ -369,61 +360,37 @@ app.get('/api/sms/history', authController.authenticate, async (req, res) => {
     
     console.log(`📊 Récupération historique pour: ${userEmail} (${userRole})`);
     
-    // Données à retourner (commencer par l'historique local)
-    let historyData = [...localHistory];
-    
-    // Essayer de récupérer l'historique depuis l'API
-    try {
-      // Essayer d'abord avec le premier endpoint
-      const response = await axios.get(`${SMS_API_URL}/history`);
-      const apiData = historyManager.normalizeApiData(response.data);
-      historyData = historyManager.mergeApiData(apiData);
-    } catch (firstError) {
-      console.log('Premier endpoint historique échoué, essai avec le second...');
+    // Si admin, charger tous les historiques
+    if (userRole === 'admin') {
+      const allHistories = await userHistoryService.getAllHistories();
+      let combinedHistory = [];
       
-      // Si le premier endpoint échoue, essayer avec le second
-      try {
-        const response = await axios.get(`${SMS_API_URL}/sms-history`);
-        const apiData = historyManager.normalizeApiData(response.data);
-        historyData = historyManager.mergeApiData(apiData);
-      } catch (secondError) {
-        console.log('Échec de récupération depuis l\'API, utilisation de l\'historique local');
+      for (const [email, history] of Object.entries(allHistories)) {
+        combinedHistory = combinedHistory.concat(history);
       }
+      
+      // Trier par date (du plus récent au plus ancien)
+      combinedHistory.sort((a, b) => {
+        const dateA = new Date(a.timestamp || 0);
+        const dateB = new Date(b.timestamp || 0);
+        return dateB - dateA;
+      });
+      
+      console.log(`👑 Admin: affichage de tout l'historique (${combinedHistory.length} SMS)`);
+      return res.json(combinedHistory);
     }
     
-    // FILTRER par utilisateur (sauf si admin qui voit tout)
-    if (userRole !== 'admin') {
-      historyData = historyData.filter(item => item.userEmail === userEmail);
-      console.log(`🔒 Filtrage appliqué: ${historyData.length} SMS pour ${userEmail}`);
-    } else {
-      console.log(`👑 Admin: affichage de tout l'historique (${historyData.length} SMS)`);
-    }
+    // Utilisateur normal: charger son propre historique
+    const userHistory = await userHistoryService.loadUserHistory(userEmail);
+    console.log(`🔒 Historique chargé: ${userHistory.length} SMS pour ${userEmail}`);
     
-    // Trier l'historique par date (du plus récent au plus ancien)
-    historyData.sort((a, b) => {
-      const dateA = new Date(a.timestamp || a.date || a.createdAt || 0);
-      const dateB = new Date(b.timestamp || b.date || b.createdAt || 0);
-      return dateB - dateA; // Ordre décroissant
-    });
-    
-    res.json(historyData);
+    res.json(userHistory);
   } catch (error) {
     console.error('Erreur récupération historique:', error.message);
-    
-    // Si tout échoue, retourner au moins l'historique local (filtré)
-    if (localHistory.length > 0) {
-      const userEmail = req.user.email;
-      const userRole = req.user.role;
-      const filteredHistory = userRole === 'admin' 
-        ? localHistory 
-        : localHistory.filter(item => item.userEmail === userEmail);
-      res.json(filteredHistory);
-    } else {
-      res.status(500).json({ 
-        error: 'Impossible de récupérer l\'historique des SMS',
-        message: error.message 
-      });
-    }
+    res.status(500).json({ 
+      error: 'Impossible de récupérer l\'historique des SMS',
+      message: error.message 
+    });
   }
 });
 
