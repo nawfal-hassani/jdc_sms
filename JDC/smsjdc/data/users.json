@@ -2,8 +2,8 @@
   {
     "id": "1",
     "email": "admin@jdc.fr",
-    "password": "$2b$10$ufUhd12a1AKh6M.8oO5HxOyofe9lro57pjyBUetUyQw6BUt65z4DG",
-    "name": "Administrateur",
+    "password": "$2b$10$ZTxADzqNMeiHtKGUE72BUOkrd/ZnG4a5n8ft8cS/fNhhSuZGxfM72",
+    "name": "Admin Nawfal",
     "role": "admin",
     "phone": "+33612345678"
   },
