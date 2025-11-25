@@ -734,14 +734,38 @@ async function loadRealStatistics() {
 
 // Mettre à jour l'interface avec les statistiques
 function updateStatisticsUI() {
-  document.getElementById('stat-total').textContent = statisticsData.totalSent;
-  document.getElementById('stat-success').textContent = statisticsData.successful;
-  document.getElementById('stat-failed').textContent = statisticsData.failed;
+  console.log('🔄 Mise à jour de l\'interface avec:', statisticsData);
+  
+  const totalElem = document.getElementById('stat-total');
+  const successElem = document.getElementById('stat-success');
+  const failedElem = document.getElementById('stat-failed');
+  
+  if (!totalElem || !successElem || !failedElem) {
+    console.error('❌ Éléments DOM non trouvés!', {
+      totalElem: !!totalElem,
+      successElem: !!successElem,
+      failedElem: !!failedElem
+    });
+    return;
+  }
+  
+  totalElem.textContent = statisticsData.totalSent;
+  successElem.textContent = statisticsData.successful;
+  failedElem.textContent = statisticsData.failed;
+  
+  console.log('✅ Interface mise à jour:', {
+    total: totalElem.textContent,
+    success: successElem.textContent,
+    failed: failedElem.textContent
+  });
   
   // Calculer et afficher le taux de succès
   if(statisticsData.totalSent > 0) {
     const successRate = (statisticsData.successful / statisticsData.totalSent * 100).toFixed(0);
-    document.getElementById('stat-rate').textContent = successRate + '%';
+    const rateElem = document.getElementById('stat-rate');
+    if (rateElem) {
+      rateElem.textContent = successRate + '%';
+    }
   } else {
     document.getElementById('stat-rate').textContent = '0%';
   }
