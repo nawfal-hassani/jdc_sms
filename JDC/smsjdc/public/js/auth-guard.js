@@ -99,6 +99,11 @@
             document.querySelectorAll('[data-require-admin]').forEach(el => {
                 el.style.display = 'none';
             });
+        } else {
+            // Afficher le bouton Administration pour les admins
+            document.querySelectorAll('.admin-only').forEach(el => {
+                el.style.display = '';
+            });
         }
     }
 
