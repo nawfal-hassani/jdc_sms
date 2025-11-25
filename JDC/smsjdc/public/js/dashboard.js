@@ -10,6 +10,8 @@ let statisticsData = {
 
 // Initialisation du dashboard
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('📱 Dashboard: DOMContentLoaded déclenché');
+  
   // Vérifier le statut de l'API
   checkApiStatus();
   
@@ -19,8 +21,16 @@ document.addEventListener('DOMContentLoaded', function() {
   // Ajouter les événements
   setupEventListeners();
   
-  // Charger les vraies statistiques depuis l'historique (avec retry)
-  loadRealStatisticsWithRetry();
+  // Attendre que tous les scripts soient chargés avant de tenter de charger les stats
+  if (document.readyState === 'complete') {
+    console.log('📱 Page déjà complète, chargement des stats immédiatement');
+    loadRealStatisticsWithRetry();
+  } else {
+    window.addEventListener('load', function() {
+      console.log('📱 Window load complet, chargement des stats');
+      loadRealStatisticsWithRetry();
+    });
+  }
   
   // Écouter les événements de mise à jour de l'historique
   document.addEventListener('history-updated', function() {
@@ -669,23 +679,27 @@ function getLast7Days() {
 }
 
 // Charger les statistiques avec retry (attendre que le token soit disponible)
-async function loadRealStatisticsWithRetry(maxRetries = 5, delay = 200) {
+async function loadRealStatisticsWithRetry(maxRetries = 20, delay = 300) {
+  console.log('🔍 Tentative de chargement des statistiques...');
+  
   for (let i = 0; i < maxRetries; i++) {
     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
     
     if (token) {
       // Token trouvé, charger les statistiques
+      console.log(`✅ Token trouvé après ${i + 1} tentative(s), chargement des statistiques...`);
       await loadRealStatistics();
       return;
     }
     
     // Token pas encore disponible, attendre un peu
-    console.log(`⏳ Token non disponible, retry ${i + 1}/${maxRetries}...`);
+    console.log(`⏳ Token non disponible, retry ${i + 1}/${maxRetries}... (attente ${delay}ms)`);
     await new Promise(resolve => setTimeout(resolve, delay));
   }
   
-  // Après tous les retries, afficher un message
-  console.warn('⚠️ Impossible de charger les statistiques: token non disponible après plusieurs tentatives');
+  // Après tous les retries, afficher un message d'erreur clair
+  console.error('❌ Impossible de charger les statistiques: token non disponible après ' + maxRetries + ' tentatives (' + (maxRetries * delay / 1000) + 's)');
+  console.error('💡 Vérifiez que vous êtes bien connecté. Si le problème persiste, rechargez la page (F5).');
 }
 
 // Charger les vraies statistiques depuis l'API
