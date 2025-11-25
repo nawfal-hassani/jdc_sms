@@ -452,16 +452,19 @@
 
   // Subscribe
   window.subscribe = async function(planId){
-    if(!confirm('Confirmer l\'abonnement ?\n\n✨ 30 jours d\'essai gratuit inclus !\nVous ne serez débité qu\'après la période d\'essai.')) return;
+    if(!confirm('Confirmer l\'abonnement ?\n\n✨ 30 jours d\'essai gratuit inclus !\nVous serez redirigé vers le paiement sécurisé Stripe.')) return;
+    
     try{
-      const r = await doSubscribe(planId, billingPeriod);
-      if(r && r.success){ 
-        alert('✅ Abonnement activé avec succès !\n\n🎉 Profitez de votre période d\'essai gratuite de 30 jours !'); 
-        await loadCredits(); 
-        await loadInvoices(); 
+      // Utiliser Stripe au lieu de l'ancienne API
+      if (window.stripePaymentService) {
+        await window.stripePaymentService.purchaseSubscription(currentUser, planId);
+      } else {
+        throw new Error('Service Stripe non disponible');
       }
-      else alert('❌ Erreur abonnement: ' + (r && r.message ? r.message : 'Erreur'));
-    }catch(e){ console.error(e); alert('❌ Erreur lors de la souscription'); }
+    }catch(e){ 
+      console.error(e); 
+      alert('❌ Erreur lors de la souscription : ' + e.message); 
+    }
   };
 
   // Load alert settings into form

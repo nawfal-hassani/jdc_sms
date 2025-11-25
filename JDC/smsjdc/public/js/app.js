@@ -33,7 +33,7 @@ function getActiveTab() {
  * Affiche un onglet spécifique
  */
 function showTab(tabId, triggerEvent = false) {
-  console.log(`🔄 Tentative d'affichage de l'onglet: ${tabId}`);
+  console.log(`🔄 Affichage de l'onglet: ${tabId}`);
   
   // Masquer tous les onglets
   document.querySelectorAll('.tab-content').forEach(tab => {
@@ -54,15 +54,14 @@ function showTab(tabId, triggerEvent = false) {
     const selectedLink = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
     if (selectedLink) {
       selectedLink.classList.add('active');
-      console.log(`✅ Lien activé pour: ${tabId}`);
+      console.log(`✅ Onglet ${tabId} affiché`);
     } else {
       console.warn(`⚠️ Lien non trouvé pour: ${tabId}`);
     }
-    
-    console.log(`👁️ Onglet affiché: ${tabId}`);
   } else {
     console.error(`❌ Onglet introuvable: ${tabId}`);
   }
+  
   // Déclencher l'événement de changement d'onglet si demandé
   if (triggerEvent) {
     try {
@@ -96,14 +95,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialiser le gestionnaire de thème
   initThemeManager();
   
-  // 🔥 RESTAURER L'ONGLET ACTIF EN DERNIER (après tous les inits)
-  // Utiliser requestAnimationFrame pour attendre que le DOM soit complètement rendu
-  requestAnimationFrame(function() {
-    setTimeout(function() {
-      console.log('🎯 Démarrage de la restauration de l\'onglet');
-      restoreActiveTab();
-    }, 50);
-  });
+  // 🔥 RESTAURER L'ONGLET ACTIF
+  console.log('🎯 Démarrage de la restauration de l\'onglet');
+  restoreActiveTab();
 });
 
 /**
@@ -116,30 +110,8 @@ function restoreActiveTab() {
   
   if (savedTab && document.getElementById(savedTab)) {
     console.log(`🔄 Restauration de l'onglet: ${savedTab}`);
-    
-    // Forcer l'affichage avec un petit délai pour s'assurer que tout est prêt
-    setTimeout(function() {
-      // Utiliser triggerEvent=true pour notifier les modules (billing, etc.)
-      showTab(savedTab, true);
-      
-      // Double vérification après 100ms pour s'assurer que rien n'a réinitialisé
-      setTimeout(function() {
-        const currentTab = document.querySelector('.tab-content[style*="display: block"]');
-        const currentTabId = currentTab ? currentTab.id : null;
-
-        if (currentTabId !== savedTab) {
-          if (!window._restorationDone) {
-            console.warn(`⚠️ Réinitialisation détectée, correction de ${currentTabId} vers ${savedTab}`);
-            window._restorationDone = true;
-            showTab(savedTab, true);
-          } else {
-            console.warn('⚠️ Restauration déjà tentée, abandon de la correction pour éviter boucle');
-          }
-        } else {
-          console.log(`✅ Onglet ${savedTab} correctement affiché et stable`);
-        }
-      }, 100);
-    }, 10);
+    showTab(savedTab, true);
+    console.log(`✅ Onglet ${savedTab} restauré`);
   } else {
     console.log(`📊 Affichage du dashboard par défaut`);
     showTab('dashboard-tab', true);

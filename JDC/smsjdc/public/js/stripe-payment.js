@@ -79,6 +79,35 @@ class StripePaymentService {
     }
   }
 
+  // Créer une session d'abonnement et rediriger vers Stripe
+  async purchaseSubscription(userId, subscriptionId) {
+    try {
+      const response = await fetch('/api/stripe/create-subscription-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: userId,
+          subscriptionId: subscriptionId
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.url) {
+        // Rediriger vers Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || 'Erreur création session abonnement');
+      }
+
+    } catch (error) {
+      console.error('Erreur achat abonnement:', error);
+      throw error;
+    }
+  }
+
   // Récupérer le solde de crédits
   async getCredits(userId) {
     try {
