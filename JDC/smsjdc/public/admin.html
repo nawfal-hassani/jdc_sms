@@ -536,32 +536,40 @@
     let editingUserId = null;
 
     document.addEventListener('DOMContentLoaded', function() {
-      // Vérifier que l'utilisateur est admin
       const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
-      
+      const user = localStorage.getItem('user') || sessionStorage.getItem('user');
+      console.log('[DEBUG ADMIN] Token:', token);
+      console.log('[DEBUG ADMIN] User:', user);
       if (!token) {
+        showAlert('❌ Aucun token trouvé dans le navigateur', 'error');
         window.location.href = '/login.html';
         return;
       }
-
-      // Vérifier le rôle admin
-      fetch('/api/auth/verify', {
+      fetch('/api/auth/verify-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
       })
-      .then(res => res.json())
+      .then(async res => {
+        const data = await res.json();
+        console.log('[DEBUG ADMIN] Réponse /api/auth/verify-token:', data);
+        return data;
+      })
       .then(data => {
-        if (!data.success || data.user.role !== 'admin') {
+        if (!data.success) {
+          showAlert('❌ Token invalide ou session expirée : ' + (data.message || 'aucun détail'), 'error');
+          setTimeout(() => window.location.href = '/login.html', 2000);
+        } else if (data.user.role !== 'admin') {
           showAlert('⛔ Accès refusé : droits administrateur requis', 'error');
           setTimeout(() => window.location.href = '/', 2000);
         } else {
+          showAlert('✅ Connexion administrateur OK', 'success');
           loadUsers();
         }
       })
       .catch(error => {
-        console.error('Erreur vérification admin:', error);
-        window.location.href = '/login.html';
+        showAlert('❌ Erreur réseau ou serveur : ' + error, 'error');
+        setTimeout(() => window.location.href = '/login.html', 2000);
       });
 
       // Références DOM

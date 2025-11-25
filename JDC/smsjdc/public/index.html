@@ -563,7 +563,7 @@
               </div>
               <div class="filter-buttons">
                 <button id="apply-filters" class="btn-primary">Appliquer</button>
-                <button id="reset-filters" class="btn-secondary">Réinitialiser</button>
+                <button id="reset-filters" class="btn btn-secondary">Réinitialiser</button>
               </div>
             </div>
           </div>
@@ -828,5 +828,31 @@
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
   <script src="/js/bulk-sms.js"></script>
   <script src="/js/chatbot.js"></script>
+  
+  <script>
+    // Force la redirection sur le lien Administration même si un JS bloque
+    document.addEventListener('DOMContentLoaded', function() {
+      var adminLink = document.querySelector('.admin-only a[href="/admin.html"]');
+      if (adminLink) {
+        adminLink.addEventListener('click', function(e) {
+          window.location.href = '/admin.html';
+        });
+      }
+    });
+  </script>
+  <script>
+    // Synchronisation forcée du token et de l'utilisateur pour l'admin
+    document.addEventListener('DOMContentLoaded', function() {
+      var token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      var user = localStorage.getItem('user') || sessionStorage.getItem('user');
+      // Si le token existe en session mais pas en local, on le copie
+      if (token && !localStorage.getItem('authToken')) {
+        localStorage.setItem('authToken', token);
+      }
+      if (user && !localStorage.getItem('user')) {
+        localStorage.setItem('user', user);
+      }
+    });
+  </script>
 </body>
 </html>
