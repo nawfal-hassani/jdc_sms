@@ -22,5 +22,21 @@
     "name": "Utilisateur",
     "role": "user",
     "phone": "+33687654381"
+  },
+  {
+    "id": "4",
+    "email": "nawfal@gmail.com",
+    "password": "$2b$10$Xn.8Ny5DSBDyb1thHS2druXAN3/jYwA9M9Y8agVgLSMNaIigpa0lq",
+    "name": "nawfal",
+    "role": "admin",
+    "phone": "+33767847265"
+  },
+  {
+    "id": "5",
+    "email": "nawfal2@gmail.com",
+    "password": "$2b$10$ezFZOEi7Ax7bFs6Z3922/OOi4diq96vhS1LB7bgy7Dpbuq77iJkaS",
+    "name": "nawfal2",
+    "role": "user",
+    "phone": "+33767847262"
   }
 ]
