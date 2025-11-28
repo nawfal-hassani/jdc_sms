@@ -38,5 +38,14 @@
     "name": "nawfal2",
     "role": "user",
     "phone": "+33767847262"
+  },
+  {
+    "id": "6",
+    "email": "nawfal3@gmail.com",
+    "password": "$2b$10$ezFZOEi7Ax7bFs6Z3922/OOi4diq96vhS1LB7bgy7Dpbuq77iJkaS",
+    "name": "nawfal3",
+    "role": "user",
+    "phone": "+33767847263"
   }
-]
+]ls
+
