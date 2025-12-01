@@ -85,22 +85,33 @@ body {
 .nav-link {
   display: flex;
   align-items: center;
-  padding: 10px 20px;
+  padding: 12px 20px;
   color: rgba(255,255,255,0.7);
   text-decoration: none;
   font-size: 14px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  margin: 0 10px;
+  position: relative;
 }
 
 .nav-link:hover {
   background-color: rgba(255,255,255,0.1);
   color: white;
+  transform: translateX(5px);
 }
 
 .nav-link.active {
-  background-color: var(--secondary);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-left: 4px solid white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  border-left: 4px solid #ffd700;
+}
+
+.nav-link.active .nav-icon {
+  color: white;
+  font-size: 18px;
 }
 
 .nav-icon {
@@ -647,7 +658,9 @@ textarea.form-control {
 
   .nav-link.active {
     border-left: none;
-    border-top: 3px solid white;
+    border-top: 4px solid #ffd700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
   }
 
   /* Main Content Mobile */
