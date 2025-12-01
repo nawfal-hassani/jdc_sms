@@ -12,10 +12,8 @@
     "email": "user@jdc.fr",
     "password": "$2b$10$nIsbfAJBd3Jbbip6br0NPeBJMUW5pZYdq0DUfZOC5Xqp0zgNlyNs.",
     "name": "Utilisateur",
-    "role": "user",
+    "role": "user", 
     "phone": "+33687654321"
-  },
-  }
   }
 ]
 
