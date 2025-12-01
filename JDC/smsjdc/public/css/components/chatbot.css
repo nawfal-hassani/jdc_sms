@@ -323,7 +323,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .chatbot-container {
-    bottom: 90px; /* Au-dessus de la barre de navigation mobile */
+    bottom: 100px; /* Au-dessus de la barre de navigation mobile */
     right: 15px;
   }
 
@@ -337,7 +337,7 @@
     width: calc(100% - 30px);
     height: calc(100vh - 200px);
     right: 15px;
-    bottom: 155px; /* Au-dessus du bouton chatbot */
+    bottom: 165px; /* Au-dessus du bouton chatbot */
     max-height: 500px;
   }
 }
