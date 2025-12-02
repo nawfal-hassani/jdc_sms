@@ -15,6 +15,11 @@
   <link rel="stylesheet" href="/css/components/bulk-sms.css">
   <link rel="stylesheet" href="/css/components/chatbot.css">
   <link rel="stylesheet" href="/css/components/stripe-payment.css">
+  
+  <!-- International Telephone Input -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css">
+  <link rel="stylesheet" href="/css/components/intl-tel-input-custom.css">
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -902,6 +907,69 @@
         adminLinks.forEach(function(el) { el.style.display = 'none'; });
       }
     }
+  </script>
+
+  <!-- International Telephone Input JS -->
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/intlTelInput.min.js"></script>
+  
+  <!-- Initialisation des champs téléphone -->
+  <script>
+    // Attendre que le DOM soit chargé
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialiser le champ téléphone pour "Envoyer un SMS"
+      const phoneInput = document.querySelector("#phone");
+      let phoneIti = null;
+      
+      if (phoneInput) {
+        phoneIti = window.intlTelInput(phoneInput, {
+          initialCountry: "fr",
+          preferredCountries: ["fr", "ma", "be", "ch", "es", "it", "de", "dz", "tn", "pt"],
+          separateDialCode: false,
+          utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/utils.js",
+          formatOnDisplay: true,
+          nationalMode: false,
+          autoPlaceholder: "aggressive",
+          autoInsertDialCode: true
+        });
+        
+        // Stocker l'instance globalement pour l'utiliser dans dashboard.js
+        window.phoneIti = phoneIti;
+        
+        // Événement quand l'utilisateur change de pays
+        phoneInput.addEventListener("countrychange", function() {
+          const selectedCountryData = phoneIti.getSelectedCountryData();
+          console.log('📍 Pays sélectionné:', selectedCountryData.name, '+' + selectedCountryData.dialCode);
+        });
+      }
+      
+      // Initialiser le champ téléphone pour "Envoyer un Token par SMS"
+      const tokenPhoneInput = document.querySelector("#token-phone");
+      let tokenPhoneIti = null;
+      
+      if (tokenPhoneInput) {
+        tokenPhoneIti = window.intlTelInput(tokenPhoneInput, {
+          initialCountry: "fr",
+          preferredCountries: ["fr", "ma", "be", "ch", "es", "it", "de", "dz", "tn", "pt"],
+          separateDialCode: false,
+          utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/utils.js",
+          formatOnDisplay: true,
+          nationalMode: false,
+          autoPlaceholder: "aggressive",
+          autoInsertDialCode: true
+        });
+        
+        // Stocker l'instance globalement pour l'utiliser dans dashboard.js
+        window.tokenPhoneIti = tokenPhoneIti;
+        
+        // Événement quand l'utilisateur change de pays
+        tokenPhoneInput.addEventListener("countrychange", function() {
+          const selectedCountryData = tokenPhoneIti.getSelectedCountryData();
+          console.log('📍 Pays sélectionné:', selectedCountryData.name, '+' + selectedCountryData.dialCode);
+        });
+      }
+      
+      console.log('📞 intl-tel-input initialisé pour les champs téléphone');
+    });
   </script>
 
   <!-- Footer -->

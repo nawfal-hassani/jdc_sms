@@ -1,0 +1,246 @@
+/* Custom styles for intl-tel-input - Style épuré comme le calendrier */
+
+/* Container styling */
+.iti {
+  width: 100%;
+  display: block;
+}
+
+.iti__flag-container {
+  padding: 0;
+}
+
+/* Input field styling - Simple et épuré */
+.iti__input {
+  width: 100%;
+  padding: 12px 16px;
+  padding-left: 55px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.iti__input:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.iti__input::placeholder {
+  color: #999;
+}
+
+/* Country selector button - Style minimaliste */
+.iti__selected-flag {
+  padding: 0 6px 0 12px;
+  background: transparent;
+  border-radius: 10px 0 0 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.iti__selected-flag:hover,
+.iti__selected-flag:focus {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+/* Arrow icon - Simple et clair */
+.iti__arrow {
+  border: none !important;
+  width: 12px;
+  height: 12px;
+  margin-left: 2px;
+  position: relative;
+  display: inline-block;
+  background: transparent;
+}
+
+.iti__arrow::before {
+  content: '\f078';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 11px;
+  color: #667eea;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s ease;
+}
+
+.iti__arrow--up::before {
+  content: '\f077';
+}
+
+/* Dropdown styling - Comme le calendrier */
+.iti__country-list {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  margin-top: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 6px;
+  font-family: 'Poppins', sans-serif;
+  z-index: 9999;
+}
+
+/* Custom scrollbar for dropdown */
+.iti__country-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.iti__country-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.iti__country-list::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+.iti__country-list::-webkit-scrollbar-thumb:hover {
+  background: #5568d3;
+}
+
+/* Country item styling - Épuré */
+.iti__country {
+  padding: 8px 12px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  margin: 2px 0;
+}
+
+.iti__country:hover {
+  background: rgba(102, 126, 234, 0.08);
+}
+
+.iti__country.iti__highlight {
+  background: #667eea;
+  color: white;
+}
+
+.iti__country.iti__active {
+  background: rgba(102, 126, 234, 0.12);
+  font-weight: 500;
+}
+
+/* Country name */
+.iti__country-name {
+  margin-right: auto;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Dial code */
+.iti__dial-code {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.iti__country.iti__highlight .iti__dial-code {
+  color: white;
+}
+
+/* Flag icon - Taille normale et propre */
+.iti__flag {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+}
+
+/* Preferred countries separator */
+.iti__divider {
+  border-bottom: 2px solid #e0e0e0;
+  margin: 8px 0;
+}
+
+/* Search input in dropdown (if enabled) */
+.iti__search-input {
+  width: calc(100% - 24px);
+  margin: 8px 12px;
+  padding: 10px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.iti__search-input:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Hide element (accessibility) */
+.iti__hide {
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .iti__input {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 14px 16px;
+    padding-left: 60px;
+  }
+  
+  .iti__country-list {
+    max-height: 240px;
+    font-size: 14px;
+  }
+  
+  .iti__country {
+    padding: 10px 12px;
+  }
+}
+
+/* Validation states */
+.iti--separate-dial-code .iti__selected-flag {
+  background: transparent;
+}
+
+/* Error state */
+.iti.iti--error .iti__input {
+  border-color: #ef4444;
+}
+
+.iti.iti--error .iti__input:focus {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+/* Success state */
+.iti.iti--success .iti__input {
+  border-color: #10b981;
+}
+
+.iti.iti--success .iti__input:focus {
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+/* Disabled state */
+.iti__input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Loading state */
+.iti--loading .iti__selected-flag {
+  opacity: 0.6;
+}

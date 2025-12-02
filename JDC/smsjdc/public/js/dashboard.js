@@ -394,8 +394,20 @@ function handleSendSms(e) {
   const submitBtn = document.querySelector('#sms-form button[type="submit"]');
   const resultDiv = document.getElementById('sms-result');
   
-  // Valider les entrées
-  if (!validatePhone(phoneInput.value)) {
+  // Récupérer le numéro au format international via intl-tel-input
+  let phoneNumber = phoneInput.value.trim();
+  if (window.phoneIti) {
+    phoneNumber = window.phoneIti.getNumber(); // Format international complet (+33612345678)
+    
+    // Validation avec intl-tel-input
+    if (!window.phoneIti.isValidNumber()) {
+      if (typeof window.showNotification === 'function') {
+        window.showNotification('❌ Numéro de téléphone invalide pour le pays sélectionné', 'danger');
+      }
+      showAlert('Numéro de téléphone invalide pour le pays sélectionné', 'danger', resultDiv);
+      return;
+    }
+  } else if (!validatePhone(phoneNumber)) {
     showAlert('Numéro de téléphone invalide. Utilisez le format international (ex: +33612345678)', 'danger', resultDiv);
     return;
   }
@@ -417,7 +429,7 @@ function handleSendSms(e) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      to: phoneInput.value.trim(),
+      to: phoneNumber,
       message: messageInput.value.trim()
     })
   })
@@ -429,15 +441,20 @@ function handleSendSms(e) {
     if (data.success) {
       // Notification de succès avec vérification
       if (typeof window.showNotification === 'function') {
-        window.showNotification(`✅ SMS envoyé avec succès à ${phoneInput.value}`, 'success');
+        window.showNotification(`✅ SMS envoyé avec succès à ${phoneNumber}`, 'success');
       } else {
-        console.log('✅ SMS envoyé avec succès à', phoneInput.value);
+        console.log('✅ SMS envoyé avec succès à', phoneNumber);
       }
-      showAlert(`SMS envoyé avec succès à ${phoneInput.value}`, 'success', resultDiv);
+      showAlert(`SMS envoyé avec succès à ${phoneNumber}`, 'success', resultDiv);
       
       // Réinitialiser complètement le formulaire (vider tous les champs)
       phoneInput.value = '';
       messageInput.value = '';
+      
+      // Réinitialiser intl-tel-input si disponible
+      if (window.phoneIti) {
+        window.phoneIti.setNumber('');
+      }
       
       // Réinitialiser le compteur de caractères
       const charCounter = document.getElementById('char-counter');
@@ -495,8 +512,20 @@ function handleSendToken(e) {
   const submitBtn = document.querySelector('#token-form button[type="submit"]');
   const resultDiv = document.getElementById('token-result');
   
-  // Valider les entrées
-  if (!validatePhone(phoneInput.value)) {
+  // Récupérer le numéro au format international via intl-tel-input
+  let phoneNumber = phoneInput.value.trim();
+  if (window.tokenPhoneIti) {
+    phoneNumber = window.tokenPhoneIti.getNumber(); // Format international complet (+33612345678)
+    
+    // Validation avec intl-tel-input
+    if (!window.tokenPhoneIti.isValidNumber()) {
+      if (typeof window.showNotification === 'function') {
+        window.showNotification('❌ Numéro de téléphone invalide pour le pays sélectionné', 'danger');
+      }
+      showAlert('Numéro de téléphone invalide pour le pays sélectionné', 'danger', resultDiv);
+      return;
+    }
+  } else if (!validatePhone(phoneNumber)) {
     showAlert('Numéro de téléphone invalide. Utilisez le format international (ex: +33612345678)', 'danger', resultDiv);
     return;
   }
@@ -518,7 +547,7 @@ function handleSendToken(e) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      phoneNumber: phoneInput.value.trim(),
+      phoneNumber: phoneNumber,
       token: tokenInput.value.trim()
     })
   })
@@ -530,15 +559,20 @@ function handleSendToken(e) {
     if (data.success) {
       // Notification de succès avec vérification
       if (typeof window.showNotification === 'function') {
-        window.showNotification(`✅ Token SMS envoyé avec succès à ${phoneInput.value}`, 'success');
+        window.showNotification(`✅ Token SMS envoyé avec succès à ${phoneNumber}`, 'success');
       } else {
-        console.log('✅ Token SMS envoyé avec succès à', phoneInput.value);
+        console.log('✅ Token SMS envoyé avec succès à', phoneNumber);
       }
-      showAlert(`Token envoyé avec succès à ${phoneInput.value}`, 'success', resultDiv);
+      showAlert(`Token envoyé avec succès à ${phoneNumber}`, 'success', resultDiv);
       
       // Réinitialiser complètement le formulaire (vider tous les champs)
       phoneInput.value = '';
       tokenInput.value = '';
+      
+      // Réinitialiser intl-tel-input si disponible
+      if (window.tokenPhoneIti) {
+        window.tokenPhoneIti.setNumber('');
+      }
       
       // Mettre à jour les statistiques
       updateStats(true);
