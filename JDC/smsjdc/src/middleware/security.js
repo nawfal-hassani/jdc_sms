@@ -8,14 +8,14 @@ const rateLimit = require('express-rate-limit');
 
 /**
  * Rate limiter pour les tentatives de connexion
- * Limite: 5 tentatives par 15 minutes par IP
+ * Limite: 10 tentatives par 5 minutes par IP
  */
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 tentatives max
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 10, // 10 tentatives max
   message: {
     success: false,
-    message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.'
+    message: 'Trop de tentatives de connexion. Réessayez dans 5 minutes.'
   },
   standardHeaders: true,
   legacyHeaders: false,
