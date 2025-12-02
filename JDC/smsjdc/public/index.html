@@ -844,15 +844,64 @@
     // Synchronisation forcée du token et de l'utilisateur pour l'admin
     document.addEventListener('DOMContentLoaded', function() {
       var token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
-      var user = localStorage.getItem('user') || sessionStorage.getItem('user');
+      var userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
+      
       // Si le token existe en session mais pas en local, on le copie
       if (token && !localStorage.getItem('authToken')) {
         localStorage.setItem('authToken', token);
       }
-      if (user && !localStorage.getItem('user')) {
-        localStorage.setItem('user', user);
+      if (userStr && !localStorage.getItem('user')) {
+        localStorage.setItem('user', userStr);
+      }
+      
+      // Mettre à jour le profil utilisateur immédiatement
+      if (userStr) {
+        try {
+          var user = JSON.parse(userStr);
+          updateUserProfile(user);
+        } catch (e) {
+          console.error('Erreur parsing user:', e);
+        }
       }
     });
+    
+    // Fonction de mise à jour du profil utilisateur
+    function updateUserProfile(user) {
+      if (!user) return;
+      
+      // Récupérer les éléments du DOM
+      var userNameElement = document.getElementById('user-name') || document.querySelector('.user-name');
+      var userRoleElement = document.getElementById('user-role') || document.querySelector('.user-role');
+      var userAvatarElement = document.getElementById('user-avatar') || document.querySelector('.user-avatar');
+      
+      if (userNameElement) {
+        userNameElement.textContent = user.name || 'Utilisateur';
+      }
+      
+      if (userRoleElement) {
+        userRoleElement.textContent = user.role === 'admin' ? 'Administrateur' : 'Utilisateur';
+      }
+      
+      if (userAvatarElement) {
+        // Créer les initiales à partir du nom
+        var initials = (user.name || 'Utilisateur')
+          .split(' ')
+          .map(function(n) { return n[0]; })
+          .join('')
+          .toUpperCase()
+          .substring(0, 2);
+          
+        userAvatarElement.textContent = initials;
+      }
+      
+      // Afficher le lien Administration si admin
+      var adminLinks = document.querySelectorAll('.admin-only');
+      if (user.role === 'admin') {
+        adminLinks.forEach(function(el) { el.style.display = ''; });
+      } else {
+        adminLinks.forEach(function(el) { el.style.display = 'none'; });
+      }
+    }
   </script>
 
   <!-- Footer -->
