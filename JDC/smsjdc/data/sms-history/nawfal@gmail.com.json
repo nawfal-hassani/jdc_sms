@@ -1,0 +1,65 @@
+[
+  {
+    "id": "sms_1764685173085_15nmbl80y",
+    "userEmail": "nawfal@gmail.com",
+    "type": "SMS",
+    "to": "+33767847265",
+    "message": "fgb",
+    "status": "failed",
+    "source": "dashboard",
+    "timestamp": "2025-12-02T14:19:33.085Z",
+    "error": "Request failed with status code 500",
+    "userName": "nawfal hassani"
+  },
+  {
+    "id": "sms_1764685150640_i2ql6sltb",
+    "userEmail": "nawfal@gmail.com",
+    "type": "Token",
+    "to": "+33756885077",
+    "message": "Votre code d'authentification JDC est: 656245",
+    "status": "failed",
+    "source": "dashboard",
+    "timestamp": "2025-12-02T14:19:10.640Z",
+    "token": "656245",
+    "error": "Request failed with status code 500",
+    "userName": "nawfal hassani"
+  },
+  {
+    "id": "sms_1764685025758_mjfmvcpgo",
+    "userEmail": "nawfal@gmail.com",
+    "type": "SMS",
+    "to": "+33756885072",
+    "message": "bonjour",
+    "status": "delivered",
+    "source": "dashboard",
+    "timestamp": "2025-12-02T14:17:05.758Z",
+    "userName": "nawfal hassani",
+    "messageId": null
+  },
+  {
+    "id": "sms_1764685005405_svza9pn6e",
+    "userEmail": "nawfal@gmail.com",
+    "type": "Token",
+    "to": "+33756885077",
+    "message": "Votre code d'authentification JDC est: 933346",
+    "status": "failed",
+    "source": "dashboard",
+    "timestamp": "2025-12-02T14:16:45.405Z",
+    "token": "933346",
+    "error": "Request failed with status code 500",
+    "userName": "nawfal hassani"
+  },
+  {
+    "id": "sms_1764684875030_p168d9800",
+    "userEmail": "nawfal@gmail.com",
+    "type": "Token",
+    "to": "+33756885072",
+    "message": "Votre code d'authentification JDC est: 663500",
+    "status": "delivered",
+    "source": "dashboard",
+    "timestamp": "2025-12-02T14:14:35.030Z",
+    "token": "663500",
+    "userName": "nawfal hassani",
+    "messageId": null
+  }
+]
