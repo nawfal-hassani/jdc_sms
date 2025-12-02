@@ -12,8 +12,23 @@
     "email": "user@jdc.fr",
     "password": "$2b$10$nIsbfAJBd3Jbbip6br0NPeBJMUW5pZYdq0DUfZOC5Xqp0zgNlyNs.",
     "name": "Utilisateur",
-    "role": "user", 
+    "role": "user",
     "phone": "+33687654321"
+  },
+  {
+    "id": "3",
+    "email": "nawfal@gmail.com",
+    "password": "$2b$10$ccWK0si9wgCP6Ng81qaPb.oj3r7OozOn8/tazWmmlfxLSMDS1L1fy",
+    "name": "nawfal hassani",
+    "role": "admin",
+    "phone": "+33767847262"
+  },
+  {
+    "id": "4",
+    "email": "nawfal2@gmail.com",
+    "password": "$2b$10$w.PNzihLuIwOZWetDvVUU.65UYbkbeLrPTzO7v7UP6qsMYvSFN.e6",
+    "name": "hassani nawfal",
+    "role": "user",
+    "phone": "+33767847265"
   }
 ]
-
