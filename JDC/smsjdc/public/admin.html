@@ -579,11 +579,29 @@
       const cancelBtn = document.getElementById('cancel-btn');
       const saveUserBtn = document.getElementById('save-user-btn');
       
+      console.log('[DEBUG] Éléments DOM trouvés:', {
+        addUserBtn: !!addUserBtn,
+        userModal: !!userModal,
+        modalClose: !!modalClose,
+        cancelBtn: !!cancelBtn,
+        saveUserBtn: !!saveUserBtn
+      });
+      
       // Événements
-      addUserBtn.addEventListener('click', openCreateModal);
-      modalClose.addEventListener('click', closeModal);
-      cancelBtn.addEventListener('click', closeModal);
-      saveUserBtn.addEventListener('click', saveUser);
+      if (addUserBtn) {
+        addUserBtn.addEventListener('click', function(e) {
+          console.log('[DEBUG] Bouton "Créer un Compte" cliqué');
+          openCreateModal();
+        });
+      }
+      if (modalClose) modalClose.addEventListener('click', closeModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+      if (saveUserBtn) {
+        saveUserBtn.addEventListener('click', function(e) {
+          console.log('[DEBUG] Bouton "Enregistrer" cliqué');
+          saveUser();
+        });
+      }
       
       window.addEventListener('click', function(e) {
         if (e.target === userModal) closeModal();
@@ -655,19 +673,27 @@
 
     // Ouvrir modal de création
     function openCreateModal() {
+      console.log('[DEBUG] openCreateModal appelé');
       editingUserId = null;
       document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-plus"></i> Créer un Utilisateur';
       document.getElementById('user-form').reset();
       document.getElementById('user-id').value = '';
       document.getElementById('user-password').required = true;
       document.getElementById('user-modal').classList.add('active');
+      console.log('[DEBUG] Modal ouvert, classe active ajoutée');
     }
 
     // Éditer un utilisateur
     function editUser(userId) {
+      console.log('[DEBUG] editUser appelé avec userId:', userId);
       const user = users.find(u => u.id === userId);
-      if (!user) return;
+      if (!user) {
+        console.error('[DEBUG] Utilisateur non trouvé:', userId);
+        showAlert('❌ Utilisateur non trouvé', 'error');
+        return;
+      }
 
+      console.log('[DEBUG] Utilisateur trouvé:', user);
       editingUserId = userId;
       document.getElementById('modal-title').innerHTML = '<i class="fas fa-edit"></i> Modifier l\'Utilisateur';
       document.getElementById('user-id').value = user.id;
@@ -678,10 +704,12 @@
       document.getElementById('user-password').required = false;
       document.getElementById('user-role').value = user.role;
       document.getElementById('user-modal').classList.add('active');
+      console.log('[DEBUG] Modal de modification ouvert');
     }
 
     // Sauvegarder un utilisateur
     async function saveUser() {
+      console.log('[DEBUG] saveUser appelé');
       const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
       const userId = document.getElementById('user-id').value;
       const isEdit = userId !== '';
@@ -698,9 +726,14 @@
         userData.password = password;
       }
 
+      console.log('[DEBUG] Données utilisateur:', userData);
+      console.log('[DEBUG] Mode:', isEdit ? 'Modification' : 'Création');
+
       try {
         const url = isEdit ? `/api/admin/users/${userId}` : '/api/admin/users';
         const method = isEdit ? 'PUT' : 'POST';
+
+        console.log('[DEBUG] Requête:', method, url);
 
         const response = await fetch(url, {
           method: method,
@@ -712,26 +745,37 @@
         });
 
         const data = await response.json();
+        
+        console.log('[DEBUG] Réponse serveur:', data);
 
         if (data.success) {
           showAlert(`✅ Utilisateur ${isEdit ? 'modifié' : 'créé'} avec succès`, 'success');
           closeModal();
           loadUsers();
         } else {
-          showAlert(`❌ ${data.message || 'Erreur lors de la sauvegarde'}`, 'error');
+          console.error('[DEBUG] Erreur API:', data.message, data.errors);
+          if (data.errors && data.errors.length > 0) {
+            const errorMessages = data.errors.map(e => `- ${e.field}: ${e.message}`).join('\n');
+            showAlert(`❌ Erreurs de validation:\n${errorMessages}`, 'error');
+          } else {
+            showAlert(`❌ ${data.message || 'Erreur lors de la sauvegarde'}`, 'error');
+          }
         }
       } catch (error) {
-        console.error('Erreur:', error);
+        console.error('[DEBUG] Erreur catch:', error);
         showAlert('❌ Erreur de connexion au serveur', 'error');
       }
     }
 
     // Supprimer un utilisateur
     async function deleteUser(userId, userEmail) {
+      console.log('[DEBUG] deleteUser appelé avec userId:', userId, 'email:', userEmail);
       if (!confirm(`⚠️ Êtes-vous sûr de vouloir supprimer l'utilisateur ${userEmail} ?\n\nCette action est irréversible et supprimera également son historique.`)) {
+        console.log('[DEBUG] Suppression annulée par l\'utilisateur');
         return;
       }
 
+      console.log('[DEBUG] Suppression confirmée');
       const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
 
       try {
