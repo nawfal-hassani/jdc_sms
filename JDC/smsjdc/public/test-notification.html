@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Notifications</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/components/alerts.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 50px;
+      background: #f5f5f5;
+    }
+    .test-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+    button {
+      padding: 12px 24px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      transition: all 0.3s;
+    }
+    .btn-success {
+      background: #10b981;
+    }
+    .btn-danger {
+      background: #ef4444;
+    }
+    .btn-warning {
+      background: #f59e0b;
+    }
+    .btn-info {
+      background: #3b82f6;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="alerts-container"></div>
+  
+  <div class="test-container">
+    <h1>🧪 Test des Notifications</h1>
+    
+    <div>
+      <button class="btn-success" onclick="testSuccess()">
+        <i class="fas fa-check-circle"></i> Test Succès
+      </button>
+      
+      <button class="btn-danger" onclick="testError()">
+        <i class="fas fa-exclamation-circle"></i> Test Erreur
+      </button>
+      
+      <button class="btn-warning" onclick="testWarning()">
+        <i class="fas fa-exclamation-triangle"></i> Test Avertissement
+      </button>
+      
+      <button class="btn-info" onclick="testInfo()">
+        <i class="fas fa-info-circle"></i> Test Info
+      </button>
+    </div>
+    
+    <div class="status" id="status">
+      Cliquez sur un bouton pour tester les notifications...
+    </div>
+  </div>
+  
+  <script src="/js/notification.js"></script>
+  <script>
+    function updateStatus(message) {
+      document.getElementById('status').textContent = message;
+      console.log(message);
+    }
+    
+    function testSuccess() {
+      updateStatus('Test: Notification de succès');
+      showNotification('✅ SMS envoyé avec succès à +33612345678', 'success');
+    }
+    
+    function testError() {
+      updateStatus('Test: Notification d\'erreur');
+      showNotification('❌ Échec de l\'envoi du SMS : Numéro invalide', 'danger');
+    }
+    
+    function testWarning() {
+      updateStatus('Test: Notification d\'avertissement');
+      showNotification('⚠️ Attention : Crédits SMS faibles', 'warning');
+    }
+    
+    function testInfo() {
+      updateStatus('Test: Notification d\'information');
+      showNotification('ℹ️ Le serveur SMS est en ligne', 'info');
+    }
+    
+    // Test au chargement
+    console.log('Test page loaded');
+    console.log('showNotification available:', typeof window.showNotification === 'function');
+  </script>
+</body>
+</html>

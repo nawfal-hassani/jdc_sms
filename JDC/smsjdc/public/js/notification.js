@@ -5,16 +5,32 @@
 
 // Rendre la fonction showNotification disponible globalement
 window.showNotification = function(message, type = 'info') {
-  const alertsContainer = document.getElementById('alerts-container');
+  console.log(`[NOTIFICATION] Affichage d'une notification ${type}:`, message);
+  
+  // Vérifier ou créer le conteneur d'alertes
+  let alertsContainer = document.getElementById('alerts-container');
+  
   if (!alertsContainer) {
-    console.log(`Notification (${type}):`, message);
-    return;
+    console.warn('[NOTIFICATION] Conteneur alerts-container non trouvé, création...');
+    alertsContainer = document.createElement('div');
+    alertsContainer.id = 'alerts-container';
+    document.body.appendChild(alertsContainer);
+    console.log('[NOTIFICATION] Conteneur créé et ajouté au body');
   }
   
+  // Créer l'alerte
   const alert = document.createElement('div');
   alert.className = `alert alert-${type}`;
+  
+  // Déterminer l'icône selon le type
+  let iconClass = 'info-circle';
+  if (type === 'success') iconClass = 'check-circle';
+  else if (type === 'danger' || type === 'error') iconClass = 'exclamation-circle';
+  else if (type === 'warning') iconClass = 'exclamation-triangle';
+  
   alert.innerHTML = `
-    <i class="fas fa-${type === 'info' ? 'info-circle' : type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i> ${message}
+    <i class="fas fa-${iconClass}"></i>
+    <span>${message}</span>
     <button class="alert-dismiss"><i class="fas fa-times"></i></button>
   `;
   
@@ -22,17 +38,23 @@ window.showNotification = function(message, type = 'info') {
   const dismissBtn = alert.querySelector('.alert-dismiss');
   if (dismissBtn) {
     dismissBtn.addEventListener('click', function() {
+      console.log('[NOTIFICATION] Fermeture manuelle de l\'alerte');
       alert.remove();
     });
   }
   
   // Ajouter l'alerte au conteneur
   alertsContainer.appendChild(alert);
+  console.log('[NOTIFICATION] Alerte ajoutée au conteneur');
   
   // Supprimer automatiquement après 5 secondes
   setTimeout(() => {
     if (alert.parentNode) {
+      console.log('[NOTIFICATION] Suppression automatique de l\'alerte');
       alert.remove();
     }
   }, 5000);
 };
+
+// Log de confirmation du chargement
+console.log('[NOTIFICATION] Module de notifications chargé - window.showNotification disponible');

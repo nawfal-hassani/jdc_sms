@@ -427,10 +427,23 @@ function handleSendSms(e) {
     submitBtn.innerHTML = 'Envoyer le SMS';
     
     if (data.success) {
+      // Notification de succès avec vérification
+      if (typeof window.showNotification === 'function') {
+        window.showNotification(`✅ SMS envoyé avec succès à ${phoneInput.value}`, 'success');
+      } else {
+        console.log('✅ SMS envoyé avec succès à', phoneInput.value);
+      }
       showAlert(`SMS envoyé avec succès à ${phoneInput.value}`, 'success', resultDiv);
       
-      // Réinitialiser le formulaire
+      // Réinitialiser complètement le formulaire (vider tous les champs)
+      phoneInput.value = '';
       messageInput.value = '';
+      
+      // Réinitialiser le compteur de caractères
+      const charCounter = document.getElementById('char-counter');
+      if (charCounter) {
+        charCounter.textContent = '0 caractères (0 SMS)';
+      }
       
       // Mettre à jour les statistiques
       updateStats(true);
@@ -449,6 +462,12 @@ function handleSendSms(e) {
         }
       }));
     } else {
+      // Notification d'erreur avec vérification
+      if (typeof window.showNotification === 'function') {
+        window.showNotification(`❌ Échec de l'envoi du SMS : ${data.error || 'Une erreur est survenue'}`, 'danger');
+      } else {
+        console.error('❌ Échec de l\'envoi du SMS :', data.error || 'Une erreur est survenue');
+      }
       showAlert(`Erreur: ${data.error || 'Une erreur est survenue'}`, 'danger', resultDiv);
       updateStats(false);
     }
@@ -456,6 +475,12 @@ function handleSendSms(e) {
   .catch(error => {
     submitBtn.disabled = false;
     submitBtn.innerHTML = 'Envoyer le SMS';
+    // Notification d'erreur réseau avec vérification
+    if (typeof window.showNotification === 'function') {
+      window.showNotification(`❌ Erreur de connexion : ${error.message}`, 'danger');
+    } else {
+      console.error('❌ Erreur de connexion :', error.message);
+    }
     showAlert(`Erreur: ${error.message}`, 'danger', resultDiv);
     updateStats(false);
   });
@@ -503,9 +528,16 @@ function handleSendToken(e) {
     submitBtn.innerHTML = 'Envoyer le Token';
     
     if (data.success) {
+      // Notification de succès avec vérification
+      if (typeof window.showNotification === 'function') {
+        window.showNotification(`✅ Token SMS envoyé avec succès à ${phoneInput.value}`, 'success');
+      } else {
+        console.log('✅ Token SMS envoyé avec succès à', phoneInput.value);
+      }
       showAlert(`Token envoyé avec succès à ${phoneInput.value}`, 'success', resultDiv);
       
-      // Réinitialiser le formulaire
+      // Réinitialiser complètement le formulaire (vider tous les champs)
+      phoneInput.value = '';
       tokenInput.value = '';
       
       // Mettre à jour les statistiques
@@ -530,6 +562,12 @@ function handleSendToken(e) {
         detail: { success: true }
       }));
     } else {
+      // Notification d'erreur avec vérification
+      if (typeof window.showNotification === 'function') {
+        window.showNotification(`❌ Échec de l'envoi du Token : ${data.error || 'Une erreur est survenue'}`, 'danger');
+      } else {
+        console.error('❌ Échec de l\'envoi du Token :', data.error || 'Une erreur est survenue');
+      }
       showAlert(`Erreur: ${data.error || 'Une erreur est survenue'}`, 'danger', resultDiv);
       updateStats(false);
     }
@@ -537,6 +575,12 @@ function handleSendToken(e) {
   .catch(error => {
     submitBtn.disabled = false;
     submitBtn.innerHTML = 'Envoyer le Token';
+    // Notification d'erreur réseau avec vérification
+    if (typeof window.showNotification === 'function') {
+      window.showNotification(`❌ Erreur de connexion : ${error.message}`, 'danger');
+    } else {
+      console.error('❌ Erreur de connexion :', error.message);
+    }
     showAlert(`Erreur: ${error.message}`, 'danger', resultDiv);
     updateStats(false);
   });
