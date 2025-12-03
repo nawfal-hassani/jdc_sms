@@ -775,8 +775,9 @@ textarea.form-control {
 
   /* Dark Mode Toggle Mobile */
   .dark-mode-toggle {
-    bottom: 100px; /* Au-dessus de la barre de navigation */
-    left: 15px;
+    bottom: 150px; /* Remonté plus haut pour éviter la barre de navigation */
+    right: 15px; /* Positionné à droite pour ne pas gêner */
+    left: auto;
     width: 50px;
     height: 50px;
     z-index: 999;
