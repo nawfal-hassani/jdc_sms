@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadRealStatisticsWithRetry();
   } else {
     window.addEventListener('load', function() {
-      console.log('📱 Window load complet, chargement des stats');
+      console.log('📱 Window load complet, chargement des stats');  
       loadRealStatisticsWithRetry();
     });
   }
@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('📊 Historique mis à jour, rechargement des statistiques et graphiques...');
     loadRealStatistics();
     updateChartsWithRealData();
+    updateWeeklyChanges();
   });
   
   // Écouter les événements d'envoi de SMS
@@ -45,11 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
       loadRealStatistics();
       updateChartsWithRealData();
+      updateWeeklyChanges();
     }, 500); // Petit délai pour laisser l'historique se mettre à jour
   });
-  
-  // Optionnel : Calculer et afficher les variations hebdomadaires réelles
-  // updateWeeklyChanges();
 });
 
 // Vérifier le statut de l'API
@@ -482,9 +481,10 @@ function handleSendSms(e) {
       // Mettre à jour les statistiques
       updateStats(true);
       
-      // Mettre à jour les graphiques immédiatement
+      // Mettre à jour les graphiques et pourcentages immédiatement
       setTimeout(() => {
         updateChartsWithRealData();
+        updateWeeklyChanges();
       }, 500);
       
       // Déclencher un événement pour informer les autres modules
@@ -599,9 +599,10 @@ function handleSendToken(e) {
       // Mettre à jour les statistiques
       updateStats(true);
       
-      // Mettre à jour les graphiques immédiatement
+      // Mettre à jour les graphiques et pourcentages immédiatement
       setTimeout(() => {
         updateChartsWithRealData();
+        updateWeeklyChanges();
       }, 500);
       
       // Déclencher un événement pour mettre à jour l'historique
@@ -794,6 +795,7 @@ async function loadRealStatisticsWithRetry(maxRetries = 20, delay = 300) {
       // Token trouvé, charger les statistiques
       console.log(`✅ Token trouvé après ${i + 1} tentative(s), chargement des statistiques...`);
       await loadRealStatistics();
+      await updateWeeklyChanges();
       return;
     }
     
@@ -903,8 +905,25 @@ function simulateData() {
 // Fonction pour calculer les statistiques de la semaine dernière et cette semaine
 async function calculateWeeklyStats() {
   try {
+    // Récupérer le token d'authentification
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    
+    if (!token) {
+      console.warn('⚠️ Token non disponible pour calculateWeeklyStats');
+      return {
+        thisWeek: { total: 0, successful: 0, failed: 0 },
+        lastWeek: { total: 0, successful: 0, failed: 0 },
+        changes: { total: 0, successful: 0, failed: 0, rate: 0 }
+      };
+    }
+    
     // Récupérer l'historique depuis le serveur
-    const response = await fetch('/api/sms/history');
+    const response = await fetch('/api/sms/history', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
     if (!response.ok) {
       throw new Error('Impossible de récupérer l\'historique');
     }
