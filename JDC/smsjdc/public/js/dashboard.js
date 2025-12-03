@@ -34,14 +34,18 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Écouter les événements de mise à jour de l'historique
   document.addEventListener('history-updated', function() {
-    console.log('📊 Historique mis à jour, rechargement des statistiques...');
+    console.log('📊 Historique mis à jour, rechargement des statistiques et graphiques...');
     loadRealStatistics();
+    updateChartsWithRealData();
   });
   
   // Écouter les événements d'envoi de SMS
   document.addEventListener('sms-sent', function() {
-    console.log('📤 SMS envoyé, rechargement des statistiques...');
-    setTimeout(() => loadRealStatistics(), 500); // Petit délai pour laisser l'historique se mettre à jour
+    console.log('📤 SMS envoyé, rechargement des statistiques et graphiques...');
+    setTimeout(() => {
+      loadRealStatistics();
+      updateChartsWithRealData();
+    }, 500); // Petit délai pour laisser l'historique se mettre à jour
   });
   
   // Optionnel : Calculer et afficher les variations hebdomadaires réelles
@@ -98,13 +102,13 @@ let typesChart = null;
 let successChart = null;
 
 function initCharts() {
-  // Initialiser les graphiques avec des données de simulation
+  // Initialiser les graphiques avec des données vides
   initDailyChart();
   initTypesChart();
   initSuccessChart();
   
-  // Optionnel : décommenter pour utiliser les vraies données
-  // updateChartsWithRealData();
+  // Charger immédiatement les vraies données
+  updateChartsWithRealData();
 }
 
 // Graphique des SMS envoyés par jour
@@ -117,7 +121,7 @@ function initDailyChart() {
         labels: getLast7Days(),
         datasets: [{
           label: 'SMS envoyés',
-          data: [12, 19, 8, 15, 20, 14, 18],
+          data: [0, 0, 0, 0, 0, 0, 0],
           fill: true,
           backgroundColor: 'rgba(52, 152, 219, 0.1)',
           borderColor: '#3498db',
@@ -160,7 +164,7 @@ function initTypesChart() {
       data: {
         labels: ['SMS Simple', 'Tokens', 'Notifications'],
         datasets: [{
-          data: [65, 25, 10],
+          data: [0, 0, 0],
           backgroundColor: [
             '#3498db',
             '#2ecc71',
@@ -193,11 +197,11 @@ function initSuccessChart() {
         labels: getLast7Days(),
         datasets: [{
           label: 'Succès',
-          data: [11, 18, 7, 14, 19, 13, 17],
+          data: [0, 0, 0, 0, 0, 0, 0],
           backgroundColor: '#2ecc71'
         }, {
           label: 'Échecs',
-          data: [1, 1, 1, 1, 1, 1, 1],
+          data: [0, 0, 0, 0, 0, 0, 0],
           backgroundColor: '#e74c3c'
         }]
       },
@@ -233,7 +237,20 @@ function initSuccessChart() {
 // Mettre à jour les graphiques avec les vraies données
 async function updateChartsWithRealData() {
   try {
-    const response = await fetch('/api/sms/history');
+    // Récupérer le token d'authentification
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    
+    if (!token) {
+      console.warn('⚠️ Token non disponible pour updateChartsWithRealData');
+      return;
+    }
+    
+    const response = await fetch('/api/sms/history', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
     if (!response.ok) {
       console.error('Erreur lors de la récupération de l\'historique');
       return;
@@ -465,6 +482,11 @@ function handleSendSms(e) {
       // Mettre à jour les statistiques
       updateStats(true);
       
+      // Mettre à jour les graphiques immédiatement
+      setTimeout(() => {
+        updateChartsWithRealData();
+      }, 500);
+      
       // Déclencher un événement pour informer les autres modules
       document.dispatchEvent(new CustomEvent('sms-sent', {
         detail: { 
@@ -576,6 +598,11 @@ function handleSendToken(e) {
       
       // Mettre à jour les statistiques
       updateStats(true);
+      
+      // Mettre à jour les graphiques immédiatement
+      setTimeout(() => {
+        updateChartsWithRealData();
+      }, 500);
       
       // Déclencher un événement pour mettre à jour l'historique
       document.dispatchEvent(new CustomEvent('token-sent', {
@@ -815,8 +842,8 @@ async function loadRealStatistics() {
     // Mettre à jour l'interface
     updateStatisticsUI();
     
-    // Mettre à jour les graphiques
-    updateCharts();
+    // Mettre à jour les graphiques avec les vraies données
+    updateChartsWithRealData();
     
   } catch (error) {
     console.error('Erreur lors du chargement des statistiques:', error);
