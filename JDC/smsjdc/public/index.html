@@ -106,10 +106,32 @@
           </h1>
         </div>
         <div class="user-profile">
-          <div class="user-avatar" id="user-avatar">--</div>
-          <div class="user-info">
-            <div class="user-name" id="user-name">Chargement...</div>
-            <div class="user-role" id="user-role">--</div>
+          <div class="user-menu-trigger" id="user-menu-trigger">
+            <div class="user-avatar" id="user-avatar">--</div>
+            <div class="user-info">
+              <div class="user-name" id="user-name">Chargement...</div>
+              <div class="user-role" id="user-role">--</div>
+            </div>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+          </div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="dropdown-item" data-action="profile">
+              <i class="fas fa-user"></i>
+              <span>Mon compte / Profil utilisateur</span>
+            </div>
+            <div class="dropdown-item" data-action="settings">
+              <i class="fas fa-cog"></i>
+              <span>Paramètres</span>
+            </div>
+            <div class="dropdown-item" data-action="account">
+              <i class="fas fa-user-cog"></i>
+              <span>Gestion du compte</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item logout" data-action="logout">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Déconnexion</span>
+            </div>
           </div>
         </div>
       </div>
@@ -240,7 +262,7 @@
           <div class="card-content">
             <form id="sms-form">
               <div class="form-grid">
-                <div class="form-group">
+                <div class="form-group">    
                   <label class="form-label" for="phone">Numéro de téléphone</label>
                   <input type="tel" id="phone" class="form-control" placeholder="+33612345678" required>
                   <small>Format international (ex: +33612345678)</small>
@@ -907,6 +929,108 @@
         adminLinks.forEach(function(el) { el.style.display = 'none'; });
       }
     }
+
+    // Gestion du menu déroulant utilisateur
+    (function initUserDropdown() {
+      // Attendre que le DOM soit chargé
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initUserDropdown);
+        return;
+      }
+      
+      var menuTrigger = document.getElementById('user-menu-trigger');
+      var dropdown = document.getElementById('user-dropdown');
+      
+      if (!menuTrigger || !dropdown) return;
+      
+      // Toggle du menu au clic
+      menuTrigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('show');
+        menuTrigger.classList.toggle('active');
+      });
+      
+      // Fermer le menu si on clique ailleurs (sans bloquer les formulaires)
+      document.addEventListener('click', function(e) {
+        // Ne rien faire si on clique dans un formulaire, sur un bouton ou dans intl-tel-input
+        if (e.target.closest('form') || 
+            e.target.closest('button') || 
+            e.target.closest('input') || 
+            e.target.closest('textarea') ||
+            e.target.closest('.iti') ||  // intl-tel-input container
+            e.target.closest('.iti__flag-container') || // dropdown de pays
+            e.target.closest('.iti__country-list')) {  // liste des pays
+          return; // Laisser l'événement se propager normalement
+        }
+        
+        // Vérifier si le clic est dans le menu utilisateur
+        var isInUserMenu = menuTrigger.contains(e.target) || dropdown.contains(e.target);
+        
+        // Fermer uniquement si on clique en dehors du menu utilisateur
+        if (!isInUserMenu && dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show');
+          menuTrigger.classList.remove('active');
+        }
+      }, false); // false = phase de bubbling (après les autres événements)
+      
+      // Gérer les actions du menu
+      dropdown.addEventListener('click', function(e) {
+        var item = e.target.closest('.dropdown-item');
+        if (!item) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var action = item.getAttribute('data-action');
+        
+        switch(action) {
+          case 'profile':
+            console.log('Ouvrir le profil utilisateur');
+            if (typeof showTab === 'function') {
+              showTab('settings-tab', true);
+            }
+            break;
+            
+          case 'settings':
+            console.log('Ouvrir les paramètres');
+            if (typeof showTab === 'function') {
+              showTab('settings-tab', true);
+            }
+            break;
+            
+          case 'account':
+            console.log('Ouvrir la gestion du compte');
+            if (typeof showTab === 'function') {
+              showTab('settings-tab', true);
+            }
+            break;
+            
+          case 'logout':
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+              console.log('Déconnexion...');
+              if (window.authService && typeof window.authService.logout === 'function') {
+                window.authService.logout().then(function() {
+                  window.location.href = '/login.html';
+                }).catch(function(error) {
+                  console.error('Erreur lors de la déconnexion:', error);
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  window.location.href = '/login.html';
+                });
+              } else {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/login.html';
+              }
+            }
+            break;
+        }
+        
+        // Fermer le menu après une action
+        dropdown.classList.remove('show');
+        menuTrigger.classList.remove('active');
+      });
+    })();
   </script>
 
   <!-- International Telephone Input JS -->
