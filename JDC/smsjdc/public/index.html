@@ -1045,25 +1045,63 @@
       let phoneIti = null;
       
       if (phoneInput) {
+        // Désactiver complètement le formatage d'intl-tel-input
         phoneIti = window.intlTelInput(phoneInput, {
           initialCountry: "fr",
           preferredCountries: ["fr", "ma", "be", "ch", "es", "it", "de", "dz", "tn", "pt"],
           separateDialCode: false,
           utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/utils.js",
-          formatOnDisplay: true,
+          formatOnDisplay: false,
           nationalMode: false,
-          autoPlaceholder: "aggressive",
-          autoInsertDialCode: true
+          autoPlaceholder: "off",  // Désactiver complètement le placeholder
+          strictMode: true,
+          customContainer: "intl-tel-input-no-format"
         });
         
-        // Stocker l'instance globalement pour l'utiliser dans dashboard.js
+        // Stocker l'instance globalement
         window.phoneIti = phoneIti;
+        
+        // Supprimer les espaces immédiatement après chaque modification
+        const removeSpaces = function() {
+          const cursorPos = phoneInput.selectionStart;
+          const oldValue = phoneInput.value;
+          const newValue = oldValue.replace(/\s+/g, '');
+          
+          if (oldValue !== newValue) {
+            phoneInput.value = newValue;
+            // Repositionner le curseur
+            const offset = (oldValue.substring(0, cursorPos).match(/\s/g) || []).length;
+            phoneInput.setSelectionRange(cursorPos - offset, cursorPos - offset);
+          }
+        };
+        
+        // Écouter tous les événements qui peuvent modifier la valeur
+        phoneInput.addEventListener("input", removeSpaces);
+        phoneInput.addEventListener("change", removeSpaces);
+        phoneInput.addEventListener("blur", removeSpaces);
+        phoneInput.addEventListener("keyup", removeSpaces);
         
         // Événement quand l'utilisateur change de pays
         phoneInput.addEventListener("countrychange", function() {
           const selectedCountryData = phoneIti.getSelectedCountryData();
-          console.log('📍 Pays sélectionné:', selectedCountryData.name, '+' + selectedCountryData.dialCode);
+          const dialCode = '+' + selectedCountryData.dialCode;
+          console.log('📍 Pays sélectionné:', selectedCountryData.name, dialCode);
+          
+          // Remplacer ou ajouter le code pays
+          if (!phoneInput.value || !phoneInput.value.startsWith('+')) {
+            phoneInput.value = dialCode;
+          } else {
+            // Remplacer l'ancien code pays
+            phoneInput.value = dialCode + phoneInput.value.replace(/^\+\d+/, '');
+          }
+          removeSpaces();
         });
+        
+        // Initialiser avec le code pays par défaut
+        if (!phoneInput.value) {
+          const selectedCountryData = phoneIti.getSelectedCountryData();
+          phoneInput.value = '+' + selectedCountryData.dialCode;
+        }
       }
       
       // Initialiser le champ téléphone pour "Envoyer un Token par SMS"
@@ -1071,25 +1109,63 @@
       let tokenPhoneIti = null;
       
       if (tokenPhoneInput) {
+        // Désactiver complètement le formatage d'intl-tel-input
         tokenPhoneIti = window.intlTelInput(tokenPhoneInput, {
           initialCountry: "fr",
           preferredCountries: ["fr", "ma", "be", "ch", "es", "it", "de", "dz", "tn", "pt"],
           separateDialCode: false,
           utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/utils.js",
-          formatOnDisplay: true,
+          formatOnDisplay: false,
           nationalMode: false,
-          autoPlaceholder: "aggressive",
-          autoInsertDialCode: true
+          autoPlaceholder: "off",  // Désactiver complètement le placeholder
+          strictMode: true,
+          customContainer: "intl-tel-input-no-format"
         });
         
-        // Stocker l'instance globalement pour l'utiliser dans dashboard.js
+        // Stocker l'instance globalement
         window.tokenPhoneIti = tokenPhoneIti;
+        
+        // Supprimer les espaces immédiatement après chaque modification
+        const removeSpaces = function() {
+          const cursorPos = tokenPhoneInput.selectionStart;
+          const oldValue = tokenPhoneInput.value;
+          const newValue = oldValue.replace(/\s+/g, '');
+          
+          if (oldValue !== newValue) {
+            tokenPhoneInput.value = newValue;
+            // Repositionner le curseur
+            const offset = (oldValue.substring(0, cursorPos).match(/\s/g) || []).length;
+            tokenPhoneInput.setSelectionRange(cursorPos - offset, cursorPos - offset);
+          }
+        };
+        
+        // Écouter tous les événements qui peuvent modifier la valeur
+        tokenPhoneInput.addEventListener("input", removeSpaces);
+        tokenPhoneInput.addEventListener("change", removeSpaces);
+        tokenPhoneInput.addEventListener("blur", removeSpaces);
+        tokenPhoneInput.addEventListener("keyup", removeSpaces);
         
         // Événement quand l'utilisateur change de pays
         tokenPhoneInput.addEventListener("countrychange", function() {
           const selectedCountryData = tokenPhoneIti.getSelectedCountryData();
-          console.log('📍 Pays sélectionné:', selectedCountryData.name, '+' + selectedCountryData.dialCode);
+          const dialCode = '+' + selectedCountryData.dialCode;
+          console.log('📍 Pays sélectionné:', selectedCountryData.name, dialCode);
+          
+          // Remplacer ou ajouter le code pays
+          if (!tokenPhoneInput.value || !tokenPhoneInput.value.startsWith('+')) {
+            tokenPhoneInput.value = dialCode;
+          } else {
+            // Remplacer l'ancien code pays
+            tokenPhoneInput.value = dialCode + tokenPhoneInput.value.replace(/^\+\d+/, '');
+          }
+          removeSpaces();
         });
+        
+        // Initialiser avec le code pays par défaut
+        if (!tokenPhoneInput.value) {
+          const selectedCountryData = tokenPhoneIti.getSelectedCountryData();
+          tokenPhoneInput.value = '+' + selectedCountryData.dialCode;
+        }
       }
       
       console.log('📞 intl-tel-input initialisé pour les champs téléphone');
