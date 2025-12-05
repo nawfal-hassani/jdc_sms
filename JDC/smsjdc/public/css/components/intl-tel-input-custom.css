@@ -4,6 +4,16 @@
 .iti {
   width: 100%;
   display: block;
+  margin-bottom: 4px;
+}
+
+/* Le texte small doit être en dessous */
+.form-group .iti + small,
+.form-group small {
+  display: block;
+  margin-top: 6px;
+  color: #666;
+  font-size: 12px;
 }
 
 .iti__flag-container {
@@ -34,52 +44,38 @@
   color: #999;
 }
 
-/* Country selector button - Style minimaliste */
+/* Country selector button - Bien visible */
 .iti__selected-flag {
-  padding: 0 10px 0 14px;
-  background: transparent;
+  padding: 0 12px 0 16px;
+  background: rgba(102, 126, 234, 0.03);
   border-radius: 10px 0 0 10px;
   height: 100%;
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 10px;
   transition: all 0.2s ease;
   cursor: pointer;
   border: none;
+  min-width: 70px;
 }
 
 .iti__selected-flag:hover,
 .iti__selected-flag:focus {
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(102, 126, 234, 0.1);
 }
 
-/* Arrow icon - Plus grande et bien visible */
+/* Arrow icon - Invisible */
 .iti__arrow {
-  border: none !important;
-  width: 18px;
-  height: 18px;
-  margin-left: 4px;
-  position: relative;
-  display: inline-block;
-  background: transparent;
+  display: none !important;
 }
 
 .iti__arrow::before {
-  content: '\f078';
-  font-family: 'Font Awesome 6 Free';
-  font-weight: 900;
-  font-size: 16px;
-  color: #667eea;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transition: all 0.2s ease;
+  display: none !important;
 }
 
 .iti__arrow--up::before {
-  content: '\f077';
+  display: none !important;
 }
 
 /* Dropdown styling - Comme le calendrier */
@@ -159,12 +155,13 @@
   color: white;
 }
 
-/* Flag icon - Plus grande et bien visible */
+/* Flag icon - Drapeaux bien visibles */
 .iti__flag {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 2px;
-  transform: scale(1.3);
-  margin-right: 4px;
+  margin-right: 8px;
+  display: inline-block;
 }
 
 /* Preferred countries separator */
