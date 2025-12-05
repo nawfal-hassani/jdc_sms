@@ -273,6 +273,11 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
+        // Notification visuelle de succès
+        if (window.showNotification) {
+          window.showNotification(`✅ SMS planifié avec succès pour le ${formatDate(messageData.scheduledDate)}`, 'success');
+        }
+        
         // Afficher un message de succès
         if (resultDiv) {
           resultDiv.innerHTML = `
@@ -294,6 +299,11 @@ document.addEventListener('DOMContentLoaded', function() {
         tomorrow.setHours(9, 0, 0, 0);
         scheduleDate.value = formatDateTimeForInput(tomorrow);
       } else {
+        // Notification visuelle d'erreur
+        if (window.showNotification) {
+          window.showNotification(`❌ Erreur lors de la planification: ${data.error || 'Une erreur est survenue'}`, 'danger');
+        }
+        
         // Afficher un message d'erreur
         if (resultDiv) {
           resultDiv.innerHTML = `
@@ -306,6 +316,11 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(error => {
       console.error('Erreur lors de l\'enregistrement de la planification:', error);
+      
+      // Notification visuelle d'erreur
+      if (window.showNotification) {
+        window.showNotification(`❌ Erreur de connexion: ${error.message}`, 'danger');
+      }
       
       // Afficher un message d'erreur
       if (resultDiv) {
@@ -409,6 +424,11 @@ document.addEventListener('DOMContentLoaded', function() {
   function simulateSuccessfulScheduling(messageData) {
     // Ajouter le message à la liste locale
     scheduledMessages.push(messageData);
+    
+    // Notification visuelle de succès
+    if (window.showNotification) {
+      window.showNotification(`✅ SMS planifié avec succès pour le ${formatDate(messageData.scheduledDate)}`, 'success');
+    }
     
     // Afficher un message de succès
     const resultDiv = document.getElementById('schedule-result');

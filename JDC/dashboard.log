@@ -1,8 +1,24 @@
-
-> sms-dashboard@1.0.0 start
-> node server.js
-
-Historique local chargé: 45 messages
-📱 Dashboard SMS démarré sur http://localhost:3030
+Historique local chargé: 24 messages
+📱 Dashboard SMS démarré sur http://0.0.0.0:3030
 🔌 Connecté à l'API SMS: http://localhost:3000/api
 🌐 WebSocket activé pour le suivi en temps réel
+📊 Récupération historique pour: nawfal@gmail.com (admin)
+📂 Historique chargé pour nawfal@gmail.com: 49 SMS
+📂 Historique chargé pour s.gavet@jdclr.com: 1 SMS
+👑 Admin: affichage de tout l'historique (50 SMS)
+📊 Récupération historique pour: nawfal@gmail.com (admin)
+📂 Historique chargé pour nawfal@gmail.com: 49 SMS
+📂 Historique chargé pour s.gavet@jdclr.com: 1 SMS
+👑 Admin: affichage de tout l'historique (50 SMS)
+📊 Récupération historique pour: nawfal@gmail.com (admin)
+📂 Historique chargé pour nawfal@gmail.com: 49 SMS
+📂 Historique chargé pour s.gavet@jdclr.com: 1 SMS
+👑 Admin: affichage de tout l'historique (50 SMS)
+📊 Récupération historique pour: nawfal@gmail.com (admin)
+📂 Historique chargé pour nawfal@gmail.com: 49 SMS
+📂 Historique chargé pour s.gavet@jdclr.com: 1 SMS
+👑 Admin: affichage de tout l'historique (50 SMS)
+📊 Récupération historique pour: nawfal@gmail.com (admin)
+📂 Historique chargé pour nawfal@gmail.com: 49 SMS
+📂 Historique chargé pour s.gavet@jdclr.com: 1 SMS
+👑 Admin: affichage de tout l'historique (50 SMS)

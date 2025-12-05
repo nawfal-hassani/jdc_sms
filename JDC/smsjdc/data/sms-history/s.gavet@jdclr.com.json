@@ -1,0 +1,15 @@
+[
+  {
+    "id": "sms_1764929758819_h3an4a6xx",
+    "userEmail": "s.gavet@jdclr.com",
+    "type": "Token",
+    "to": "+33756885072",
+    "message": "Votre code d'authentification JDC est: 784937",
+    "status": "delivered",
+    "source": "dashboard",
+    "timestamp": "2025-12-05T10:15:58.819Z",
+    "token": "784937",
+    "userName": "Gavet Sebastien ",
+    "messageId": null
+  }
+]

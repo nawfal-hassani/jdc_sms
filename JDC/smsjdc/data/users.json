@@ -30,5 +30,13 @@
     "name": "hassani nawfal",
     "role": "user",
     "phone": "+33767847265"
+  },
+  {
+    "id": "5",
+    "email": "s.gavet@jdclr.com",
+    "password": "$2b$10$iEdwvT85FCs3f/0.Rz9OdeOuC2g0h4zw6PamQsRd4FXxQgrNBvut2",
+    "name": "Gavet Sebastien ",
+    "role": "admin",
+    "phone": "0625771774"
   }
 ]

@@ -10,13 +10,13 @@ window.initCharts = function() {
   // Graphique des SMS envoyés (par jour)
   const ctxDaily = document.getElementById('chart-daily');
   if (ctxDaily) {
-    new Chart(ctxDaily, {
+    const dailyChart = new Chart(ctxDaily, {
       type: 'line',
       data: {
         labels: getLast7Days(),
         datasets: [{
           label: 'SMS envoyés',
-          data: [12, 19, 8, 15, 20, 14, 18],
+          data: [0, 0, 0, 0, 0, 0, 0],
           fill: true,
           backgroundColor: 'rgba(52, 152, 219, 0.1)',
           borderColor: '#3498db',
@@ -47,6 +47,44 @@ window.initCharts = function() {
         }
       }
     });
+    
+    // Charger les vraies données
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      fetch('/api/sms/history', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (!Array.isArray(data)) return;
+          
+          // Compter les SMS par jour sur les 7 derniers jours
+          const dailyCounts = [0, 0, 0, 0, 0, 0, 0];
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          data.forEach(item => {
+            const itemDate = new Date(item.timestamp);
+            itemDate.setHours(0, 0, 0, 0);
+            const diffDays = Math.floor((today - itemDate) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays >= 0 && diffDays < 7) {
+              dailyCounts[6 - diffDays]++;
+            }
+          });
+          
+          console.log('📊 SMS par jour:', dailyCounts);
+          
+          // Mettre à jour avec les vraies données
+          dailyChart.data.datasets[0].data = dailyCounts;
+          dailyChart.update();
+        })
+        .catch(error => {
+          console.error('Erreur chargement données graphique Daily:', error);
+        });
+    }
   } else {
     console.error("Élément canvas 'chart-daily' non trouvé");
   }
@@ -127,17 +165,17 @@ window.initCharts = function() {
   // Graphique des taux de succès
   const ctxSuccess = document.getElementById('chart-success');
   if (ctxSuccess) {
-    new Chart(ctxSuccess, {
+    const successChart = new Chart(ctxSuccess, {
       type: 'bar',
       data: {
         labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
         datasets: [{
           label: 'Succès',
-          data: [95, 98, 92, 97, 99, 96, 94],
+          data: [0, 0, 0, 0, 0, 0, 0],
           backgroundColor: '#2ecc71'
         }, {
           label: 'Échecs',
-          data: [5, 2, 8, 3, 1, 4, 6],
+          data: [0, 0, 0, 0, 0, 0, 0],
           backgroundColor: '#e74c3c'
         }]
       },
@@ -151,6 +189,13 @@ window.initCharts = function() {
           tooltip: {
             mode: 'index',
             intersect: false,
+            callbacks: {
+              label: function(context) {
+                const label = context.dataset.label || '';
+                const value = context.parsed.y || 0;
+                return label + ': ' + value + '%';
+              }
+            }
           }
         },
         scales: {
@@ -170,6 +215,67 @@ window.initCharts = function() {
         }
       }
     });
+    
+    // Charger les vraies données
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      fetch('/api/sms/history', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (!Array.isArray(data)) return;
+          
+          // Calculer les taux de succès par jour de la semaine sur les 7 derniers jours
+          const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+          const successByDay = [0, 0, 0, 0, 0, 0, 0]; // Lun à Dim
+          const failureByDay = [0, 0, 0, 0, 0, 0, 0];
+          const totalByDay = [0, 0, 0, 0, 0, 0, 0];
+          
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          data.forEach(item => {
+            const itemDate = new Date(item.timestamp);
+            const diffDays = Math.floor((today - itemDate) / (1000 * 60 * 60 * 24));
+            
+            // Seulement les 7 derniers jours
+            if (diffDays >= 0 && diffDays < 7) {
+              const dayOfWeek = itemDate.getDay(); // 0=Dimanche, 1=Lundi, etc.
+              const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convertir en index Lundi=0
+              
+              totalByDay[dayIndex]++;
+              
+              if (item.status === 'delivered' || item.status === 'success') {
+                successByDay[dayIndex]++;
+              } else if (item.status === 'failed' || item.status === 'error') {
+                failureByDay[dayIndex]++;
+              }
+            }
+          });
+          
+          // Calculer les pourcentages
+          const successPercent = totalByDay.map((total, i) => 
+            total > 0 ? Math.round((successByDay[i] / total) * 100) : 0
+          );
+          const failurePercent = totalByDay.map((total, i) => 
+            total > 0 ? Math.round((failureByDay[i] / total) * 100) : 0
+          );
+          
+          console.log('📊 Taux de succès par jour:', successPercent);
+          console.log('📊 Taux d\'échec par jour:', failurePercent);
+          
+          // Mettre à jour avec les vraies données
+          successChart.data.datasets[0].data = successPercent;
+          successChart.data.datasets[1].data = failurePercent;
+          successChart.update();
+        })
+        .catch(error => {
+          console.error('Erreur chargement données graphique Success:', error);
+        });
+    }
   } else {
     console.error("Élément canvas 'chart-success' non trouvé");
   }

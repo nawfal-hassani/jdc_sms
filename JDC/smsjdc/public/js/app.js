@@ -37,6 +37,7 @@ function showTab(tabId, triggerEvent = false) {
   
   // Masquer tous les onglets
   document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
     tab.style.display = 'none';
   });
   
@@ -49,6 +50,7 @@ function showTab(tabId, triggerEvent = false) {
   const selectedTab = document.getElementById(tabId);
   if (selectedTab) {
     selectedTab.style.display = 'block';
+    selectedTab.classList.add('active');
     
     // Activer le lien correspondant dans la sidebar
     const selectedLink = document.querySelector(`.nav-link[data-tab="${tabId}"]`);

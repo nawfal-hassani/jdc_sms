@@ -348,15 +348,10 @@ function getDayIndex(date, days) {
 
 // Configuration des écouteurs d'événements
 function setupEventListeners() {
-  console.log('🎯 Configuration des événements dashboard...');
-  
   // Formulaire d'envoi de SMS
   const smsForm = document.getElementById('sms-form');
-  console.log('📝 Formulaire SMS trouvé:', !!smsForm);
-  
   if (smsForm) {
     smsForm.addEventListener('submit', handleSendSms);
-    console.log('✅ Événement submit attaché au formulaire SMS');
     
     // Compteur de caractères
     const messageInput = document.getElementById('message');
@@ -369,19 +364,12 @@ function setupEventListeners() {
         charCounter.textContent = `${count} caractères (${smsCount} SMS)`;
       });
     }
-  } else {
-    console.warn('⚠️ Formulaire SMS non trouvé dans le DOM');
   }
   
   // Formulaire d'envoi de token
   const tokenForm = document.getElementById('token-form');
-  console.log('🔑 Formulaire Token trouvé:', !!tokenForm);
-  
   if (tokenForm) {
     tokenForm.addEventListener('submit', handleSendToken);
-    console.log('✅ Événement submit attaché au formulaire Token');
-  } else {
-    console.warn('⚠️ Formulaire Token non trouvé dans le DOM');
   }
   
   // Bouton d'actualisation du statut
@@ -415,20 +403,12 @@ function setupEventListeners() {
 
 // Gestion de l'envoi de SMS
 function handleSendSms(e) {
-  console.log('📤 handleSendSms appelé');
   e.preventDefault();
-  e.stopPropagation();
   
   const phoneInput = document.getElementById('phone');
   const messageInput = document.getElementById('message');
   const submitBtn = document.querySelector('#sms-form button[type="submit"]');
   const resultDiv = document.getElementById('sms-result');
-  
-  console.log('📱 Données du formulaire:', {
-    phone: phoneInput?.value,
-    message: messageInput?.value,
-    submitBtn: !!submitBtn
-  });
   
   // Récupérer le numéro au format international via intl-tel-input
   let phoneNumber = phoneInput.value.trim();
@@ -438,7 +418,7 @@ function handleSendSms(e) {
     // Validation avec intl-tel-input
     if (!window.phoneIti.isValidNumber()) {
       if (typeof window.showNotification === 'function') {
-        window.showNotification('❌ Numéro de téléphone invalide', 'warning');
+        window.showNotification('❌ Numéro de téléphone invalide pour le pays sélectionné', 'danger');
       }
       showAlert('Numéro de téléphone invalide pour le pays sélectionné', 'danger', resultDiv);
       return;
@@ -447,10 +427,6 @@ function handleSendSms(e) {
     showAlert('Numéro de téléphone invalide. Utilisez le format international (ex: +33612345678)', 'danger', resultDiv);
     return;
   }
-  
-  // Nettoyer le numéro : supprimer tous les espaces, tirets, parenthèses
-  phoneNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
-  console.log('📱 Numéro nettoyé:', phoneNumber);
   
   if (!messageInput.value.trim()) {
     showAlert('Le message ne peut pas être vide.', 'danger', resultDiv);
@@ -462,15 +438,11 @@ function handleSendSms(e) {
   submitBtn.innerHTML = '<span class="loader"></span> Envoi...';
   resultDiv.innerHTML = '';
   
-  // Récupérer le token d'authentification
-  const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
-  
   // Envoyer la requête à l'API via le proxy local
   fetch('/api/send-sms', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       to: phoneNumber,
@@ -483,9 +455,11 @@ function handleSendSms(e) {
     submitBtn.innerHTML = 'Envoyer le SMS';
     
     if (data.success) {
-      // Notification de succès
+      // Notification de succès avec vérification
       if (typeof window.showNotification === 'function') {
         window.showNotification(`✅ SMS envoyé avec succès à ${phoneNumber}`, 'success');
+      } else {
+        console.log('✅ SMS envoyé avec succès à', phoneNumber);
       }
       showAlert(`SMS envoyé avec succès à ${phoneNumber}`, 'success', resultDiv);
       
@@ -527,9 +501,11 @@ function handleSendSms(e) {
         }
       }));
     } else {
-      // Notification d'erreur
+      // Notification d'erreur avec vérification
       if (typeof window.showNotification === 'function') {
         window.showNotification(`❌ Échec de l'envoi du SMS : ${data.error || 'Une erreur est survenue'}`, 'danger');
+      } else {
+        console.error('❌ Échec de l\'envoi du SMS :', data.error || 'Une erreur est survenue');
       }
       showAlert(`Erreur: ${data.error || 'Une erreur est survenue'}`, 'danger', resultDiv);
       updateStats(false);
@@ -538,9 +514,11 @@ function handleSendSms(e) {
   .catch(error => {
     submitBtn.disabled = false;
     submitBtn.innerHTML = 'Envoyer le SMS';
-    // Notification d'erreur réseau
+    // Notification d'erreur réseau avec vérification
     if (typeof window.showNotification === 'function') {
       window.showNotification(`❌ Erreur de connexion : ${error.message}`, 'danger');
+    } else {
+      console.error('❌ Erreur de connexion :', error.message);
     }
     showAlert(`Erreur: ${error.message}`, 'danger', resultDiv);
     updateStats(false);
@@ -549,20 +527,12 @@ function handleSendSms(e) {
 
 // Gestion de l'envoi de token
 function handleSendToken(e) {
-  console.log('🔑 handleSendToken appelé');
   e.preventDefault();
-  e.stopPropagation();
   
   const phoneInput = document.getElementById('token-phone');
   const tokenInput = document.getElementById('token');
   const submitBtn = document.querySelector('#token-form button[type="submit"]');
   const resultDiv = document.getElementById('token-result');
-  
-  console.log('📱 Données du formulaire token:', {
-    phone: phoneInput?.value,
-    token: tokenInput?.value,
-    submitBtn: !!submitBtn
-  });
   
   // Récupérer le numéro au format international via intl-tel-input
   let phoneNumber = phoneInput.value.trim();
@@ -572,7 +542,7 @@ function handleSendToken(e) {
     // Validation avec intl-tel-input
     if (!window.tokenPhoneIti.isValidNumber()) {
       if (typeof window.showNotification === 'function') {
-        window.showNotification('❌ Numéro de téléphone invalide', 'warning');
+        window.showNotification('❌ Numéro de téléphone invalide pour le pays sélectionné', 'danger');
       }
       showAlert('Numéro de téléphone invalide pour le pays sélectionné', 'danger', resultDiv);
       return;
@@ -581,10 +551,6 @@ function handleSendToken(e) {
     showAlert('Numéro de téléphone invalide. Utilisez le format international (ex: +33612345678)', 'danger', resultDiv);
     return;
   }
-  
-  // Nettoyer le numéro : supprimer tous les espaces, tirets, parenthèses
-  phoneNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
-  console.log('📱 Numéro nettoyé:', phoneNumber);
   
   if (!tokenInput.value.trim()) {
     showAlert('Le token ne peut pas être vide.', 'danger', resultDiv);
@@ -596,15 +562,11 @@ function handleSendToken(e) {
   submitBtn.innerHTML = '<span class="loader"></span> Envoi...';
   resultDiv.innerHTML = '';
   
-  // Récupérer le token d'authentification
-  const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
-  
   // Envoyer la requête à l'API via le proxy local
   fetch('/api/send-token', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       phoneNumber: phoneNumber,
@@ -617,9 +579,11 @@ function handleSendToken(e) {
     submitBtn.innerHTML = 'Envoyer le Token';
     
     if (data.success) {
-      // Notification de succès
+      // Notification de succès avec vérification
       if (typeof window.showNotification === 'function') {
-        window.showNotification(`✅ Token envoyé avec succès à ${phoneNumber}`, 'success');
+        window.showNotification(`✅ Token SMS envoyé avec succès à ${phoneNumber}`, 'success');
+      } else {
+        console.log('✅ Token SMS envoyé avec succès à', phoneNumber);
       }
       showAlert(`Token envoyé avec succès à ${phoneNumber}`, 'success', resultDiv);
       
@@ -660,9 +624,11 @@ function handleSendToken(e) {
         detail: { success: true }
       }));
     } else {
-      // Notification d'erreur
+      // Notification d'erreur avec vérification
       if (typeof window.showNotification === 'function') {
         window.showNotification(`❌ Échec de l'envoi du Token : ${data.error || 'Une erreur est survenue'}`, 'danger');
+      } else {
+        console.error('❌ Échec de l\'envoi du Token :', data.error || 'Une erreur est survenue');
       }
       showAlert(`Erreur: ${data.error || 'Une erreur est survenue'}`, 'danger', resultDiv);
       updateStats(false);
@@ -671,9 +637,11 @@ function handleSendToken(e) {
   .catch(error => {
     submitBtn.disabled = false;
     submitBtn.innerHTML = 'Envoyer le Token';
-    // Notification d'erreur réseau
+    // Notification d'erreur réseau avec vérification
     if (typeof window.showNotification === 'function') {
       window.showNotification(`❌ Erreur de connexion : ${error.message}`, 'danger');
+    } else {
+      console.error('❌ Erreur de connexion :', error.message);
     }
     showAlert(`Erreur: ${error.message}`, 'danger', resultDiv);
     updateStats(false);

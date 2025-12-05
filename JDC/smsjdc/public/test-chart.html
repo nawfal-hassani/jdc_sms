@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Chart.js</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .chart-box {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+    h2 {
+      color: #333;
+      margin-top: 0;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test des Graphiques Chart.js</h1>
+  
+  <div id="status" class="status">Chargement...</div>
+
+  <div class="chart-box">
+    <h2>📊 Graphique en ligne (Line)</h2>
+    <div class="chart-container">
+      <canvas id="test-line"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <h2>🍩 Graphique Donut</h2>
+    <div class="chart-container">
+      <canvas id="test-donut"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <h2>📊 Graphique en barres (Bar)</h2>
+    <div class="chart-container">
+      <canvas id="test-bar"></canvas>
+    </div>
+  </div>
+
+  <script src="/js/chart.min.js"></script>
+  <script>
+    const statusDiv = document.getElementById('status');
+    
+    // Vérifier si Chart.js est chargé
+    if (typeof Chart === 'undefined') {
+      statusDiv.innerHTML = '❌ ERREUR: Chart.js n\'est pas chargé!';
+      statusDiv.style.background = '#ffebee';
+      statusDiv.style.color = '#c62828';
+    } else {
+      statusDiv.innerHTML = '✅ Chart.js version ' + Chart.version + ' chargé avec succès!';
+      statusDiv.style.background = '#e8f5e9';
+      statusDiv.style.color = '#2e7d32';
+      
+      // Créer les graphiques
+      try {
+        // Graphique en ligne
+        new Chart(document.getElementById('test-line'), {
+          type: 'line',
+          data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+            datasets: [{
+              label: 'SMS envoyés',
+              data: [12, 19, 8, 15, 20, 14, 18],
+              borderColor: '#3498db',
+              backgroundColor: 'rgba(52, 152, 219, 0.1)',
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+        // Graphique Donut
+        new Chart(document.getElementById('test-donut'), {
+          type: 'doughnut',
+          data: {
+            labels: ['SMS Simple', 'Token'],
+            datasets: [{
+              data: [65, 35],
+              backgroundColor: ['#3498db', '#2ecc71']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%'
+          }
+        });
+
+        // Graphique en barres
+        new Chart(document.getElementById('test-bar'), {
+          type: 'bar',
+          data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+            datasets: [{
+              label: 'Succès',
+              data: [95, 98, 92, 97, 99, 96, 94],
+              backgroundColor: '#2ecc71'
+            }, {
+              label: 'Échecs',
+              data: [5, 2, 8, 3, 1, 4, 6],
+              backgroundColor: '#e74c3c'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                stacked: true
+              },
+              x: {
+                stacked: true
+              }
+            }
+          }
+        });
+
+        console.log('✅ Tous les graphiques créés avec succès');
+      } catch (error) {
+        statusDiv.innerHTML = '❌ ERREUR lors de la création des graphiques: ' + error.message;
+        statusDiv.style.background = '#ffebee';
+        statusDiv.style.color = '#c62828';
+        console.error('Erreur:', error);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1927,6 +1927,15 @@ body.dark-mode #billing-tab .card-body > div[style*="background: #f8f9fa"] {
   }
 }
 
+/* Animation pour le changement d'onglets */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
 /* Responsive Design for Billing */
 @media (max-width: 768px) {
   #sms-packs-grid,

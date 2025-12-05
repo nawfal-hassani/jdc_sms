@@ -58,3 +58,6 @@ window.showNotification = function(message, type = 'info') {
 
 // Log de confirmation du chargement
 console.log('[NOTIFICATION] Module de notifications chargé - window.showNotification disponible');
+
+// Notification de test désactivée
+// La fonction showNotification est prête à être utilisée par les autres modules
