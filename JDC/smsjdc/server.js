@@ -59,10 +59,10 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "http://localhost:*", "ws://localhost:*"],
+      imgSrc: ["'self'", "data:", "https:", "https://cdn.jsdelivr.net", "blob:"],
+      connectSrc: ["'self'", "http://localhost:*", "ws://localhost:*", "https://cdn.jsdelivr.net"],
     },
   },
   crossOriginEmbedderPolicy: false,
