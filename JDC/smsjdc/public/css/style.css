@@ -89,29 +89,86 @@ body {
   color: rgba(255,255,255,0.7);
   text-decoration: none;
   font-size: 14px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
   margin: 0 10px;
   position: relative;
+  cursor: pointer;
+  overflow: hidden;
 }
 
-.nav-link:hover {
+/* Effet de brillance au survol */
+.nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.nav-link:hover::before {
+  left: 100%;
+}
+
+.nav-link:hover:not(.active) {
   background-color: rgba(255,255,255,0.1);
   color: white;
   transform: translateX(5px);
 }
 
+/* État actif avec style marqué - Priorité maximale */
 .nav-link.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  border-left: 4px solid #ffd700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5), 0 0 0 3px rgba(255, 215, 0, 0.3) !important;
+  border-left: 5px solid #ffd700 !important;
+  transform: translateX(8px) !important;
+}
+
+/* Hover sur l'état actif - Légère accentuation */
+.nav-link.active:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6), 0 0 0 4px rgba(255, 215, 0, 0.4) !important;
+  transform: translateX(9px) !important;
 }
 
 .nav-link.active .nav-icon {
-  color: white;
-  font-size: 18px;
+  color: white !important;
+  font-size: 19px;
+  animation: iconPulse 0.6s ease-out;
+}
+
+/* Animation au clic - S'applique par-dessus l'état actif */
+.nav-link.active.nav-link-clicked {
+  animation: clickPulse 0.3s ease-out;
+}
+
+@keyframes clickPulse {
+  0% {
+    transform: translateX(8px) scale(1);
+  }
+  50% {
+    transform: translateX(10px) scale(1.08);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.7), 0 0 0 5px rgba(255, 215, 0, 0.5);
+  }
+  100% {
+    transform: translateX(8px) scale(1);
+  }
+}
+
+@keyframes iconPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .nav-icon {
@@ -820,6 +877,7 @@ textarea.form-control {
     font-size: 11px;
     text-align: center;
     gap: 4px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .nav-link span {
@@ -836,10 +894,43 @@ textarea.form-control {
   }
 
   .nav-link.active {
-    border-left: none;
-    border-top: 4px solid #ffd700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    border-left: none !important;
+    border-top: 5px solid #ffd700 !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    box-shadow: 0 -2px 12px rgba(102, 126, 234, 0.5), 0 0 0 2px rgba(255, 215, 0, 0.3) !important;
+    font-weight: 600 !important;
+    transform: translateY(-2px) !important;
+  }
+  
+  /* Hover sur l'état actif mobile - Légère accentuation */
+  .nav-link.active:hover {
+    box-shadow: 0 -4px 15px rgba(102, 126, 234, 0.6), 0 0 0 3px rgba(255, 215, 0, 0.4) !important;
+    transform: translateY(-3px) !important;
+  }
+  
+  .nav-link.active .nav-icon {
+    color: white !important;
+    font-size: 20px;
+    animation: iconPulse 0.6s ease-out;
+  }
+  
+  /* Animation au clic mobile - S'applique par-dessus l'état actif */
+  .nav-link.active.nav-link-clicked {
+    animation: clickPulseMobile 0.3s ease-out !important;
+  }
+  
+  @keyframes clickPulseMobile {
+    0% {
+      transform: translateY(-2px) scale(1);
+    }
+    50% {
+      transform: translateY(-6px) scale(1.15);
+      box-shadow: 0 -4px 20px rgba(102, 126, 234, 0.8), 0 0 0 4px rgba(255, 215, 0, 0.6);
+    }
+    100% {
+      transform: translateY(-2px) scale(1);
+    }
   }
 
   /* Main Content Mobile */

@@ -30,7 +30,7 @@ function getActiveTab() {
 }
 
 /**
- * Affiche un onglet spécifique
+ * Affiche un onglet spécifique avec animation
  */
 function showTab(tabId, triggerEvent = false) {
   console.log(`🔄 Affichage de l'onglet: ${tabId}`);
@@ -41,9 +41,11 @@ function showTab(tabId, triggerEvent = false) {
     tab.style.display = 'none';
   });
   
-  // Retirer la classe active de tous les liens
+  // Retirer la classe active de tous les liens avec animation
   document.querySelectorAll('.nav-link').forEach(link => {
     link.classList.remove('active');
+    link.classList.remove('nav-link-clicked'); // Retirer l'animation de clic
+    link.style.cssText = ''; // 🔥 NETTOYER le style inline
   });
   
   // Afficher l'onglet sélectionné
@@ -52,11 +54,38 @@ function showTab(tabId, triggerEvent = false) {
     selectedTab.style.display = 'block';
     selectedTab.classList.add('active');
     
-    // Activer le lien correspondant dans la sidebar
+    // Activer le lien correspondant dans la sidebar avec animation
     const selectedLink = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
     if (selectedLink) {
+      // Ajouter la classe active IMMÉDIATEMENT
       selectedLink.classList.add('active');
-      console.log(`✅ Onglet ${tabId} affiché`);
+      
+      // 🔥 FORCER LE STYLE INLINE POUR QUE ÇA RESTE À 100%
+      selectedLink.style.cssText = `
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        font-weight: 600 !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5), 0 0 0 3px rgba(255, 215, 0, 0.3) !important;
+        border-left: 5px solid #ffd700 !important;
+        transform: translateX(8px) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      `;
+      
+      console.log(`🔥 Style inline FORCÉ sur ${tabId}`);
+      
+      // Forcer le reflow
+      void selectedLink.offsetWidth;
+      
+      // Ajouter l'animation de clic
+      selectedLink.classList.add('nav-link-clicked');
+      
+      // Retirer UNIQUEMENT l'animation après 300ms
+      setTimeout(() => {
+        selectedLink.classList.remove('nav-link-clicked');
+        console.log(`✅ Animation terminée pour ${tabId}`);
+      }, 300);
+      
+      console.log(`✅ Onglet ${tabId} affiché avec style forcé`);
     } else {
       console.warn(`⚠️ Lien non trouvé pour: ${tabId}`);
     }

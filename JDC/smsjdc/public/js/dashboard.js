@@ -378,27 +378,32 @@ function setupEventListeners() {
     refreshButton.addEventListener('click', checkApiStatus);
   }
   
-  // Navigation
+  // Navigation - Géré par app.js, pas besoin de dupliquer ici
+  // Cette section est commentée car la navigation est déjà gérée par setupTabNavigation() dans app.js
+  /*
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', function(e) {
       // Si c'est un lien vers un onglet
       if (this.getAttribute('data-tab')) {
         e.preventDefault();
         const tabId = this.getAttribute('data-tab');
-        showTab(tabId);
         
-        // Marquer le lien comme actif
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        this.classList.add('active');
+        // Utiliser la fonction globale showTab qui gère déjà l'activation visuelle
+        if (typeof window.showTab === 'function') {
+          window.showTab(tabId, true);
+        } else {
+          // Fallback si window.showTab n'existe pas
+          showTab(tabId);
+          document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+        }
       }
     });
   });
+  */
   
-  // Initialiser sur le premier onglet
-  const firstTabLink = document.querySelector('.nav-link[data-tab]');
-  if (firstTabLink) {
-    firstTabLink.click();
-  }
+  // Initialisation du premier onglet - Géré par restoreActiveTab() dans app.js
+  // Pas besoin de cliquer ici car cela créerait un double événement
 }
 
 // Gestion de l'envoi de SMS

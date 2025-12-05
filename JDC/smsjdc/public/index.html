@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=5.0">
   <link rel="stylesheet" href="/css/components/filters.css">
   <link rel="stylesheet" href="/css/components/schedule.css">
   <link rel="stylesheet" href="/css/components/export.css">
@@ -19,6 +19,23 @@
   <!-- International Telephone Input -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css">
   <link rel="stylesheet" href="/css/components/intl-tel-input-custom.css?v=2.3">
+  
+  <!-- Style forcé pour navigation active -->
+  <style>
+    .nav-link.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      color: white !important;
+      font-weight: 600 !important;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5), 0 0 0 3px rgba(255, 215, 0, 0.3) !important;
+      border-left: 5px solid #ffd700 !important;
+      transform: translateX(8px) !important;
+    }
+    
+    .nav-link.active:hover {
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6), 0 0 0 4px rgba(255, 215, 0, 0.4) !important;
+      transform: translateX(9px) !important;
+    }
+  </style>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
