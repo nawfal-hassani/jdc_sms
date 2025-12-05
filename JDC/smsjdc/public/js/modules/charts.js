@@ -54,16 +54,15 @@ window.initCharts = function() {
   // Graphique des types de SMS
   const ctxTypes = document.getElementById('chart-types');
   if (ctxTypes) {
-    new Chart(ctxTypes, {
+    const typesChart = new Chart(ctxTypes, {
       type: 'doughnut',
       data: {
-        labels: ['SMS Simple', 'Tokens', 'Notifications'],
+        labels: ['SMS Simple', 'Token'],
         datasets: [{
-          data: [65, 25, 10],
+          data: [0, 0],
           backgroundColor: [
             '#3498db',
-            '#2ecc71',
-            '#f39c12'
+            '#2ecc71'
           ],
           borderWidth: 0,
         }]
@@ -79,6 +78,48 @@ window.initCharts = function() {
         cutout: '70%'
       }
     });
+    
+    // Charger les vraies données depuis l'historique
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      fetch('/api/sms/history', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (!Array.isArray(data)) return;
+          
+          let smsCount = 0;
+          let tokenCount = 0;
+          
+          data.forEach(item => {
+            const type = item.type || 'SMS';
+            if (type === 'Token') {
+              tokenCount++;
+            } else {
+              smsCount++;
+            }
+          });
+          
+          console.log(`📊 Types de SMS: ${smsCount} SMS, ${tokenCount} Tokens`);
+          
+          // Mettre à jour avec les vraies données
+          typesChart.data.datasets[0].data = [smsCount, tokenCount];
+          typesChart.update();
+        })
+        .catch(error => {
+          console.error('Erreur chargement données graphique Types:', error);
+          // Données par défaut en cas d'erreur
+          typesChart.data.datasets[0].data = [1, 1];
+          typesChart.update();
+        });
+    } else {
+      console.warn('Pas de token d\'authentification pour charger les données du graphique');
+      typesChart.data.datasets[0].data = [1, 1];
+      typesChart.update();
+    }
   } else {
     console.error("Élément canvas 'chart-types' non trouvé");
   }
