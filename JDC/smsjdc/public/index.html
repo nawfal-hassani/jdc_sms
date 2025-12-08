@@ -566,6 +566,96 @@
         </div>
       </div>
       
+      <!-- Schedule Tab -->
+      <div id="schedule-tab" class="tab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-calendar-alt"></i> Planifier un envoi SMS
+            </h2>
+            <div class="card-actions">
+              <button id="refresh-scheduled"><i class="fas fa-sync-alt"></i> Actualiser</button>
+            </div>
+          </div>
+          <div class="card-content">
+            <!-- Formulaire de planification -->
+            <form id="schedule-form" style="margin-bottom: 30px;">
+              <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div class="form-group">
+                  <label class="form-label" for="schedule-phone">
+                    <i class="fas fa-phone"></i> Numéro de téléphone
+                  </label>
+                  <input type="tel" id="schedule-phone" class="form-control" placeholder="+33612345678" required>
+                  <small class="form-text">Format international recommandé</small>
+                </div>
+                
+                <div class="form-group">
+                  <label class="form-label" for="schedule-date">
+                    <i class="fas fa-calendar"></i> Date d'envoi
+                  </label>
+                  <input type="date" id="schedule-date" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                  <label class="form-label" for="schedule-time">
+                    <i class="fas fa-clock"></i> Heure d'envoi
+                  </label>
+                  <input type="time" id="schedule-time" class="form-control" required>
+                </div>
+              </div>
+              
+              <div class="form-group" style="margin-top: 20px;">
+                <label class="form-label" for="schedule-message">
+                  <i class="fas fa-comment-dots"></i> Message
+                </label>
+                <textarea id="schedule-message" class="form-control" rows="4" placeholder="Votre message..." required maxlength="640"></textarea>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                  <span id="schedule-char-counter" class="char-counter" style="color: #666; font-size: 14px;">0 caractères (0 SMS)</span>
+                  <span id="schedule-cost" class="char-counter" style="color: #667eea; font-weight: 600;">Coût: 0 SMS</span>
+                </div>
+              </div>
+              
+              <div class="form-group" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  <i class="fas fa-clock"></i> Planifier l'envoi
+                </button>
+              </div>
+            </form>
+            
+            <!-- Liste des SMS planifiés -->
+            <div class="scheduled-list">
+              <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-list"></i> SMS planifiés
+                <span id="scheduled-count" class="badge" style="background: #667eea; color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px;">0</span>
+              </h3>
+              
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th><i class="fas fa-calendar-day"></i> Date & Heure</th>
+                      <th><i class="fas fa-user"></i> Destinataire</th>
+                      <th><i class="fas fa-comment"></i> Message</th>
+                      <th><i class="fas fa-info-circle"></i> Statut</th>
+                      <th><i class="fas fa-cog"></i> Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="scheduled-tbody">
+                    <tr>
+                      <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                        <i class="fas fa-calendar-times" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <p>Aucun SMS planifié pour le moment</p>
+                        <p style="font-size: 14px;">Utilisez le formulaire ci-dessus pour planifier un envoi</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <!-- History Tab -->
       <div id="history-tab" class="tab-content" style="display: none;">
         <div class="card">
@@ -1187,6 +1277,9 @@
       console.log('📞 intl-tel-input initialisé pour les champs téléphone');
     });
   </script>
+  
+  <!-- Schedule Module -->
+  <script src="/js/schedule.js"></script>
 
   <!-- Footer -->
   <footer class="app-footer">
