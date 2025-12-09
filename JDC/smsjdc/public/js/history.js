@@ -278,6 +278,56 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
+  // Fonction pour supprimer une entrée de l'historique
+  function deleteHistoryEntry(messageId, row) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette entrée de l\'historique ?')) {
+      return;
+    }
+
+    // Appeler l'API pour supprimer l'entrée
+    fetch(`/api/sms/history/${messageId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Supprimer visuellement la ligne du tableau
+        if (row && row.parentNode) {
+          row.classList.add('fade-out');
+          setTimeout(() => {
+            row.remove();
+            
+            // Recharger l'historique pour mettre à jour les stats
+            loadSmsHistory();
+            
+            // Afficher une notification de succès
+            if (window.showToast) {
+              window.showToast('Entrée supprimée avec succès', 'success');
+            }
+          }, 300);
+        }
+      } else {
+        console.error('Erreur lors de la suppression:', data.message);
+        if (window.showToast) {
+          window.showToast('Erreur lors de la suppression: ' + data.message, 'error');
+        } else {
+          alert('Erreur lors de la suppression: ' + data.message);
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Erreur lors de la suppression:', error);
+      if (window.showToast) {
+        window.showToast('Erreur lors de la suppression', 'error');
+      } else {
+        alert('Erreur lors de la suppression');
+      }
+    });
+  }
+
   // Charger l'historique si l'onglet est déjà actif au chargement
   if (historyTab && historyTab.style.display !== 'none' && historyTable) {
     loadSmsHistory();

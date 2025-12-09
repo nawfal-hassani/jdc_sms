@@ -2027,6 +2027,22 @@ body.dark-mode #billing-tab .card-body > div[style*="background: #f8f9fa"] {
   display: block;
 }
 
+/* Animation pour la suppression d'une ligne */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
 /* Responsive Design for Billing */
 @media (max-width: 768px) {
   #sms-packs-grid,
