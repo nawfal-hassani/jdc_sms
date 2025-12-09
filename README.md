@@ -405,7 +405,7 @@ Si ce projet vous aide, donnez-lui une ⭐ sur GitHub !
 
 <div align="center">
 
-**Fait avec ❤️ par l'équipe JDC Occitanie**
+
 
 [⬆ Retour en haut](#-jdc-test---écosystème-sms-complet)
 
