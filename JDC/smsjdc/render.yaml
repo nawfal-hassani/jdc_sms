@@ -1,4 +1,28 @@
 services:
+  # API SMS Backend
+  - type: web
+    name: jdc-sms-api
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: cd ../sms-api && npm install
+    startCommand: cd ../sms-api && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+      - key: SMS_PROVIDER
+        value: twilio
+      - key: API_KEY
+        generateValue: true
+
   # Dashboard SMS (Frontend + Backend)
   - type: web
     name: jdc-sms-dashboard
@@ -12,6 +36,8 @@ services:
         value: production
       - key: PORT
         value: 3030
+      - key: SMS_API_URL
+        value: https://jdc-sms-api.onrender.com/api
       - key: TWILIO_ACCOUNT_SID
         sync: false
       - key: TWILIO_AUTH_TOKEN
