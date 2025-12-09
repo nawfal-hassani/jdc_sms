@@ -7,17 +7,17 @@ services:
     plan: free
     rootDir: JDC/sms-api
     buildCommand: npm install
-    startCommand: node src/server.js
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3000
-      - key: TWILIO_ACCOUNT_SID
+      - key: TWILIO_SID
         sync: false
-      - key: TWILIO_AUTH_TOKEN
+      - key: TWILIO_TOKEN
         sync: false
-      - key: TWILIO_PHONE_NUMBER
+      - key: TWILIO_PHONE
         sync: false
       - key: SMS_PROVIDER
         value: twilio
@@ -32,7 +32,7 @@ services:
     plan: free
     rootDir: JDC/smsjdc
     buildCommand: npm install
-    startCommand: node server.js
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -40,12 +40,11 @@ services:
         value: 3030
       - key: SMS_API_URL
         value: https://jdc-sms-api.onrender.com/api
-      - key: TWILIO_ACCOUNT_SID
-        sync: false
-      - key: TWILIO_AUTH_TOKEN
-        sync: false
-      - key: TWILIO_PHONE_NUMBER
-        sync: false
+      - key: SMS_API_KEY
+        fromService:
+          type: web
+          name: jdc-sms-api
+          envVarKey: API_KEY
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_PUBLISHABLE_KEY
