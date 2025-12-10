@@ -683,8 +683,8 @@
       console.log('[DEBUG] Modal ouvert, classe active ajoutée');
     }
 
-    // Éditer un utilisateur
-    function editUser(userId) {
+    // Éditer un utilisateur (exposé globalement pour onclick)
+    window.editUser = function(userId) {
       console.log('[DEBUG] editUser appelé avec userId:', userId);
       const user = users.find(u => u.id === userId);
       if (!user) {
@@ -705,7 +705,7 @@
       document.getElementById('user-role').value = user.role;
       document.getElementById('user-modal').classList.add('active');
       console.log('[DEBUG] Modal de modification ouvert');
-    }
+    };
 
     // Sauvegarder un utilisateur
     async function saveUser() {
@@ -767,8 +767,8 @@
       }
     }
 
-    // Supprimer un utilisateur
-    async function deleteUser(userId, userEmail) {
+    // Supprimer un utilisateur (exposé globalement pour onclick)
+    window.deleteUser = async function(userId, userEmail) {
       console.log('[DEBUG] deleteUser appelé avec userId:', userId, 'email:', userEmail);
       if (!confirm(`⚠️ Êtes-vous sûr de vouloir supprimer l'utilisateur ${userEmail} ?\n\nCette action est irréversible et supprimera également son historique.`)) {
         console.log('[DEBUG] Suppression annulée par l\'utilisateur');
@@ -796,7 +796,7 @@
         console.error('Erreur:', error);
         showAlert('❌ Erreur de connexion au serveur', 'error');
       }
-    }
+    };
 
     // Fermer le modal
     function closeModal() {
