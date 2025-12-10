@@ -280,9 +280,13 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Fonction pour supprimer une entrée de l'historique
   function deleteHistoryEntry(messageId, row) {
+    console.log('🗑️ Demande de suppression pour l\'ID:', messageId);
+    
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette entrée de l\'historique ?')) {
       return;
     }
+
+    console.log('📡 Envoi de la requête DELETE à:', `/api/sms/history/${messageId}`);
 
     // Appeler l'API pour supprimer l'entrée
     fetch(`/api/sms/history/${messageId}`, {
@@ -293,6 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(response => response.json())
     .then(data => {
+      console.log('📥 Réponse du serveur:', data);
       if (data.success) {
         // Supprimer visuellement la ligne du tableau
         if (row && row.parentNode) {

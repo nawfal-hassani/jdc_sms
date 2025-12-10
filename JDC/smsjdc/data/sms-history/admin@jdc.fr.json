@@ -1,0 +1,28 @@
+[
+  {
+    "id": "sms_1765354621871_iah78741o",
+    "userEmail": "admin@jdc.fr",
+    "type": "Token",
+    "to": "+33756885075",
+    "message": "Votre code d'authentification JDC est: 791147",
+    "status": "failed",
+    "source": "dashboard",
+    "timestamp": "2025-12-10T08:17:01.872Z",
+    "token": "791147",
+    "error": "Request failed with status code 500",
+    "userName": "Admin Nawfal"
+  },
+  {
+    "id": "sms_1765354591202_irhjhoajc",
+    "userEmail": "admin@jdc.fr",
+    "type": "Token",
+    "to": "+33756885072",
+    "message": "Votre code d'authentification JDC est: 448019",
+    "status": "delivered",
+    "source": "dashboard",
+    "timestamp": "2025-12-10T08:16:31.202Z",
+    "token": "448019",
+    "userName": "Admin Nawfal",
+    "messageId": null
+  }
+]

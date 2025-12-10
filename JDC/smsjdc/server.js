@@ -289,19 +289,37 @@ app.post('/api/send-token', authController.authenticate, async (req, res) => {
 
 // Ajouter la méthode remove() au gestionnaire d'historique
 historyManager.remove = function(id) {
+  console.log('🗑️ Tentative de suppression de l\'ID:', id);
+  console.log('📊 Nombre d\'entrées avant suppression:', localHistory.length);
+  
+  // Log des premiers IDs pour debug
+  if (localHistory.length > 0) {
+    console.log('🔍 Premiers IDs dans l\'historique:', localHistory.slice(0, 3).map(item => item.id));
+  }
+  
   // Rechercher le message dans l'historique local
   const initialLength = localHistory.length;
   localHistory = localHistory.filter(item => {
     // Vérifier si l'id correspond à celui recherché
-    return item.id !== id;
+    const keep = item.id !== id;
+    if (!keep) {
+      console.log('✅ Entrée trouvée et supprimée:', item.id);
+    }
+    return keep;
   });
   
   // Si la taille du tableau a changé, un élément a été supprimé
   const removed = initialLength > localHistory.length;
   
+  console.log('📊 Nombre d\'entrées après suppression:', localHistory.length);
+  console.log('✅ Suppression réussie?', removed);
+  
   // Sauvegarder le nouvel historique dans le fichier
   if (removed) {
     this.save();
+    console.log('💾 Historique sauvegardé dans le fichier');
+  } else {
+    console.log('❌ Aucune entrée supprimée - ID non trouvé');
   }
   
   return removed;
