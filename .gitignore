@@ -13,6 +13,11 @@ JDC/*.log
 # Dépendances
 node_modules/
 
+# Données utilisateur (historiques, etc.)
+JDC/smsjdc/data/sms-history/*.json
+JDC/smsjdc/data/*.json
+!JDC/smsjdc/data/.gitkeep
+
 # Système
 .DS_Store
 Thumbs.db
