@@ -6,6 +6,7 @@ dotenv.config();
 const twilio = await import("twilio");
 const accountSid = process.env.TWILIO_SID;
 const authToken = process.env.TWILIO_TOKEN;
+const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID; // Nouveau : Support Messaging Service
 
 if (!accountSid || !authToken) {
   throw new Error("ERREUR: TWILIO_SID et TWILIO_TOKEN doivent être configurés dans le fichier .env");
@@ -14,6 +15,15 @@ if (!accountSid || !authToken) {
 const twilioClient = twilio.default(accountSid, authToken);
 console.log("✅ Twilio configuré avec succès");
 console.log("Mode de fonctionnement: PRODUCTION");
+
+// Afficher le mode d'envoi
+if (messagingServiceSid) {
+  console.log(`📱 Utilisation du Messaging Service SID: ${messagingServiceSid}`);
+} else if (process.env.TWILIO_PHONE) {
+  console.log(`📱 Utilisation du numéro direct: ${process.env.TWILIO_PHONE}`);
+} else {
+  console.warn("⚠️ Aucun numéro ou Messaging Service SID configuré");
+}
 
 /**
  * Envoie un SMS via Twilio ou simule l'envoi si Twilio n'est pas configuré
@@ -34,20 +44,37 @@ async function sendSmsViaTwilio(to, message) {
       message = `${message}\n- JDC Longdoc`;
     }
     
-    const result = await twilioClient.messages.create({
+    // Préparer les paramètres du message
+    const messageParams = {
       body: message,
-      from: process.env.TWILIO_PHONE,
       to: to
-    });
+    };
+    
+    // Utiliser le Messaging Service SID si disponible, sinon utiliser le numéro direct
+    if (messagingServiceSid) {
+      messageParams.messagingServiceSid = messagingServiceSid;
+      console.log(`📤 Envoi via Messaging Service: ${messagingServiceSid} → ${to}`);
+    } else if (process.env.TWILIO_PHONE) {
+      messageParams.from = process.env.TWILIO_PHONE;
+      console.log(`📤 Envoi via numéro direct: ${process.env.TWILIO_PHONE} → ${to}`);
+    } else {
+      throw new Error("Aucun numéro d'envoi ou Messaging Service SID configuré");
+    }
+    
+    const result = await twilioClient.messages.create(messageParams);
 
-    console.log(`SMS envoyé avec Twilio: ${result.sid}`);
+    console.log(`✅ SMS envoyé avec succès: ${result.sid} | Statut: ${result.status}`);
     return { 
       success: true, 
       sid: result.sid,
+      status: result.status,
       timestamp: new Date().toISOString() 
     };
   } catch (error) {
-    console.error(`Erreur Twilio: ${error.message}`);
+    console.error(`❌ Erreur Twilio: ${error.message}`);
+    if (error.code) {
+      console.error(`Code d'erreur Twilio: ${error.code}`);
+    }
     throw error;
   }
 }
